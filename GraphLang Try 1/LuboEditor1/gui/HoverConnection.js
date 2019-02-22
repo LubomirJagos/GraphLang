@@ -3,7 +3,7 @@ var HoverConnection = draw2d.Connection.extend({
     init: function ( sourcePort, targetPort) {
         var self = this;
         this._super({
-            router: new draw2d.layout.connection.SketchConnectionRouter(),
+            router: new draw2d.layout.connection.InteractiveManhattanConnectionRouter(),
             radius: 5,
             source: sourcePort,
             target: targetPort,

@@ -62,7 +62,7 @@ example.View = draw2d.Canvas.extend({
 				if (label){attributes += "text: \"" + label + "\",";}
 				attributes = "{" + attributes.substring(0,attributes.length-1) + "}";
 
-				if (label && width && height){
+				if (label || width || height){
 					figure = eval("new "+type+"(" + attributes + ");");
 				}else{
 					figure = eval("new "+type+"();");
@@ -71,5 +71,18 @@ example.View = draw2d.Canvas.extend({
         var command = new draw2d.command.CommandAdd(this, figure, x, y);
         this.getCommandStack().execute(command);
 				$("#logitem1").html("Obj type: " + type);
+
+				/*
+				 *	Adding anchor policy for connection when drop new node.
+				 *	Not used in combination with interactive InteractiveManhattanConnectionRouter
+				 *	because then there are possibility to modify route by 2 ways:
+				 *		1. using wire nodes for editting
+				 *		2. routing associated with ports
+				 */
+				// this.getFigures().each(function(i,f){
+				//     f.getPorts().each(function(i,port){
+				//         port.setConnectionAnchor(new draw2d.layout.anchor.ShortesPathConnectionAnchor(port));
+				//     });
+				// });
     }
 });
