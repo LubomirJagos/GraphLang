@@ -52,7 +52,7 @@ example.Toolbar = Class.extend({
 		this.html.append(this.delimiter);
 
 		/*
-			Button, when clicked it should add joints to all crossing wires.
+			BUTTON, when clicked it should add joints to all crossing wires.
 		*/
 		this.addWireJointsButton  = $("<button>Detect Joints</button>");
 		this.html.append(this.addWireJointsButton);
@@ -61,13 +61,10 @@ example.Toolbar = Class.extend({
 		},this));
 
 		/**
-		 *	Button run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.
+		 *	BUTTON run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.
 		 */
-		this.addRunButton  = $("<button>Run</button>");
+		this.addRunButton  = $("<button id=\"runButton\">Run</button>");
 		this.html.append(this.addRunButton);
-		this.addRunButton.button().click($.proxy(function(){
-		    GraphLang.Utils.run(function(){alert("Rand number: " + String(Math.random()*42.0));});
-		},this));
 	},
 
 	/**

@@ -16,6 +16,15 @@
 
     <script src="../../draw2d/dist/draw2d.js"></script>
 
+    <script type="text/javascript">
+      /**
+       *  GLOBAL DEFINITIONS
+       */
+      //save reference to canvas to have it globally acessible
+      var appCanvas;
+    </script>
+
+
     <script src="./gui/Application.js"></script>
 	  <script src="./gui/View.js"></script>
     <script src="./gui/Toolbar.js"></script>
@@ -29,9 +38,6 @@
     <script src="./GraphLangUtils/Run.js"></script>
 
  <script type="text/javascript">
-
-//save reference to canvas to have it globally acessible
-var appCanvas;
 
 document.addEventListener("DOMContentLoaded",function () {
 
@@ -54,16 +60,40 @@ document.addEventListener("DOMContentLoaded",function () {
 
       // Function to button Run is assigned in Toolbar.js
       //GraphLang.Utils.run(function(){alert("Anonymous functions given to run()");});
+      //This here is just click() handler, because here appCanvas has visibility
+      //I put it in front of HTML file so now should be visible everywhere.
+      $("#runButton").button().click($.proxy(function(){
+  		    GraphLang.Utils.run(function(){
+            //alert(displayJSON(appCanvas));
+
+            //start basic parsing JSON network, looking just for wires let's say
+            //init json to get some data prepared by V8
+            var jsonStr = displayJSON(appCanvas);
+            var jsonObj = JSON.parse(jsonStr);
+
+            var numberofNumericAdd = 0;
+            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+                numberofNumericAdd++;
+              }
+            }
+            alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
+          });
+  		}));
 });
 
 /**
  *  This is called on event and serializing canvas into JSON format here to have some results.
+ *  @return Return value is JSON string to be able produce obj on another place
  */
 function displayJSON(canvas){
     var writer = new draw2d.io.json.Writer();
+    var jsonStr = "";
     writer.marshal(appCanvas,function(json){
-        $("#json").text(JSON.stringify(json, null, 2));
+        jsonStr = JSON.stringify(json, null, 2);
+        $("#json").text(jsonStr);
     });
+    return jsonStr;
 }
 </script>
 

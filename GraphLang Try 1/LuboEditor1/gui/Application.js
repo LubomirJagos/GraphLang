@@ -2,27 +2,27 @@
 var example = {};
 
 /**
- * 
+ *
  * The **GraphicalEditor** is responsible for layout and dialog handling.
- * 
+ *
  * @author Andreas Herz
  * @extends draw2d.ui.parts.GraphicalEditor
  */
 example.Application = Class.extend(
 {
-    NAME : "example.Application", 
+    NAME : "example.Application",
 
     /**
      * @constructor
-     * 
+     *
      * @param {String} canvasId the id of the DOM element to use as paint container
      */
     init : function()
     {
 	      this.view    = new example.View("canvas");
-          this.toolbar = new example.Toolbar("toolbar",  this.view );
-	       
-	       
+        this.toolbar = new example.Toolbar("toolbar",  this.view );
+
+
 	       // layout FIRST the body
 	       this.appLayout = $('#container').layout({
 	   	     west: {
@@ -38,7 +38,7 @@ example.Application = Class.extend(
 	              paneSelector: "#content"
 	            }
 	       });
-	      
+
 	       //
 	       this.contentLayout = $('#content').layout({
 	   	     north: {
