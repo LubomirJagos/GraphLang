@@ -18,20 +18,53 @@
 
     <script src="./gui/Application.js"></script>
 	  <script src="./gui/View.js"></script>
-    <script src="./gui/Toolbar.js"></script> <script src="./gui/HoverConnection.js"></script>
+    <script src="./gui/Toolbar.js"></script>
+    <script src="./gui/HoverConnection.js"></script>
+
+    <!--
+      These are mine shapes added. LuboJ.
+    -->
+    <script src="./GraphLangShapes/Add.js"></script>
+    <!-- End of GraphLang shapes-->
+    <script src="./GraphLangUtils/Run.js"></script>
 
  <script type="text/javascript">
 
+//save reference to canvas to have it globally acessible
+var appCanvas;
+
 document.addEventListener("DOMContentLoaded",function () {
 
-     var app  = new example.Application();
+    var app  = new example.Application();
      app.view.installEditPolicy(  new draw2d.policy.connection.DragConnectionCreatePolicy({
         createConnection: function(){
             return new HoverConnection();
         }
       }));
+
+      /**
+       *  Update JSON representation of canvas
+       */
+       appCanvas = app.view;
+      app.view.getCommandStack().addEventListener(function(e){
+  	      if(e.isPostChangeEvent()){
+  	          displayJSON(appCanvas);
+  	      }
+  	  });
+
+      // Function to button Run is assigned in Toolbar.js
+      //GraphLang.Utils.run(function(){alert("Anonymous functions given to run()");});
 });
 
+/**
+ *  This is called on event and serializing canvas into JSON format here to have some results.
+ */
+function displayJSON(canvas){
+    var writer = new draw2d.io.json.Writer();
+    writer.marshal(appCanvas,function(json){
+        $("#json").text(JSON.stringify(json, null, 2));
+    });
+}
 </script>
 
 </head>
@@ -50,10 +83,17 @@ document.addEventListener("DOMContentLoaded",function () {
       <div data-shape="draw2d.shape.node.Hub" data-width="10" data-height="100" data-label="Hub label" class="palette_node_element draw2d_droppable">Hub</div>
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
       <div data-shape="draw2d.shape.composite.Raft" data-width="300" data-height="300" data-label="Hello world" class="palette_node_element draw2d_droppable">WhileLoop</div>
+
+      <!--
+        Node which change for yellow-green after drop on canvas.
+      -->
+      <div data-shape="GraphLang.Shapes.Numeric.Add" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Add</div>
    </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>
+   </div>
+   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:300;background:white;border:1px solid gray">
    </div>
 
 </body>

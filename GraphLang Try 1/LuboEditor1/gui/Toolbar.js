@@ -59,6 +59,15 @@ example.Toolbar = Class.extend({
 		this.addWireJointsButton.button().click($.proxy(function(){
 		    alert("add some code");
 		},this));
+
+		/**
+		 *	Button run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.
+		 */
+		this.addRunButton  = $("<button>Run</button>");
+		this.html.append(this.addRunButton);
+		this.addRunButton.button().click($.proxy(function(){
+		    GraphLang.Utils.run(function(){alert("Rand number: " + String(Math.random()*42.0));});
+		},this));
 	},
 
 	/**
