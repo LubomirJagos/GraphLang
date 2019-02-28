@@ -75,6 +75,22 @@ document.addEventListener("DOMContentLoaded",function () {
             for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
               if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
                 numberofNumericAdd++;
+                //set default value for counter 1 of object
+                jsonObj[nodeCnt].cnt1 = 0;
+                //this is how to call object function, need to put there also object to push reference there
+                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
+              }
+            }
+            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+                numberofNumericAdd++;
+                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
+              }
+            }
+            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+                numberofNumericAdd++;
+                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
               }
             }
             alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
