@@ -54,11 +54,11 @@ example.Toolbar = Class.extend({
 		/*
 			BUTTON, when clicked it should add joints to all crossing wires.
 		*/
-		this.addWireJointsButton  = $("<button>Detect Joints</button>");
+		this.addWireJointsButton  = $("<button id=\"detectJointsButton\">Detect Joints</button>");
 		this.html.append(this.addWireJointsButton);
-		this.addWireJointsButton.button().click($.proxy(function(){
-		    alert("add some code");
-		},this));
+		//this.addWireJointsButton.button().click($.proxy(function(){
+		//    alert("add some code");
+		//},this));
 
 		/**
 		 *	BUTTON run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.

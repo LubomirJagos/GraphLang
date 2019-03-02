@@ -60,10 +60,21 @@ GraphLang.Shapes.Numeric.Add = draw2d.shape.node.End.extend({
   NAME: "GraphLang.Shapes.Numeric.Add",
   init:function(attr, setter, getter){
     this._super($.extend(attr,{color: "#004200", bgColor: "#FFFF00", width: "42", height: "42"}), setter, getter);
+    this.createPort("input");
+    this.createPort("input");
+    this.createPort("input");
+    this.createPort("output");
+
+    //draw End node ID on top
+    this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({
+      //???this has effect???
+     //margin:10  // distance to the parent shape
+    }));
   },
   onRun: function(){
     this.cnt1++;
-    alert(this.id + "\n" + " -----> " + String(this.cnt1));
+    //Disabled to not interrupt application waiting for user to click on prompt
+    //alert(this.id + "\n" + " -----> " + String(this.cnt1));
   },
 
   /**
@@ -71,6 +82,22 @@ GraphLang.Shapes.Numeric.Add = draw2d.shape.node.End.extend({
    */
   onRun2: function(caller){
     caller.cnt1++;
-    alert(caller.id + "\n" + " -----> " + String(caller.cnt1));
+    //disabled just to not interrupt application by waiting for user to click on prompt
+    //alert(caller.id + "\n" + " -----> " + String(caller.cnt1));
+  }
+});
+
+GraphLang.Port = draw2d.Port.extend({
+  NAME: "GraphLang.Port",
+  constructor(obj){
+    obj && Object.assign(this, obj);
+  }
+});
+
+GraphLang.geo = new Object();
+GraphLang.geo.Point = draw2d.geo.Point.extend({
+  NAME: "GraphLang.geo.Point",
+  constructor(obj){
+    obj && Object.assign(this, obj);
   }
 });

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded",function () {
       /**
        *  Update JSON representation of canvas
        */
-       appCanvas = app.view;
+      appCanvas = app.view;
       app.view.getCommandStack().addEventListener(function(e){
   	      if(e.isPostChangeEvent()){
   	          displayJSON(appCanvas);
@@ -72,6 +72,7 @@ document.addEventListener("DOMContentLoaded",function () {
             var jsonObj = JSON.parse(jsonStr);
 
             var numberofNumericAdd = 0;
+            var mySelectedNode;
             for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
               if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
                 numberofNumericAdd++;
@@ -79,8 +80,12 @@ document.addEventListener("DOMContentLoaded",function () {
                 jsonObj[nodeCnt].cnt1 = 0;
                 //this is how to call object function, need to put there also object to push reference there
                 new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
+
+                //remember one nodes for other experiments, last Add item
+                mySelectedNode = new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]);
               }
             }
+/*
             for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
               if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
                 numberofNumericAdd++;
@@ -93,9 +98,62 @@ document.addEventListener("DOMContentLoaded",function () {
                 new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
               }
             }
+*/
+            inputPorts = mySelectedNode.getInputPorts();  //ArrayList
+            alert("Input ports count:\n" + inputPorts.getSize());
+
+            outMsg = new String();
+            //for each port object call method to add to message its ID
+            inputPorts.each(function(i, caller){outMsg += "> " + caller.id + "\n"});
+            outMsg += "\n";
+            alert("Node input ports:\n" + outMsg);
+
             alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
           });
   		}));
+
+      /**************************************
+       *  BUTTON "Detect Joints"
+       **************************************/
+      $("#detectJointsButton").button().click($.proxy(function(){
+        //get objects from canvas
+        //var jsonStr = displayJSON(appCanvas);
+        //var jsonObj = JSON.parse(jsonStr);
+
+        var allWires = appCanvas.getLines();
+        var wiresIntersectionList = [];
+        var outMsg = "Wires ID list:\n";
+        allWires.each(function(i, caller){
+          outMsg += "> " + caller.id + "\n";
+          wiresIntersectionList.push(appCanvas.getIntersection(caller));
+          //caller.setColor("#FF0000"); //change color of each wire to red
+        });
+        alert(outMsg);
+
+        outMsg = "Intersection X,Y:\n";
+        if (wiresIntersectionList.length > 0){
+          for (var k = 0; k < wiresIntersectionList.length; k++){
+            wiresIntersectionList[k].each(function(i, caller){
+              pObj = new GraphLang.geo.Point(caller);
+              pX = pObj.getX();
+              pY = pObj.getY();
+              outMsg += "> " + String(pX) + "," + String(pY) + "\n";
+              var shape =  new draw2d.shape.basic.Circle({stroke:3, color:"#3d3d3d", bgColor:"#3dff3d"});
+              shape.setWidth(10);
+              shape.setHeight(10);
+              shape.setX(pX);
+              shape.setY(pY);
+              pX = pX - shape.width/2;
+              pY = pY - shape.width/2;
+              shape.setX(pX);
+              shape.setY(pY);
+              appCanvas.add(shape);
+            });
+          }
+        }
+        alert("Intersections: " + wiresIntersectionList[0].getSize() + "\n" + outMsg);
+
+   		},this));
 });
 
 /**
