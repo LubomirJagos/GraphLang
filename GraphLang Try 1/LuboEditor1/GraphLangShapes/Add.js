@@ -1,5 +1,12 @@
 var GraphLang = {};
 
+// var GraphLang = Class.extend({
+//   NAME: "",
+//   constructor(obj){
+//     obj && Object.assign(this, obj);
+//   }
+// });
+
 /*
   LuboJ. warning to have more beautiful life:
       NOT 'var' WORD ANYMORE!!!
@@ -8,12 +15,12 @@ var GraphLang = {};
 
 GraphLang.Color = Class.extend({
   NAME: "GraphLang.Color",
-  getByName:function(colorName){
-    if (colorName == "yellow") return "#FFFF00";
-    else if (colorName == "red") return "#FF0000";
-    else return "#000000";
-  }
 });
+GraphLang.Color.getByName = function(colorName){
+  if (colorName == "yellow") return "#FFFF00";
+  else if (colorName == "red") return "#FF0000";
+  else return "#000000";
+}
 
 /**
  *  @author Lubomir Jagos

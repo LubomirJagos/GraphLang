@@ -22,3 +22,25 @@ GraphLang.Utils.run = function(textValue){
   //eval(textValue);
   this.internalFunctionStorage();
 }
+
+GraphLang.Utils.runInterpreter = function(canvas){
+  //alert(canvas);
+  let allPorts = canvas.getAllPorts();
+  let outMsg = "";
+  let idList = [];
+  let cntPort = 0;
+  let parentIdList = [];
+
+  //getting type names of all ports just for example to show how it should be done
+  allPorts.each(function(index, portObj){
+    idList.push(portObj.NAME);
+    parentIdList.push(portObj);
+  });
+  idList.sort();
+  for (var i = 0; i < idList.length; i++){
+    outMsg += idList[i] + "\n";
+  }
+
+  alert("All ports:" + "\n" + outMsg);
+  //alert(idList);
+}

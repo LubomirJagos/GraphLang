@@ -63,53 +63,51 @@ document.addEventListener("DOMContentLoaded",function () {
       //This here is just click() handler, because here appCanvas has visibility
       //I put it in front of HTML file so now should be visible everywhere.
       $("#runButton").button().click($.proxy(function(){
-  		    GraphLang.Utils.run(function(){
-            //alert(displayJSON(appCanvas));
+          //alert(displayJSON(appCanvas));
 
-            //start basic parsing JSON network, looking just for wires let's say
-            //init json to get some data prepared by V8
-            var jsonStr = displayJSON(appCanvas);
-            var jsonObj = JSON.parse(jsonStr);
+          //start basic parsing JSON network, looking just for wires let's say
+          //init json to get some data prepared by V8
+          var jsonStr = displayJSON(appCanvas);
+          var jsonObj = JSON.parse(jsonStr);
 
-            var numberofNumericAdd = 0;
-            var mySelectedNode;
-            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-                numberofNumericAdd++;
-                //set default value for counter 1 of object
-                jsonObj[nodeCnt].cnt1 = 0;
-                //this is how to call object function, need to put there also object to push reference there
-                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
+          var numberofNumericAdd = 0;
+          var mySelectedNode;
+          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+              numberofNumericAdd++;
+              //set default value for counter 1 of object
+              jsonObj[nodeCnt].cnt1 = 0;
+              //this is how to call object function, need to put there also object to push reference there
+              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
 
-                //remember one nodes for other experiments, last Add item
-                mySelectedNode = new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]);
-              }
+              //remember one nodes for other experiments, last Add item
+              mySelectedNode = new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]);
             }
+          }
 /*
-            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-                numberofNumericAdd++;
-                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
-              }
+          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+              numberofNumericAdd++;
+              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
             }
-            for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-              if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-                numberofNumericAdd++;
-                new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
-              }
+          }
+          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
+              numberofNumericAdd++;
+              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
             }
+          }
 */
-            inputPorts = mySelectedNode.getInputPorts();  //ArrayList
-            alert("Input ports count:\n" + inputPorts.getSize());
+          inputPorts = mySelectedNode.getInputPorts();  //ArrayList
+          alert("Input ports count:\n" + inputPorts.getSize());
 
-            outMsg = new String();
-            //for each port object call method to add to message its ID
-            inputPorts.each(function(i, caller){outMsg += "> " + caller.id + "\n"});
-            outMsg += "\n";
-            alert("Node input ports:\n" + outMsg);
+          outMsg = new String();
+          //for each port object call method to add to message its ID
+          inputPorts.each(function(i, caller){outMsg += "> " + caller.id + "\n"});
+          outMsg += "\n";
+          alert("Node input ports:\n" + outMsg);
 
-            alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
-          });
+          alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
   		}));
 
       /**************************************
@@ -152,8 +150,11 @@ document.addEventListener("DOMContentLoaded",function () {
           }
         }
         alert("Intersections: " + wiresIntersectionList[0].getSize() + "\n" + outMsg);
+   		}));
 
-   		},this));
+      $("#runInterpreterButton").button().click($.proxy(function(){
+        GraphLang.Utils.runInterpreter(appCanvas);
+  		}));
 });
 
 /**

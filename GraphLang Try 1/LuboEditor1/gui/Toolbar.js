@@ -64,7 +64,13 @@ example.Toolbar = Class.extend({
 		 *	BUTTON run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.
 		 */
 		this.addRunButton  = $("<button id=\"runButton\">Run</button>");
-		this.html.append(this.addRunButton);
+ 		this.html.append(this.addRunButton);
+
+		/**
+		 *	RUN INTERPRETER
+		 */
+		 this.addRunButton  = $("<button id=\"runInterpreterButton\">Run Interpreter</button>");
+  		this.html.append(this.addRunButton);
 	},
 
 	/**
