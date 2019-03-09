@@ -46,13 +46,13 @@ GraphLang.Shapes = draw2d.shape.node.Node.extend({
   }
 });
 
-/*
-  This is basic numeric class for numeric entry.
-  It cannot be placed on Canvas, because it doesn't has method for draw itself, but mus be created to be able have new subbranches of blocks.
-
-  I was getting error in browser:
-    "Uncaught Inherited class [GraphLang.Shapes.Numeric] must override the abstract method createShapeElement"
-*/
+/**
+ *  @description This is basic numeric class for numeric entry.
+ *  It cannot be placed on Canvas, because it doesn't has method for draw itself, but mus be created to be able have new subbranches of blocks.
+ *
+ *  I was getting error in browser:
+ *    "Uncaught Inherited class [GraphLang.Shapes.Numeric] must override the abstract method createShapeElement"
+ */
 GraphLang.Shapes.Numeric = draw2d.shape.node.Node.extend({
   NAME: "GraphLang.Shapes.Numeric",
   init:function(attr, setter, getter){
@@ -91,6 +91,34 @@ GraphLang.Shapes.Numeric.Add = draw2d.shape.node.End.extend({
     caller.cnt1++;
     //disabled just to not interrupt application by waiting for user to click on prompt
     //alert(caller.id + "\n" + " -----> " + String(caller.cnt1));
+  },
+
+  onRun3: function(){
+    alert("Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);
+  }
+});
+
+GraphLang.Port = draw2d.Port.extend({
+  NAME: "GraphLang.Port",
+  constructor(obj){
+    obj && Object.assign(this, obj);
+  }
+});
+
+GraphLang.Shapes.Numeric.Subtract = draw2d.shape.node.End.extend({
+  NAME: "GraphLang.Shapes.Numeric.Subtract",
+  init:function(attr, setter, getter){
+    this._super($.extend(attr,{color: "#004200", bgColor: "#FF2200", width: "42", height: "42"}), setter, getter);
+    this.createPort("input");
+    this.createPort("input");
+    this.createPort("output");
+
+    //draw End node ID on top
+    this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({
+    }));
+  },
+  onRun3: function(){
+    alert("THIS IS ANOTHER FUNCTION \n Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);
   }
 });
 

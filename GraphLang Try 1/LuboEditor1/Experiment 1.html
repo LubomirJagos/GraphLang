@@ -34,8 +34,10 @@
       These are mine shapes added. LuboJ.
     -->
     <script src="./GraphLangShapes/Add.js"></script>
+    <script src="./GraphLangShapes/Property Node.js"></script>
     <!-- End of GraphLang shapes-->
     <script src="./GraphLangUtils/Run.js"></script>
+    <script src="./GraphLangShapes/Default Schematic 1.js"></script>
 
  <script type="text/javascript">
 
@@ -58,103 +60,38 @@ document.addEventListener("DOMContentLoaded",function () {
   	      }
   	  });
 
+      //Reading default objects on canvas
+      var reader = new draw2d.io.json.Reader();
+      reader.unmarshal(appCanvas, jsonDocument);
+
       // Function to button Run is assigned in Toolbar.js
       //GraphLang.Utils.run(function(){alert("Anonymous functions given to run()");});
       //This here is just click() handler, because here appCanvas has visibility
       //I put it in front of HTML file so now should be visible everywhere.
       $("#runButton").button().click($.proxy(function(){
-          //alert(displayJSON(appCanvas));
-
-          //start basic parsing JSON network, looking just for wires let's say
-          //init json to get some data prepared by V8
-          var jsonStr = displayJSON(appCanvas);
-          var jsonObj = JSON.parse(jsonStr);
-
-          var numberofNumericAdd = 0;
-          var mySelectedNode;
-          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-              numberofNumericAdd++;
-              //set default value for counter 1 of object
-              jsonObj[nodeCnt].cnt1 = 0;
-              //this is how to call object function, need to put there also object to push reference there
-              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
-
-              //remember one nodes for other experiments, last Add item
-              mySelectedNode = new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]);
-            }
-          }
-/*
-          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-              numberofNumericAdd++;
-              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
-            }
-          }
-          for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
-            if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
-              numberofNumericAdd++;
-              new GraphLang.Shapes.Numeric.Add(jsonObj[nodeCnt]).onRun2(jsonObj[nodeCnt]);
-            }
-          }
-*/
-          inputPorts = mySelectedNode.getInputPorts();  //ArrayList
-          alert("Input ports count:\n" + inputPorts.getSize());
-
-          outMsg = new String();
-          //for each port object call method to add to message its ID
-          inputPorts.each(function(i, caller){outMsg += "> " + caller.id + "\n"});
-          outMsg += "\n";
-          alert("Node input ports:\n" + outMsg);
-
-          alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
+        GraphLang.Utils.run(appCanvas);
   		}));
 
       /**************************************
        *  BUTTON "Detect Joints"
        **************************************/
       $("#detectJointsButton").button().click($.proxy(function(){
-        //get objects from canvas
-        //var jsonStr = displayJSON(appCanvas);
-        //var jsonObj = JSON.parse(jsonStr);
-
-        var allWires = appCanvas.getLines();
-        var wiresIntersectionList = [];
-        var outMsg = "Wires ID list:\n";
-        allWires.each(function(i, caller){
-          outMsg += "> " + caller.id + "\n";
-          wiresIntersectionList.push(appCanvas.getIntersection(caller));
-          //caller.setColor("#FF0000"); //change color of each wire to red
-        });
-        alert(outMsg);
-
-        outMsg = "Intersection X,Y:\n";
-        if (wiresIntersectionList.length > 0){
-          for (var k = 0; k < wiresIntersectionList.length; k++){
-            wiresIntersectionList[k].each(function(i, caller){
-              pObj = new GraphLang.geo.Point(caller);
-              pX = pObj.getX();
-              pY = pObj.getY();
-              outMsg += "> " + String(pX) + "," + String(pY) + "\n";
-              var shape =  new draw2d.shape.basic.Circle({stroke:3, color:"#3d3d3d", bgColor:"#3dff3d"});
-              shape.setWidth(10);
-              shape.setHeight(10);
-              shape.setX(pX);
-              shape.setY(pY);
-              pX = pX - shape.width/2;
-              pY = pY - shape.width/2;
-              shape.setX(pX);
-              shape.setY(pY);
-              appCanvas.add(shape);
-            });
-          }
-        }
-        alert("Intersections: " + wiresIntersectionList[0].getSize() + "\n" + outMsg);
+        GraphLang.Utils.detectJoints(appCanvas);
    		}));
 
+      /**************************************
+       *  BUTTON "Run Interpreter"
+       **************************************/
       $("#runInterpreterButton").button().click($.proxy(function(){
         GraphLang.Utils.runInterpreter(appCanvas);
   		}));
+
+      /**************************************
+       *  BUTTON "Go Through Graph"
+       **************************************/
+       $("#goThroughGraphButton").button().click($.proxy(function(){
+         GraphLang.Utils.goThroughGraph(appCanvas);
+       }));
 });
 
 /**
@@ -178,12 +115,13 @@ function displayJSON(canvas){
 
    <div id="content">
    		<div id="toolbar"></div>
-   		<div id="canvas" class="" style="width:3000px; height:3000px;"></div>
+   		<div id="canvas" class="" style="width:3000px; height:3000px;">
+      </div>
    </div>
 
    <div id="navigation" class="">
-    	<div data-shape="draw2d.shape.node.Start"   class="palette_node_element draw2d_droppable">Start</div>
-    	<div data-shape="draw2d.shape.node.End"     class="palette_node_element draw2d_droppable">End</div>
+      <div data-shape="draw2d.shape.node.Start"   class="palette_node_element draw2d_droppable">Start</div>
+      <div data-shape="draw2d.shape.node.End"     class="palette_node_element draw2d_droppable">End</div>
     	<div data-shape="draw2d.shape.node.Between" data-width="300" data-height="50" data-label="Hub label" class="palette_node_element draw2d_droppable">Between</div>
       <div data-shape="draw2d.shape.node.Hub" data-width="10" data-height="100" data-label="Hub label" class="palette_node_element draw2d_droppable">Hub</div>
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
@@ -193,10 +131,13 @@ function displayJSON(canvas){
         Node which change for yellow-green after drop on canvas.
       -->
       <div data-shape="GraphLang.Shapes.Numeric.Add" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Add</div>
+      <div data-shape="GraphLang.Shapes.Numeric.Subtract" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Subtract</div>
+      <div data-shape="GraphLang.Shapes.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">GL PropertyNode</div>
    </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>
+     Msg: <div id="logitem2"></div>
    </div>
    <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:300;background:white;border:1px solid gray">
    </div>

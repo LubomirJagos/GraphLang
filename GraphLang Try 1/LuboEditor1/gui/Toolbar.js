@@ -70,7 +70,13 @@ example.Toolbar = Class.extend({
 		 *	RUN INTERPRETER
 		 */
 		 this.addRunButton  = $("<button id=\"runInterpreterButton\">Run Interpreter</button>");
-  		this.html.append(this.addRunButton);
+		 this.html.append(this.addRunButton);
+
+		 /**
+		  *	Go through graph
+			*/
+			this.goThroughGraphButton  = $("<button id=\"goThroughGraphButton\">Go Through Graph</button>");
+			this.html.append(this.goThroughGraphButton);
 	},
 
 	/**
