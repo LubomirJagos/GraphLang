@@ -77,6 +77,12 @@ example.Toolbar = Class.extend({
 			*/
 			this.goThroughGraphButton  = $("<button id=\"goThroughGraphButton\">Go Through Graph</button>");
 			this.html.append(this.goThroughGraphButton);
+
+			/**
+ 		  *	Detect Tunnels
+ 			*/
+ 			this.detectTunnelsButton  = $("<button id=\"detectTunnelsButton\">Detect Tunnels</button>");
+ 			this.html.append(this.detectTunnelsButton);
 	},
 
 	/**

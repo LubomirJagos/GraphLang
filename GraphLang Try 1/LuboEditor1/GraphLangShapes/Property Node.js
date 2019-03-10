@@ -41,6 +41,9 @@ GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
 
         //at least here is added one item into list
         this.addEntity("_new_");
+
+        //LuboJ. add ID on top of each property node for debugging
+        //this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({}));
     },
 
 

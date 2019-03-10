@@ -157,3 +157,103 @@ GraphLang.Utils.goThroughGraph = function(canvas){
     appCanvas.add(label);
   });
 }
+
+/**
+ *  @method
+ *  @name GraphLang.Utils.detectTunnels(canvas)
+ *  @description Returns coordinates and put point where wires intersect with loop border (for loop, while loop, case structure, ...)
+ */
+GraphLang.Utils.detectTunnels = function(canvas){
+  let loopBoundingRect;
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    //alert(figureObj.NAME);
+    if (figureObj.NAME == "GraphLang.Shapes.Basic.Loop") loopBoundingRect = figureObj.getBoundingBox();
+  });
+  //alert("Loop rect width: " + loopBoundingRect.getWidth());
+  let loopIntersections = [];
+  let loopIntersctDirection = []; //1=top to bottom, 2=bottom to top, 3=left to right, 4=right to left
+  let lineVert  = [];
+  canvas.getLines().each(function(lineIndex, lineObj){
+    let lineSegments = lineObj.getSegments();
+    lineSegments.each(function(segmentIndex, segmentObj){
+      let intersectPoint = loopBoundingRect.intersectionWithLine(
+        segmentObj.start,
+        segmentObj.end
+      );
+      if (intersectPoint){
+        loopIntersections.push(intersectPoint);
+
+        //looking which point of segment is inside, which is otuside
+        let insidePoint, outsidePoint;
+        if (loopBoundingRect.hitTest(segmentObj.start.getX(), segmentObj.start.getY())){
+          insidePoint = segmentObj.start;
+          outsidePoint = segmentObj.end;
+        }else{
+          insidePoint = segmentObj.end;
+          outsidePoint = segmentObj.start;
+        }
+        //based on X,Y coords of inside and outside point I'm able to compute dircetion
+        //in which segment cross bounding box, whether is it crossing it top to bottom,
+        //left to right or opposite direction, so I store this direction along with
+        //intersection points
+        if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() < outsidePoint.getY()) loopIntersctDirection.push(1);
+        if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(3);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(4);
+      }
+    });
+    lineVert.push(lineObj.getVertices());
+  });
+
+  //going through all connection segments and on each vertice put red point
+/*
+  for (var k = 0; k < lineVert.length; k++){
+    lineVert[k].each(function(i, caller){
+      pObj = new GraphLang.geo.Point(caller);
+      pX = pObj.getX();
+      pY = pObj.getY();
+
+      var shape =  new draw2d.shape.basic.Circle({stroke:1, color:"#00FF00", bgColor:"#FF0000"});
+      shape.setWidth(10);
+      shape.setHeight(10);
+      shape.setX(pX);
+      shape.setY(pY);
+      pX = pX - shape.width/2;
+      pY = pY - shape.width/2;
+      shape.setX(pX);
+      shape.setY(pY);
+      appCanvas.add(shape);
+    });
+  }
+*/
+  if (loopIntersections.length > 0){
+    for (var k = 0; k < loopIntersections.length; k++){
+      loopIntersections[k].each(function(i, caller){
+        pObj = new GraphLang.geo.Point(caller);
+        pX = pObj.getX();
+        pY = pObj.getY();
+
+        outMsg = "> " + String(pX) + "," + String(pY) + "\n";
+        $("#logitem2").html(outMsg);
+
+        var shape =  new draw2d.shape.basic.Circle({stroke:3, color:"#3d3d3d", bgColor:"#3dff3d"});
+        shape.setWidth(10);
+        shape.setHeight(10);
+        shape.setX(pX);
+        shape.setY(pY);
+        pX = pX - shape.width/2;
+        pY = pY - shape.width/2;
+        //based on direction in which wire is crossing boundary box, tunnel is moved inside
+        //raft object, so when raft object is moved all placed tunnels are also moving
+        if (loopIntersctDirection[k+i] == 1) pY -= 5;
+        if (loopIntersctDirection[k+i] == 2) pY += 5;
+        if (loopIntersctDirection[k+i] == 3) pX -= 5;
+        if (loopIntersctDirection[k+i] == 4) pX += 5;
+        shape.setX(pX);
+        shape.setY(pY);
+        appCanvas.add(shape);
+      });
+    }
+  }
+
+};
