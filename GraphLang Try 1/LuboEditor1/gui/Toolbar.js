@@ -83,6 +83,18 @@ example.Toolbar = Class.extend({
  			*/
  			this.detectTunnelsButton  = $("<button id=\"detectTunnelsButton\">Detect Tunnels</button>");
  			this.html.append(this.detectTunnelsButton);
+
+			/**
+ 		  *	Init all ports to default value
+ 			*/
+ 			this.initPortsToDefaultButton  = $("<button id=\"initPortsToDefaultButton\">Init ports</button>");
+ 			this.html.append(this.initPortsToDefaultButton);
+
+			/**
+ 		  *	Execution order
+ 			*/
+ 			this.executionOrderButton  = $("<button id=\"executionOrderButton\">Execution order</button>");
+ 			this.html.append(this.executionOrderButton);
 	},
 
 	/**

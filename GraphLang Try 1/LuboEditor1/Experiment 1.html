@@ -39,7 +39,8 @@
 
     <script src="./GraphLangUtils/Run.js"></script>
     <!-- <script src="./GraphLangShapes/Default Schematic 1.js"></script> -->
-    <script src="./GraphLangShapes/Default Schematic 2.js"></script>
+    <!-- <script src="./GraphLangShapes/Default Schematic 2.js"></script> -->
+    <script src="./GraphLangShapes/Default Schematic 3.js"></script>
 
  <script type="text/javascript">
 
@@ -111,6 +112,19 @@ document.addEventListener("DOMContentLoaded",function () {
           GraphLang.Utils.detectTunnels(appCanvas);
         }));
 
+        /**************************************
+         *  BUTTON "Init ports"
+         **************************************/
+         $("#initPortsToDefaultButton").button().click($.proxy(function(){
+           GraphLang.Utils.initAllPortToDefault(appCanvas);
+         }));
+
+        /**************************************
+         *  BUTTON "Execution order"
+         **************************************/
+         $("#executionOrderButton").button().click($.proxy(function(){
+           GraphLang.Utils.executionOrder(appCanvas);
+         }));
 });
 
 /**

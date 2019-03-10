@@ -354,3 +354,100 @@ GraphLang.Utils.detectTunnels = function(canvas){
   }
 
 };
+
+/**
+ *  @method
+ *  @name GraphLang.Utils.initAllPortToDefault(canvas)
+ *  @description Returns execution order in which nodes run.
+ */
+GraphLang.Utils.initAllPortToDefault = function(canvas){
+  var allPorts = appCanvas.getAllPorts();
+
+  allPorts.each(function(portIndex, portObj){
+    //coloring port and set value based on if it's input or output
+    if (portObj.NAME == "draw2d.InputPort"){
+      /* if port is input it's colored as input and execution order is -1 because there
+      must be waiting for value */
+      portObj.setBackgroundColor(new draw2d.util.Color(255,255,0));
+      portObj.setUserData($.extend({value: 0, status: 0, executionOrder: -1}, portObj.getUserData()));
+    }
+    else if (portObj.NAME == "draw2d.OutputPort"){
+      if (portObj.getParent().getInputPorts().getSize() == 0){
+        /* if there are just output ports than their values must be already accessible
+        (if there would be som subblocks they will be evaluated as soon this node
+        will be running here we figure out that these nodes will be first executed) */
+        portObj.setBackgroundColor(new draw2d.util.Color(0,255,0));
+        portObj.setUserData($.extend({value: 0, status: 0, executionOrder: 1}, portObj.getUserData()));
+      }else{
+        /* if node has some inputs, it means that it cannot be executed until all data
+        at them are accessible, so status is set to 0 and corresponding color for
+        input is used */
+        portObj.setBackgroundColor(new draw2d.util.Color(255,255,255));
+        portObj.setUserData($.extend({value: 0, status: 0, executionOrder: -1}, portObj.getUserData()));
+      }
+    }
+  });
+}
+
+/**
+ *  @method
+ *  @name GraphLang.Utils.executionOrder(canvas)
+ *  @description Returns execution order in which nodes run.
+ */
+GraphLang.Utils.executionOrder = function(canvas){
+  var allNodes = canvas.getFigures();
+  let cnt1 = 0;
+  let inputPortCnt = 0;
+
+  /******************************************************************************
+   *  IMPORTANT NOT START AT 0, actualStepNum must start at 1 because for step 0
+   *  there is no rule how to increase it or somethin, I choose to do this
+   *  because 0 is weird zero :D
+   ******************************************************************************/
+  for (var actualStepNum = 1; actualStepNum < 10; actualStepNum++){
+    allNodes.each(function(nodeIndex, nodeObj){
+      //gathering information about input ports, checking if all of them are already prepared
+      nodeObj.getInputPorts().each(function(portIndex, portObj){
+        if (portObj.getUserData().executionOrder > 0) cnt1++;
+        else if (portObj.getUserData().executionOrder < 0){
+          /* if input port is not ready, check connected ports for which is this port waiting
+          and check their status */
+          let inPortPrepared = true;
+          portObj.getConnections().each(function(wireIndex, wireObj){
+            if (wireObj.getSource() && wireObj.getSource().getUserData().executionOrder < 0) inPortPrepared = false;
+          });
+          if (inPortPrepared == true){
+            var userData = portObj.getUserData();
+            userData.executionOrder = actualStepNum;
+            portObj.setUserData(userData);
+          }
+        }
+        inputPortCnt++;
+      });
+      if (cnt1 == inputPortCnt){
+        //if all inputs are available then mark to output ports number of step when they run
+        nodeObj.getOutputPorts().each(function(portIndex, portObj){
+          if (portObj.getUserData().executionOrder < 0){
+            var userData = portObj.getUserData();
+            userData.executionOrder = actualStepNum;
+            portObj.setUserData(userData);
+          }
+
+          canvas.add(
+            new draw2d.shape.basic.Label({
+              x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
+              y: portObj.getY() + portObj.getParent().getY(),
+              text:new String(portObj.getUserData().executionOrder),
+              stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+            })
+          );
+
+        });
+        //reset counters
+      }
+      cnt1 = 0;
+      inputPortCnt = 0;
+    });
+    actualStepNum++;
+  }
+}
