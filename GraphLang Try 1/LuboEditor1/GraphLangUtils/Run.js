@@ -158,6 +158,35 @@ GraphLang.Utils.goThroughGraph = function(canvas){
   });
 }
 
+/******************************************************************************
+ *  CREATES wire connection btw source and target
+ ******************************************************************************/
+var createConnection=function(sourcePort, targetPort){
+
+    var conn= new draw2d.Connection({
+        router:new draw2d.layout.connection.InteractiveManhattanConnectionRouter(),
+        outlineStroke:1,
+        outlineColor:"#303030",
+        stroke:2,
+        color:"#00a8f0",
+        radius:20,
+        source:sourcePort,
+        target:targetPort
+    });
+
+    // since version 3.5.6
+    //
+    conn.on("dragEnter", function(emitter, event){
+        conn.attr({outlineColor:"#30ff30"});
+    });
+    conn.on("dragLeave", function(emitter, event){
+        conn.attr({outlineColor:"#303030"});
+    });
+
+    return conn;
+
+};
+
 /**
  *  @method
  *  @name GraphLang.Utils.detectTunnels(canvas)
@@ -165,14 +194,21 @@ GraphLang.Utils.goThroughGraph = function(canvas){
  */
 GraphLang.Utils.detectTunnels = function(canvas){
   let loopBoundingRect;
+  let loopObj;
   canvas.getFigures().each(function(figureIndex, figureObj){
     //alert(figureObj.NAME);
-    if (figureObj.NAME == "GraphLang.Shapes.Basic.Loop") loopBoundingRect = figureObj.getBoundingBox();
+
+    //remember loop object reference to not lose access to it
+    if (figureObj.NAME == "GraphLang.Shapes.Basic.Loop"){
+      loopObj = figureObj;
+      loopBoundingRect = figureObj.getBoundingBox();
+    }
   });
   //alert("Loop rect width: " + loopBoundingRect.getWidth());
   let loopIntersections = [];
   let loopIntersctDirection = []; //1=top to bottom, 2=bottom to top, 3=left to right, 4=right to left
   let lineVert  = [];
+  let intersectedLines = [];
   canvas.getLines().each(function(lineIndex, lineObj){
     let lineSegments = lineObj.getSegments();
     lineSegments.each(function(segmentIndex, segmentObj){
@@ -182,6 +218,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
       );
       if (intersectPoint){
         loopIntersections.push(intersectPoint);
+        intersectedLines.push(lineObj);
 
         //looking which point of segment is inside, which is otuside
         let insidePoint, outsidePoint;
@@ -198,8 +235,8 @@ GraphLang.Utils.detectTunnels = function(canvas){
         //intersection points
         if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() < outsidePoint.getY()) loopIntersctDirection.push(1);
         if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
-        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(3);
-        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(4);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(3);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(4);
       }
     });
     lineVert.push(lineObj.getVertices());
@@ -236,11 +273,16 @@ GraphLang.Utils.detectTunnels = function(canvas){
         outMsg = "> " + String(pX) + "," + String(pY) + "\n";
         $("#logitem2").html(outMsg);
 
+        /*******************************************************
+         *  Adding CIRCLE POINT
+         *******************************************************/
+/*
         var shape =  new draw2d.shape.basic.Circle({stroke:3, color:"#3d3d3d", bgColor:"#3dff3d"});
         shape.setWidth(10);
         shape.setHeight(10);
         shape.setX(pX);
         shape.setY(pY);
+
         pX = pX - shape.width/2;
         pY = pY - shape.width/2;
         //based on direction in which wire is crossing boundary box, tunnel is moved inside
@@ -249,9 +291,64 @@ GraphLang.Utils.detectTunnels = function(canvas){
         if (loopIntersctDirection[k+i] == 2) pY += 5;
         if (loopIntersctDirection[k+i] == 3) pX -= 5;
         if (loopIntersctDirection[k+i] == 4) pX += 5;
+
         shape.setX(pX);
         shape.setY(pY);
         appCanvas.add(shape);
+*/
+        /*******************************************************
+         *  Adding TUNNEL (custom figure)
+         *******************************************************/
+         //var tunnelObj = new draw2d.HybridPort({stroke: 2, color: "#FF0000", bgColor: "#00FF00"});
+         var tunnelObj = new GraphLang.Shapes.Basic.Tunnel();
+
+         //pX = pX - tunnelObj.getWidth()/2;
+         //pY = pY - tunnelObj.getHeight()/2;
+         //based on direction in which wire is crossing boundary box, tunnel is moved inside
+         //raft object, so when raft object is moved all placed tunnels are also moving
+         //not needed as ports are placed directly at intersections
+         if (loopIntersctDirection[k+i] == 1) pY -= tunnelObj.getHeight()/2;
+         if (loopIntersctDirection[k+i] == 2) pY += tunnelObj.getHeight()/2;
+         if (loopIntersctDirection[k+i] == 3) pX += tunnelObj.getWidth()/2;
+         if (loopIntersctDirection[k+i] == 4) pX -= tunnelObj.getWidth()/2;
+         var tunnelLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(Math.abs(pX - loopObj.getX()), Math.abs(pY - loopObj.getY()));
+
+         //tunnelObj.setLocator(tunnelLocatorAbs);
+         //loopObj.addPort(tunnelObj);
+
+         //this is for relative locator
+         var tunnelLocatorRel =  new draw2d.layout.locator.XYRelPortLocator(
+           Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
+           Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
+         );
+
+         //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
+         if (loopIntersctDirection[k+i] == 1) tunnelObj.setRotationAngle(90);
+         if (loopIntersctDirection[k+i] == 2) tunnelObj.setRotationAngle(90);
+         //if (loopIntersctDirection[k+i] == 3) tunnelObj.setRotationAngle(180);
+         //if (loopIntersctDirection[k+i] == 4) tunnelObj.setRotationAngle(0);
+
+         //ABSOLUTE POSITIONING OF TUNNELS
+/*
+         pX = pX - tunnelObj.getWidth()/2;
+         pY = pY - tunnelObj.getHeight()/2;
+         tunnelObj.setX(pX);
+         tunnelObj.setY(pY);
+         appCanvas.add(tunnelObj);
+*/
+         //RELATIVE POSITIOINING OF TUNNELS
+         /*
+          This calculation of realtive position is not totaly correct, because when resizing loop its width and height is changing, but locator percentage is still same and not changing accordingly to new width and height of loop, it was normalized by the previous dimensions and dimension of tunnels is not changing, so right resize method would be recalculate relative locator, or figure out how to snap tunnels to right and left and top and bottom wall of loop
+          */
+         loopObj.add(tunnelObj,tunnelLocatorRel)
+
+         var oldSource = intersectedLines[k+i].getSource();
+         intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
+         var additionalConnection = createConnection();
+         appCanvas.add(additionalConnection);
+         additionalConnection.setSource(oldSource);
+         additionalConnection.setTarget(tunnelObj.getInputPort(0));
+
       });
     }
   }

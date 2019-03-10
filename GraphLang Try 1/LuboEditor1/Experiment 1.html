@@ -34,6 +34,7 @@
       <script src="./GraphLangShapes/Add.js"></script>
       <script src="./GraphLangShapes/Property Node.js"></script>
       <script src="./GraphLangShapes/Loop.js"></script>
+      <script src="./GraphLangShapes/Tunnel.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Run.js"></script>
@@ -48,6 +49,15 @@ document.addEventListener("DOMContentLoaded",function () {
      app.view.installEditPolicy(  new draw2d.policy.connection.DragConnectionCreatePolicy({
         createConnection: function(){
             return new HoverConnection();
+        },
+        delegateTarget: function(requestingFigure, connectTarget){
+            // we allow that a figure with a special class is droppable to a connection
+            //
+            if(requestingFigure instanceof TunnelFigure && connectTarget instanceof draw2d.Connection){
+                return connectTarget;
+            }
+
+            return this._super(requestingFigure, connectTarget);
         }
       }));
 
@@ -100,6 +110,7 @@ document.addEventListener("DOMContentLoaded",function () {
         $("#detectTunnelsButton").button().click($.proxy(function(){
           GraphLang.Utils.detectTunnels(appCanvas);
         }));
+
 });
 
 /**
