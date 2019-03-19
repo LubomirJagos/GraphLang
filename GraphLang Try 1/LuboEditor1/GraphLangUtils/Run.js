@@ -358,7 +358,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
 /**
  *  @method
  *  @name GraphLang.Utils.initAllPortToDefault(canvas)
- *  @description Returns execution order in which nodes run.
+ *  @description Set default value for all ports. FOR NOW SET VALUE OF EACH PORT TO 0.
  */
 GraphLang.Utils.initAllPortToDefault = function(canvas){
   var allPorts = appCanvas.getAllPorts();
@@ -403,9 +403,15 @@ GraphLang.Utils.executionOrder = function(canvas){
    *  IMPORTANT NOT START AT 0, actualStepNum must start at 1 because for step 0
    *  there is no rule how to increase it or somethin, I choose to do this
    *  because 0 is weird zero :D
+   *
+   *  portObj.getUserData().executionOrder    NEVER 0
+   *      -1 .....not executed, data not available stylesheet
+   *      +1 .....prepared, OK
    ******************************************************************************/
   for (var actualStepNum = 1; actualStepNum < 10; actualStepNum++){
     allNodes.each(function(nodeIndex, nodeObj){
+
+
       //gathering information about input ports, checking if all of them are already prepared
       nodeObj.getInputPorts().each(function(portIndex, portObj){
         if (portObj.getUserData().executionOrder > 0) cnt1++;
@@ -425,6 +431,7 @@ GraphLang.Utils.executionOrder = function(canvas){
         inputPortCnt++;
       });
       if (cnt1 == inputPortCnt){
+        //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE
         //if all inputs are available then mark to output ports number of step when they run
         nodeObj.getOutputPorts().each(function(portIndex, portObj){
           if (portObj.getUserData().executionOrder < 0){
@@ -433,6 +440,7 @@ GraphLang.Utils.executionOrder = function(canvas){
             portObj.setUserData(userData);
           }
 
+/*        THIS ADD ALBEL NEXT TO OUTPUT PORTS
           canvas.add(
             new draw2d.shape.basic.Label({
               x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
@@ -441,13 +449,26 @@ GraphLang.Utils.executionOrder = function(canvas){
               stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
             })
           );
+*/
+
+          //ADD LABEL INSIDE MIDDLE OF EACH NODE
+          nodeObj.add(
+            new draw2d.shape.basic.Label({
+              x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
+              y: portObj.getY() + portObj.getParent().getY(),
+              text:new String(portObj.getUserData().executionOrder),
+              stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+            }),
+            new draw2d.layout.locator.CenterLocator(nodeObj)
+          );
+
 
         });
         //reset counters
+
       }
       cnt1 = 0;
       inputPortCnt = 0;
     });
-    actualStepNum++;
   }
 }
