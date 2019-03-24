@@ -133,6 +133,12 @@ example.Toolbar = Class.extend({
  			this.html.append(this.runNodesInOrderButton);
 
 			/**
+ 		  *	Show Ports Execution Order Button
+ 			*/
+ 			this.showPortExecutionOrderButton  = $("<button id=\"showPortExecutionOrderButton\">showPortExecutionOrder</button>");
+ 			this.html.append(this.showPortExecutionOrderButton);
+
+			/**
  		  *	Auxiliary Buttonr
  			*/
  			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");

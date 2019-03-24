@@ -337,14 +337,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
            else if (intersectionInOutDirection[k+1] == 1) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 
            //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
-           if (intersectionEdge[k+i] == 0){
-             tunnelObj.setRotationAngle(90);
-             var objWidth = tunnelObj.getWidth();
-             var objHeight = tunnelObj.getHeight();
-             tunnelObj.setWidth(objHeight);
-             tunnelObj.setHeight(objWidth);
-           }
-           if (intersectionEdge[k+i] == 2){
+           if (intersectionEdge[k+i] == 0 || intersectionEdge[k+i] == 2){
              tunnelObj.setRotationAngle(90);
              var objWidth = tunnelObj.getWidth();
              var objHeight = tunnelObj.getHeight();
@@ -459,26 +452,30 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
   // });
 
   allPorts.each(function(portIndex, portObj){
+    if (portObj.userData == undefined) portObj.userData = {};
+    portObj.userData.value = 0;
+    portObj.userData.status = 0;
+
     //coloring port and set value based on if it's input or output
-    if (portObj.NAME == "draw2d.InputPort"){
+    if (portObj.NAME.toLowerCase().search("inputport") >= 0){
       /* if port is input it's colored as input and execution order is -1 because there
       must be waiting for value */
       portObj.setBackgroundColor(new draw2d.util.Color(255,255,0));
-      portObj.setUserData($.extend({value: 0, status: 0, executionOrder: -1}, portObj.getUserData()));
+      portObj.userData.executionOrder = -1;
     }
-    else if (portObj.NAME == "draw2d.OutputPort"){
+    else if (portObj.NAME.toLowerCase().search("outputport") >= 0){
       if (portObj.getParent().getInputPorts().getSize() == 0){
         /* if there are just output ports than their values must be already accessible
         (if there would be som subblocks they will be evaluated as soon this node
         will be running here we figure out that these nodes will be first executed) */
         portObj.setBackgroundColor(new draw2d.util.Color(0,255,0));
-        portObj.setUserData($.extend({value: 0, status: 0, executionOrder: 1}, portObj.getUserData()));
+        portObj.userData.executionOrder = 1;
       }else{
         /* if node has some inputs, it means that it cannot be executed until all data
         at them are accessible, so status is set to 0 and corresponding color for
         input is used */
         portObj.setBackgroundColor(new draw2d.util.Color(255,255,255));
-        portObj.setUserData($.extend({value: 0, status: 0, executionOrder: -1}, portObj.getUserData()));
+        portObj.userData.executionOrder = -1;
       }
     }
 
@@ -489,8 +486,38 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
       }
     });
   });
+
 }
 
+/**
+ *  @method
+ *  @name GraphLang.Utils.showPortExecutionOrder(canvas)
+ *  @description Put label with port execution order next to each port which is children of canvas. Means it was added to canvas no to object like loop.
+ */
+GraphLang.Utils.showPortExecutionOrder = function(canvas){
+  var allPorts = canvas.getAllPorts();
+  allPorts.each(function(portIndex, portObj){
+    if (portObj.getParent().NAME.toLowerCase().search("tunnel") >= 0){
+      canvas.add(
+        new draw2d.shape.basic.Label({
+          x: portObj.getX() + portObj.getParent().getX() + portObj.getParent().getParent().getX(), //ports have relative position to parent obj
+          y: portObj.getY() + portObj.getParent().getY() + portObj.getParent().getParent().getY(),
+          text:new String(portObj.getUserData().executionOrder),
+          stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+        })
+      );
+    }else{
+      canvas.add(
+        new draw2d.shape.basic.Label({
+          x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
+          y: portObj.getY() + portObj.getParent().getY(),
+          text:new String(portObj.getUserData().executionOrder),
+          stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+        })
+      );
+    }
+  });
+}
 /**
  *  @method bringToFront(canvas)
  *  @name GraphLang.Utils.bringToFront(canvas)
@@ -678,8 +705,10 @@ GraphLang.Utils.executionOrder = function(canvas){
  */
 GraphLang.Utils.runNodesInOrder = function(canvas){
   var allNodes = new draw2d.util.ArrayList();
+
+  // getting just GraphLang nodes to execute them later
   canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.userData.executionOrder != undefined) allNodes.push(figureObj);
+    if (figureObj.NAME.toLowerCase().search("graphlang") >= 0) allNodes.push(figureObj);
   });
 
   //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()

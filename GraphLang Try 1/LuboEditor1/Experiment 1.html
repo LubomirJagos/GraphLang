@@ -22,6 +22,7 @@
        */
       //save reference to canvas to have it globally acessible
       var appCanvas;
+      var GraphLang = {};
     </script>
 
 
@@ -31,6 +32,12 @@
     <script src="./gui/HoverConnection.js"></script>
 
     <!-- These are mine shapes added. LuboJ. -->
+      <script src="./GraphLangShapes/Color.js"></script>
+      <script src="./GraphLangShapes/Geo.js"></script>
+      <script src="./GraphLangShapes/Port.js"></script>
+      <script src="./GraphLangShapes/Shapes.js"></script>
+      <script src="./GraphLangShapes/Numeric.js"></script>
+      <script src="./GraphLangShapes/Subtract.js"></script>
       <script src="./GraphLangShapes/Add.js"></script>
       <script src="./GraphLangShapes/Property Node.js"></script>
       <script src="./GraphLangShapes/Loop.js"></script>
@@ -46,19 +53,21 @@
     <script src="./GraphLangUtils/TopRelPortLocator.js"></script>
     <script src="./GraphLangUtils/CommandDelete.js"></script>
     <script src="./GraphLangUtils/KeyboardDeletePolicy.js"></script>
-    <!-- <script src="./GraphLangShapes/Default Schematic 1.js"></script> -->
-    <!-- <script src="./GraphLangShapes/Default Schematic 2.js"></script> -->
-    <!-- <script src="./GraphLangShapes/Default Schematic 3.js"></script> -->
-    <!-- <script src="./GraphLangShapes/Default Schematic 4.js"></script> -->
-    <!-- <script src="./GraphLangShapes/Default Schematic 5.js"></script> -->
-    <!-- <script src="./GraphLangShapes/Default Schematic 6.js"></script> -->
-    <script src="./GraphLangShapes/Default Schematic 6.js"></script>
+
+    <!-- <script src="./GraphLangSchematics/Default Schematic 1.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 2.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 3.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 4.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 5.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 6.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 7.js"></script> -->
+    <script src="./GraphLangSchematics/Default Schematic 6.js"></script>
 
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
+     var app  = new example.Application();
 
-    var app  = new example.Application();
      app.view.installEditPolicy(  new draw2d.policy.connection.DragConnectionCreatePolicy({
         createConnection: function(){
             return new HoverConnection();
@@ -173,6 +182,13 @@ document.addEventListener("DOMContentLoaded",function () {
               GraphLang.Utils.runNodesInOrder(appCanvas);
             }));
 
+            /**************************************
+             *  BUTTON "runNodeInOrder"
+             **************************************/
+             $("#showPortExecutionOrderButton").button().click($.proxy(function(){
+               GraphLang.Utils.showPortExecutionOrder(appCanvas);
+             }));
+
            /**************************************
             *  BUTTON "Auxiliary"
             **************************************/
@@ -227,7 +243,9 @@ function displayJSON(canvas){
      Dropped obj: <div id="logitem1"></div>
      Msg: <div id="logitem2"></div>
    </div>
-   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:300;background:white;border:1px solid gray">
+
+   <!-- window with JSON representation of schematic -->
+   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray">
    </div>
 
 </body>
