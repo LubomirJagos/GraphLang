@@ -139,6 +139,12 @@ example.Toolbar = Class.extend({
  			this.html.append(this.showPortExecutionOrderButton);
 
 			/**
+ 		  *	Highlight Nodes by Execution Order Button
+ 			*/
+ 			this.highlightNodesByExecutionOrderButton  = $("<button id=\"highlightNodesByExecutionOrderButton\">highlightNodesByExecutionOrder</button>");
+ 			this.html.append(this.highlightNodesByExecutionOrderButton);
+
+			/**
  		  *	Auxiliary Buttonr
  			*/
  			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");

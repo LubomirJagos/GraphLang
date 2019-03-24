@@ -32,7 +32,6 @@
     <script src="./gui/HoverConnection.js"></script>
 
     <!-- These are mine shapes added. LuboJ. -->
-      <script src="./GraphLangShapes/Color.js"></script>
       <script src="./GraphLangShapes/Geo.js"></script>
       <script src="./GraphLangShapes/Port.js"></script>
       <script src="./GraphLangShapes/Shapes.js"></script>
@@ -53,6 +52,7 @@
     <script src="./GraphLangUtils/TopRelPortLocator.js"></script>
     <script src="./GraphLangUtils/CommandDelete.js"></script>
     <script src="./GraphLangUtils/KeyboardDeletePolicy.js"></script>
+    <script src="./GraphLangUtils/Color.js"></script>
 
     <!-- <script src="./GraphLangSchematics/Default Schematic 1.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 2.js"></script> -->
@@ -188,6 +188,13 @@ document.addEventListener("DOMContentLoaded",function () {
              $("#showPortExecutionOrderButton").button().click($.proxy(function(){
                GraphLang.Utils.showPortExecutionOrder(appCanvas);
              }));
+
+             /**************************************
+              *  BUTTON "highlightNodesByExecutionOrderButton"
+              **************************************/
+              $("#highlightNodesByExecutionOrderButton").button().click($.proxy(function(){
+                GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
+              }));
 
            /**************************************
             *  BUTTON "Auxiliary"

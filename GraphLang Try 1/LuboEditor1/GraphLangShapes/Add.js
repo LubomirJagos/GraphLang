@@ -9,10 +9,6 @@ GraphLang.Shapes.Numeric.Add = GraphLang.Shapes.Numeric.extend({
     this.createPort("input");
     this.createPort("input");
     this.createPort("output");
-
-    //draw End node ID on top
-    this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({
-    }));
   },
   onRun: function(){
     this.cnt1++;

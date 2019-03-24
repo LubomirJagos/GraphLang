@@ -426,7 +426,8 @@ GraphLang.Utils.detectTunnels = function(canvas){
 GraphLang.Utils.auxFunc = function(canvas){
   var selectedFigures = canvas.getSelection();
   if (selectedFigures){
-    var loopFigs = selectedFigures.getAll().get(0).getAboardFigures(true);
+    //alert(selectedFigures.getAll().get(0).NAME);
+    alert(GraphLang.Utils.getNodeLoopOwner(canvas, selectedFigures.getAll().get(0)).NAME + "\n" + GraphLang.Utils.getNodeLoopOwner(canvas, selectedFigures.getAll().get(0)).getId());
   }
 };
 
@@ -585,10 +586,52 @@ GraphLang.Utils.showNodes = function(canvas){
 
 /**
  *  @method
+ *  @name GraphLang.Utils.getNodeLoopOwner(canvas)
+ *  @description Return loop which ownes node, if there's no loop return null.
+ */
+GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
+  var loopList = new draw2d.util.ArrayList();
+
+  //get lsit of all loops
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("loop") >= 0){
+      loopList.push(figureObj);
+    }
+  });
+
+  //find all parent loop of this node
+  var nodeParentLoop;
+  loopList.each(function(loopIndex, loopObj){
+    if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){
+      nodeParentLoop = loopObj;
+    }
+  });
+  return nodeParentLoop;
+};
+
+/**
+ *  @method getLoopDirectChildrenNodes(canvas, parentLoop = null)
+ *  @name GraphLang.Utils.getLoopDirectChildrenNodes
+ *  @description Returns nodes which are direct descendant of loop, so there are no nodes nested inside other inner loops. If parent loop is not provided or undefined it return all nodes which are direct children of canvas.
+ */
+GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null){
+  var allLayerNodes = new draw2d.util.ArrayList();
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if ((figureObj.NAME.toLowerCase().search("loop") < 0) &&
+        (figureObj.NAME.toLowerCase().search("tunnel") < 0) &&
+        (GraphLang.Utils.getNodeLoopOwner(canvas, figureObj)) == parentLoop) allLayerNodes.push(figureObj);
+  });
+
+  return allLayerNodes;
+}
+
+/**
+ *  @method
  *  @name GraphLang.Utils.executionOrder(canvas)
  *  @description Returns execution order in which nodes run.
  */
-GraphLang.Utils.executionOrder = function(canvas){
+GraphLang.Utils.executionOrder = function executionOrder(canvas){
   var allNodes = canvas.getFigures();
 
   //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
@@ -631,17 +674,28 @@ GraphLang.Utils.executionOrder = function(canvas){
               if (wireObj.getSource() && wireObj.getSource().getUserData().executionOrder < 0) inPortPrepared = false;
             });
 
-            //if port is part of tunnel, check if all other tunnel are already prepared
-            //THIS IS NOT USED, because it makes other p[roblems that tunnels are waiting for each other so in the end we will get nothing
-            // if (portObj.getParent().NAME.toLowerCase().search("tunnel") >= 0){
-            //   var tunnelList = new draw2d.util.ArrayList();
-            //   portObj.getParent().getParent().getChildren().each(function(childIndex, childObj){
-            //     if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
-            //       if (childObj.getInputPort(0).getUserData().executionOrder < 0) inPortPrepared = false;
-            //     }
-            //   });
-            // }
+            //CHECK FOR CONTENT INSIDE LOOP IF WAIT FOR INPUT TUNNELS
+            var nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas, portObj.getParent());
+            var leftTunnelCnt = 0;
+            while (nodeParentLoop != undefined && inPortPrepared == true){
+              nodeParentLoop.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00")); //highlight current loop
+              //check if all input tunnels are prepared, if not, input port of current node is set to wait, executionOrder left as it is
+              nodeParentLoop.getChildren().each(function(tunnelIndex, tunnelObj){
+                if (tunnelObj.NAME.toLowerCase().search("lefttunnel") >= 0){
+                  leftTunnelCnt++;
+                  if (tunnelObj == undefined ||
+                      tunnelObj.getOutputPort(0).userData == undefined ||
+                      tunnelObj.getOutputPort(0).userData.executionOrder == undefined ||
+                      tunnelObj.getOutputPort(0).userData.executionOrder < 0) inPortPrepared = false;
+                }
+              });
+              //if there are no input tunnels go for loop higher look if there are some input tunnels for which we have to wait
+              //if some parent loop has some input tunnels it's not needed to go higher, because everything inside that loop will wait for these input tunnels, so we can set nodeParentLoop to undefined what cause end of while loop
+              if (leftTunnelCnt == 0) nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas,nodeParentLoop);
+              else nodeParentLoop = undefined;
+            }
 
+            //IF PORT IS PREPARED SET ITS EXECUTION ORDER
             if (inPortPrepared == true){
               var userData = portObj.getUserData();
               userData.executionOrder = actualStepNum;
@@ -664,17 +718,6 @@ GraphLang.Utils.executionOrder = function(canvas){
             userData.executionOrder = actualStepNum;
             portObj.setUserData(userData);
           }
-
-/*        THIS ADD ALBEL NEXT TO OUTPUT PORTS
-          canvas.add(
-            new draw2d.shape.basic.Label({
-              x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
-              y: portObj.getY() + portObj.getParent().getY(),
-              text:new String(portObj.getUserData().executionOrder),
-              stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
-            })
-          );
-*/
 
           //ADD LABEL INSIDE MIDDLE OF EACH NODE
           nodeObj.add(
@@ -728,4 +771,26 @@ GraphLang.Utils.runNodesInOrder = function(canvas){
       if (nodeObj.userData.executionOrder == actualStepNum) nodeObj.onRun3();
     });
   }
+}
+
+/**
+ *  @method highlightNodesByExecutionOrder(canvas)
+ *  @name GraphLang.Utils.highlightNodesByExecutionOrder(canvas)
+ *  @description Returns execution order in which nodes run.
+ */
+var auxLoopCnt = 0;
+GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = null){
+  var allLoops = new draw2d.util.ArrayList();
+  allLoops.push(undefined); //this is to get canvas direct children
+  canvas.getFigures().each(function(loopIndex, loopObj){
+    if (loopObj.NAME.toLowerCase().search("loop") >= 0) allLoops.push(loopObj);
+  });
+  parentLoop = allLoops.get(auxLoopCnt);
+
+  var allLayerNodes = GraphLang.Utils.getLoopDirectChildrenNodes(canvas, parentLoop)
+
+  allLayerNodes.each(function(nodeIndex, nodeObj){
+    nodeObj.setBackgroundColor(new GraphLang.Utils.Color("#00FF00"));
+  });
+  auxLoopCnt++; //debugging moving through loop list
 }
