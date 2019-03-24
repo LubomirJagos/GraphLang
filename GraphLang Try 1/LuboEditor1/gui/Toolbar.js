@@ -41,7 +41,19 @@ example.Toolbar = Class.extend({
 		this.html.append(this.deleteButton);
 		this.deleteButton.button().click($.proxy(function(){
 			var node = this.view.getPrimarySelection();
-			var command= new draw2d.command.CommandDelete(node);
+
+			//in case of deleteing loop it's needed to remove also all tunnels (it will also remove all wires connected to tunnels)
+			if (node.NAME.toLowerCase().search("loop") >= 0){
+				var cmdStack = this.view.getCommandStack();
+				node.getChildren().each(function(tunnelIndex, tunnelObj){
+					if (tunnelObj.NAME.toLowerCase().search("tunnel") >= 0){
+						var cmdDel = new GraphLang.Utils.CommandDelete(tunnelObj);
+						cmdStack.execute(cmdDel);
+					}
+				});
+			}
+
+			var command = new GraphLang.Utils.CommandDelete(node);
 			this.view.getCommandStack().execute(command);
 
 			$("#logitem1").html("obj deleted:" + node.getId());
@@ -73,6 +85,12 @@ example.Toolbar = Class.extend({
 		 this.html.append(this.addRunButton);
 
 		 /**
+		  *	Show Nodes
+			*/
+			this.showNodesButton  = $("<button id=\"showNodesButton\">Shows Nodes</button>");
+			this.html.append(this.showNodesButton);
+
+		 /**
 		  *	Go through graph
 			*/
 			this.goThroughGraphButton  = $("<button id=\"goThroughGraphButton\">Go Through Graph</button>");
@@ -95,6 +113,30 @@ example.Toolbar = Class.extend({
  			*/
  			this.executionOrderButton  = $("<button id=\"executionOrderButton\">Execution order</button>");
  			this.html.append(this.executionOrderButton);
+
+			/**
+ 		  *	Bring to Front Button
+ 			*/
+ 			this.bringToFrontButton  = $("<button id=\"bringToFrontButton\">Bring to Front Button</button>");
+ 			this.html.append(this.bringToFrontButton);
+
+			/**
+ 		  *	Bring to Back Button
+ 			*/
+ 			this.bringToBackButton  = $("<button id=\"bringToBackButton\">Bring to Back Button</button>");
+ 			this.html.append(this.bringToBackButton);
+
+			/**
+ 		  *	Run Nodes In Order Button
+ 			*/
+ 			this.runNodesInOrderButton  = $("<button id=\"runNodesInOrderButton\">runNodesInOrder</button>");
+ 			this.html.append(this.runNodesInOrderButton);
+
+			/**
+ 		  *	Auxiliary Buttonr
+ 			*/
+ 			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");
+ 			this.html.append(this.auxButton);
 	},
 
 	/**

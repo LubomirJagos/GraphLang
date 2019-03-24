@@ -74,8 +74,6 @@ GraphLang.Shapes.Numeric.Add = draw2d.shape.node.End.extend({
 
     //draw End node ID on top
     this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({
-      //???this has effect???
-     //margin:10  // distance to the parent shape
     }));
   },
   onRun: function(){
@@ -95,7 +93,8 @@ GraphLang.Shapes.Numeric.Add = draw2d.shape.node.End.extend({
 
   onRun3: function(){
     alert("Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);
-  }
+  },
+
 });
 
 GraphLang.Port = draw2d.Port.extend({

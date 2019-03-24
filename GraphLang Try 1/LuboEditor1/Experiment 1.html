@@ -35,13 +35,24 @@
       <script src="./GraphLangShapes/Property Node.js"></script>
       <script src="./GraphLangShapes/Loop.js"></script>
       <script src="./GraphLangShapes/Tunnel.js"></script>
+      <script src="./GraphLangShapes/LeftTunnel.js"></script>
+      <script src="./GraphLangShapes/RightTunnel.js"></script>
     <!-- End of GraphLang shapes-->
 
-    <script src="./GraphLangUtils/Run.js"></script>
+    <script src="./GraphLangUtils/Utils.js"></script>
+    <script src="./GraphLangUtils/RightRelPortLocator.js"></script>
+    <script src="./GraphLangUtils/BottomRelPortLocator.js"></script>
+    <script src="./GraphLangUtils/LeftRelPortLocator.js"></script>
+    <script src="./GraphLangUtils/TopRelPortLocator.js"></script>
+    <script src="./GraphLangUtils/CommandDelete.js"></script>
+    <script src="./GraphLangUtils/KeyboardDeletePolicy.js"></script>
     <!-- <script src="./GraphLangShapes/Default Schematic 1.js"></script> -->
     <!-- <script src="./GraphLangShapes/Default Schematic 2.js"></script> -->
     <!-- <script src="./GraphLangShapes/Default Schematic 3.js"></script> -->
-    <script src="./GraphLangShapes/Default Schematic 4.js"></script>
+    <!-- <script src="./GraphLangShapes/Default Schematic 4.js"></script> -->
+    <!-- <script src="./GraphLangShapes/Default Schematic 5.js"></script> -->
+    <!-- <script src="./GraphLangShapes/Default Schematic 6.js"></script> -->
+    <script src="./GraphLangShapes/Default Schematic 6.js"></script>
 
  <script type="text/javascript">
 
@@ -62,6 +73,12 @@ document.addEventListener("DOMContentLoaded",function () {
             return this._super(requestingFigure, connectTarget);
         }
       }));
+
+      /*
+       *  KEYBOARD reactions
+       */
+      app.view.uninstallEditPolicy(new draw2d.policy.canvas.DefaultKeyboardPolicy());
+      app.view.installEditPolicy(new GraphLang.Utils.KeyboardDeletePolicy());
 
       /**
        *  Update JSON representation of canvas
@@ -107,6 +124,14 @@ document.addEventListener("DOMContentLoaded",function () {
        }));
 
        /**************************************
+        *  BUTTON "Show Nodes"
+        **************************************/
+        $("#showNodesButton").button().click($.proxy(function(){
+          GraphLang.Utils.showNodes(appCanvas);
+        }));
+
+
+       /**************************************
         *  BUTTON "Detect Tunnels"
         **************************************/
         $("#detectTunnelsButton").button().click($.proxy(function(){
@@ -126,6 +151,34 @@ document.addEventListener("DOMContentLoaded",function () {
          $("#executionOrderButton").button().click($.proxy(function(){
            GraphLang.Utils.executionOrder(appCanvas);
          }));
+
+         /**************************************
+          *  BUTTON "Bring to Front"
+          **************************************/
+          $("#bringToFrontButton").button().click($.proxy(function(){
+            GraphLang.Utils.bringToFront(appCanvas);
+          }));
+
+          /**************************************
+           *  BUTTON "Bring to Back"
+           **************************************/
+           $("#bringToBackButton").button().click($.proxy(function(){
+             GraphLang.Utils.bringToBack(appCanvas);
+           }));
+
+           /**************************************
+            *  BUTTON "runNodeInOrder"
+            **************************************/
+            $("#runNodesInOrderButton").button().click($.proxy(function(){
+              GraphLang.Utils.runNodesInOrder(appCanvas);
+            }));
+
+           /**************************************
+            *  BUTTON "Auxiliary"
+            **************************************/
+            $("#auxButton").button().click($.proxy(function(){
+              GraphLang.Utils.auxFunc(appCanvas);
+            }));
 });
 
 /**
