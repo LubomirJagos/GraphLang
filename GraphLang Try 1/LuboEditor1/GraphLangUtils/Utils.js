@@ -17,27 +17,27 @@ GraphLang.Utils = Class.extend({
 
 /**
  *  @name GraphLang.Utils.runInterpreter
- *  @description Another testing function to see if graph interpreter is running nodes in right order.
+ *  @description Go through all nodes by execution order and run onRun4() function on each of them. It should return string which represent chunk of code for each node. THIS IS NOW WORKING ON LAYER null WHAT MEANS ON TOP NODES JUST TO SEE IF IT'S TRANSCRIPTING SOMETHING, LOOKS OK, THIS WILL BE RECURSIVE FUNCTION!
  */
 GraphLang.Utils.runInterpreter = function(canvas){
-  let allPorts = canvas.getAllPorts();
-  let outMsg = "";
-  let idList = [];
-  let cntPort = 0;
-  let parentIdList = [];
-
-  //getting type names of all ports just for example to show how it should be done
-  allPorts.each(function(index, portObj){
-    idList.push(portObj.NAME);
-    parentIdList.push(portObj);
+  var nodesToRun = GraphLang.Utils.getLoopDirectChildrenNodes(canvas, null);
+  var strCodeOut = "";
+  nodesToRun.each(function(nodeIndex, nodeObj){
+    if (nodeObj.onRun4 != undefined) strCodeOut += nodeObj.onRun4();
   });
-  idList.sort();
-  for (var i = 0; i < idList.length; i++){
-    outMsg += idList[i] + "\n";
-  }
+  var topLoops = new draw2d.util.ArrayList();
+  canvas.getFigures().each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0 && nodeObj.getParent() == null){ topLoops.push(nodeObj);}
+  });
+  var sortedTopLoops = new draw2d.util.ArrayList();
+  topLoops.each(function(loopIndex, loopObj){
+    if (GraphLang.Utils.getNodeLoopOwner(canvas, loopObj) == null) sortedTopLoops.push(loopObj);
+  });
+  sortedTopLoops.each(function(loopIndex, loopObj){
+    strCodeOut += "/* LOOP DETECTED! */";
+  });
 
-  alert("All ports:" + "\n" + outMsg);
-  //alert(idList);
+  alert("Result code:\n" + strCodeOut);
 }
 
 /**
@@ -338,7 +338,8 @@ GraphLang.Utils.detectTunnels = function(canvas){
 
            //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
            if (intersectionEdge[k+i] == 0 || intersectionEdge[k+i] == 2){
-             tunnelObj.setRotationAngle(90);
+             if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(90);
+             if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(90);
              var objWidth = tunnelObj.getWidth();
              var objHeight = tunnelObj.getHeight();
              tunnelObj.setWidth(objHeight);
@@ -600,7 +601,7 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
   });
 
   //find all parent loop of this node
-  var nodeParentLoop;
+  var nodeParentLoop = null;
   loopList.each(function(loopIndex, loopObj){
     if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){
       nodeParentLoop = loopObj;

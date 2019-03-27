@@ -8,5 +8,9 @@ GraphLang.Shapes.Numeric.Subtract = GraphLang.Shapes.Numeric.extend({
   },
   onRun3: function(){
     alert("THIS IS ANOTHER FUNCTION \n Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);
+  },
+
+  onRun4: function(){
+    return "/*Node Subtract.js: arg0=" + this.getInputPort(0).getId() + ", arg1=" + this.getInputPort(1).getId() + "*/\n";
   }
 });
