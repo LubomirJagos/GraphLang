@@ -145,6 +145,12 @@ example.Toolbar = Class.extend({
  			this.html.append(this.highlightNodesByExecutionOrderButton);
 
 			/**
+ 		  *	TranslateToCppCode Button
+ 			*/
+ 			this.translateToCppCodeButton  = $("<button id=\"translateToCppCodeButton\">translateToCppCode</button>");
+ 			this.html.append(this.translateToCppCodeButton);
+
+			/**
  		  *	Auxiliary Buttonr
  			*/
  			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");

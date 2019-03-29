@@ -11,5 +11,9 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
     },
     onRun3:function(){
       alert("TUNNEL id: " + this.id);
+    },
+
+    translateToCppCode: function(){
+      return "{Tunnel: executionOrder: " + this.getUserData().executionOrder + "}";
     }
 });

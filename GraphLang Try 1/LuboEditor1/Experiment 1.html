@@ -62,6 +62,11 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 6.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 7.js"></script> -->
     <script src="./GraphLangSchematics/Default Schematic 6.js"></script>
+    <!--
+    <script type="text/javascript">
+      var jsonDocument = [];
+    </script>
+  -->
 
  <script type="text/javascript">
 
@@ -195,6 +200,13 @@ document.addEventListener("DOMContentLoaded",function () {
               $("#highlightNodesByExecutionOrderButton").button().click($.proxy(function(){
                 GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
               }));
+
+          /**************************************
+           *  BUTTON "translateToCppCodeButton"
+           **************************************/
+           $("#translateToCppCodeButton").button().click($.proxy(function(){
+             GraphLang.Utils.translateToCppCode(appCanvas);
+           }));
 
            /**************************************
             *  BUTTON "Auxiliary"

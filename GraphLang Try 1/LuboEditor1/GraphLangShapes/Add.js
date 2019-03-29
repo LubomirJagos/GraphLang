@@ -31,5 +31,9 @@ GraphLang.Shapes.Numeric.Add = GraphLang.Shapes.Numeric.extend({
 
   onRun4: function(){
     return "/*Node Add.js: arg0=" + this.getInputPort(0).getId() + ", arg1=" + this.getInputPort(1).getId() + "*/\n";
+  },
+
+  translateToCppCode: function(){
+    return "{Add: " + this.getUserData().executionOrder + "}";
   }
 });

@@ -12,5 +12,9 @@ GraphLang.Shapes.Numeric.Subtract = GraphLang.Shapes.Numeric.extend({
 
   onRun4: function(){
     return "/*Node Subtract.js: arg0=" + this.getInputPort(0).getId() + ", arg1=" + this.getInputPort(1).getId() + "*/\n";
+  },
+
+  translateToCppCode: function(){
+    return "{Subtract: executionOrder: " + this.getUserData().executionOrder + "}";
   }
 });

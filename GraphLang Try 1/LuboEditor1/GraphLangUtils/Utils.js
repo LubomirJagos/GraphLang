@@ -795,3 +795,66 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
   });
   auxLoopCnt++; //debugging moving through loop list
 }
+
+GraphLang.Utils.translateToCppCode = function(canvas){
+  var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
+  var allLoops = new draw2d.util.ArrayList();
+
+  //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
+  allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") > 0){ //put label just for nodes, for now suppose that's all shapes.basic
+      if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
+      var loopTunnels = new draw2d.util.ArrayList();
+      nodeObj.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("tunnel") > 0){
+          allNodes.push(childObj);
+        }
+      });
+    }
+  });
+
+  /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
+  var cCode = "";
+  for (var actualStep = 0; actualStep < 20; actualStep++){
+    var allNodes = canvas.getFigures();
+
+    /*
+      Translating nodes to C++ code, if there are tunnels of loops, it's going also to translate their definitions, like:
+        while(...condition...){ <--- this is translate just for first tunnel hwne going through nodes to run
+          ...do something....
+        }
+    */
+    allNodes.each(function(nodeIndex, nodeObj){
+        if (nodeObj.NAME.toLowerCase().search("tunnel") >= 0){
+          //var loopObj = new GraphLang.Shapes.Basic.Loop(nodeObj.getParent());
+          var loopObj = nodeObj.getParent();
+          var loopObjIndex = allLoops.indexOf(loopObj)
+
+          // FOR TUNNELS MATTER IF IT SHOULD BE ALREADY EXECUTED, BECAUSE THERE COULD BE ANOTHER TUNNELS ON THE SAME LOOP WITH LATER EXEDCUTION ORDER
+          // NEED TO REWORK EXECUTION ORDER OF TUNNELS
+          if (nodeObj.getUserData().executionOrder == actualStep){
+            if (loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
+              cCode += loopObj.translateToCppCode();
+
+              /*
+                HERE SHOULD BE RECURSIVE TRANSCRITPING ALL LOOPS, BECAUSE UNTIL NOW PROCESS
+                SHOULD BE DONE FOR TOP ELEMENTS AND FOR ALL LOOP WHICH ARE EXECUTED IN THE
+                SAME STEP WHAT COULD BE FIGURE OUT BASED ON TUNNELS, ALWAYS ON THE TUNNEL
+                WHICH IS EXECUTED AS LATEST, SO EXECUTION ORDER FOR LOOP IS EXECUTION
+                ORDER OF TUNNEL WHICH IS THE HIGHEST FROM ALLS
+              */
+
+              //allLoops.removeElementAt(loopObjIndex);
+              loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
+            }
+          }
+        }
+        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 && nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder != undefined && nodeObj.getUserData().executionOrder == actualStep){
+          for (var k = 0; k < actualStep; k++) cCode += "\t";
+          cCode += nodeObj.translateToCppCode() + "\n";
+        }
+    });
+  }
+
+  alert(cCode);
+}

@@ -1,7 +1,11 @@
 GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   NAME: "GraphLang.Shapes.Basic.Loop",
+  constructor(obj){
+    obj && Object.assign(this, obj);
+  },
   userData: {
-    executionOdrder: -1
+    executionOdrder: -1,
+    wasTranslatedToCppCode: false
   },
   init:function(attr, setter, getter){
     this._super(attr, setter, getter);
@@ -27,5 +31,9 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   },
   getUserData: function(){
     return this.userData;
+  },
+  translateToCppCode: function(){
+    this.getUserData().wasTranslatedToCppCode = true;
+    return "{Loop: " + this.getUserData().executionOrder + "}";
   }
 });
