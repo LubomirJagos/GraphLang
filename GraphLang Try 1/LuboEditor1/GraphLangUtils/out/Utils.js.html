@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  *  @class GraphLang.Utils
  *  @name GraphLang.Utils
  *  @description Base class for GraphLang utils
@@ -28,7 +56,7 @@ GraphLang.Utils.runInterpreter = function(canvas){
   });
   var topLoops = new draw2d.util.ArrayList();
   canvas.getFigures().each(function(nodeIndex, nodeObj){
-    if (nodeObj.NAME.toLowerCase().search("loop") >= 0 && nodeObj.getParent() == null){ topLoops.push(nodeObj);}
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0 &amp;&amp; nodeObj.getParent() == null){ topLoops.push(nodeObj);}
   });
   var sortedTopLoops = new draw2d.util.ArrayList();
   topLoops.each(function(loopIndex, loopObj){
@@ -55,7 +83,7 @@ GraphLang.Utils.run = function(canvas){
 
     var numberofNumericAdd = 0;
     var mySelectedNode;
-    for (var nodeCnt = 0; nodeCnt < jsonObj.length; nodeCnt++){
+    for (var nodeCnt = 0; nodeCnt &lt; jsonObj.length; nodeCnt++){
       if (jsonObj[nodeCnt].type == "GraphLang.Shapes.Numeric.Add"){
         numberofNumericAdd++;
         //set default value for counter 1 of object
@@ -101,7 +129,7 @@ GraphLang.Utils.detectJoints = function(canvas){
 
   outMsg = "Intersection X,Y:\n";
   if (wiresIntersectionList.length > 0){
-    for (var k = 0; k < wiresIntersectionList.length; k++){
+    for (var k = 0; k &lt; wiresIntersectionList.length; k++){
       wiresIntersectionList[k].each(function(i, caller){
         pObj = new GraphLang.geo.Point(caller);
         pX = pObj.getX();
@@ -265,10 +293,10 @@ GraphLang.Utils.detectTunnels = function(canvas){
           //in which segment cross bounding box, whether is it crossing it top to bottom,
           //left to right or opposite direction, so I store this direction along with
           //intersection points
-          if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() < outsidePoint.getY()) loopIntersctDirection.push(1);
-          if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
-          if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(3);
-          if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(4);
+          if (insidePoint.getX() == outsidePoint.getX() &amp;&amp; insidePoint.getY() &lt; outsidePoint.getY()) loopIntersctDirection.push(1);
+          if (insidePoint.getX() == outsidePoint.getX() &amp;&amp; insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
+          if (insidePoint.getY() == outsidePoint.getY() &amp;&amp; insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(3);
+          if (insidePoint.getY() == outsidePoint.getY() &amp;&amp; insidePoint.getX() &lt; outsidePoint.getX()) loopIntersctDirection.push(4);
         }
       });
       lineVert.push(lineObj.getVertices());
@@ -276,7 +304,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
 
     //going through all connection segments and on each vertice put red point
   /*
-    for (var k = 0; k < lineVert.length; k++){
+    for (var k = 0; k &lt; lineVert.length; k++){
       lineVert[k].each(function(i, caller){
         pObj = new GraphLang.geo.Point(caller);
         pX = pObj.getX();
@@ -296,7 +324,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
     }
   */
     if (loopIntersections.length > 0){
-      for (var k = 0; k < loopIntersections.length; k++){
+      for (var k = 0; k &lt; loopIntersections.length; k++){
         loopIntersections[k].each(function(i, caller){
           pObj = new GraphLang.geo.Point(caller);
           pX = pObj.getX();
@@ -374,7 +402,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
            if (intersectionEdge[k+i] == 1){ //RIGHT edge
              var tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
                tunnelObj.getWidth()/2,
-               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
+               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //&lt;----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
            if (intersectionEdge[k+i] == 2){ //BOTTOM edge
@@ -386,7 +414,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
            if (intersectionEdge[k+i] == 3){ //LEFT edge
              var tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
                tunnelObj.getWidth()/2,
-               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
+               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //&lt;----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
 
@@ -558,7 +586,7 @@ GraphLang.Utils.showNodes = function(canvas){
   var allNodes = canvas.getFigures();
 
   allNodes.each(function(nodeIndex, nodeObj){
-    //if (nodeObj.NAME.toLowerCase().search("graphlang") < 0) return; //THIS RETURN IN CASE THAT NODE IS NOT GRAPHLANG NODE
+    //if (nodeObj.NAME.toLowerCase().search("graphlang") &lt; 0) return; //THIS RETURN IN CASE THAT NODE IS NOT GRAPHLANG NODE
 
     //SHOW TRIGGERED LABEL ON LOOP
     if (nodeObj.NAME.toLowerCase().search("loop") > 0){
@@ -604,7 +632,7 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
   //find all parent loop of this node
   var nodeParentLoop = null;
   loopList.each(function(loopIndex, loopObj){
-    if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){
+    if (loopObj != nodeObj &amp;&amp; loopObj.getAboardFigures().contains(nodeObj)){
       nodeParentLoop = loopObj;
     }
   });
@@ -620,8 +648,8 @@ GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null)
   var allLayerNodes = new draw2d.util.ArrayList();
 
   canvas.getFigures().each(function(figureIndex, figureObj){
-    if ((figureObj.NAME.toLowerCase().search("loop") < 0) &&
-        (figureObj.NAME.toLowerCase().search("tunnel") < 0) &&
+    if ((figureObj.NAME.toLowerCase().search("loop") &lt; 0) &amp;&amp;
+        (figureObj.NAME.toLowerCase().search("tunnel") &lt; 0) &amp;&amp;
         (GraphLang.Utils.getNodeLoopOwner(canvas, figureObj)) == parentLoop) allLayerNodes.push(figureObj);
   });
 
@@ -660,26 +688,26 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
    *      -1 .....not executed, data not available stylesheet
    *      +1 .....prepared, OK
    ******************************************************************************/
-  for (var actualStepNum = 1; actualStepNum < 20; actualStepNum++){
+  for (var actualStepNum = 1; actualStepNum &lt; 20; actualStepNum++){
     allNodes.each(function(nodeIndex, nodeObj){
 
         //gathering information about input ports, checking if all of them are already prepared
         nodeObj.getInputPorts().each(function(portIndex, portObj){
           if (portObj.getUserData().executionOrder > 0) cnt1++;
-          else if (portObj.getUserData().executionOrder < 0){
+          else if (portObj.getUserData().executionOrder &lt; 0){
             /* if input port is not ready, check connected ports for which is this port waiting
             and check their status */
             let inPortPrepared = true;
 
             //CHECK STATE OF CONNECTED OUTPUTS BEFORE THIS PORT
             portObj.getConnections().each(function(wireIndex, wireObj){
-              if (wireObj.getSource() && wireObj.getSource().getUserData().executionOrder < 0) inPortPrepared = false;
+              if (wireObj.getSource() &amp;&amp; wireObj.getSource().getUserData().executionOrder &lt; 0) inPortPrepared = false;
             });
 
             //CHECK FOR CONTENT INSIDE LOOP IF WAIT FOR INPUT TUNNELS
             var nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas, portObj.getParent());
             var leftTunnelCnt = 0;
-            while (nodeParentLoop != undefined && inPortPrepared == true){
+            while (nodeParentLoop != undefined &amp;&amp; inPortPrepared == true){
               nodeParentLoop.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00")); //highlight current loop
               //check if all input tunnels are prepared, if not, input port of current node is set to wait, executionOrder left as it is
               nodeParentLoop.getChildren().each(function(tunnelIndex, tunnelObj){
@@ -688,7 +716,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
                   if (tunnelObj == undefined ||
                       tunnelObj.getOutputPort(0).userData == undefined ||
                       tunnelObj.getOutputPort(0).userData.executionOrder == undefined ||
-                      tunnelObj.getOutputPort(0).userData.executionOrder < 0) inPortPrepared = false;
+                      tunnelObj.getOutputPort(0).userData.executionOrder &lt; 0) inPortPrepared = false;
                 }
               });
               //if there are no input tunnels go for loop higher look if there are some input tunnels for which we have to wait
@@ -715,7 +743,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
         //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE
         //if all inputs are available then mark to output ports number of step when they run
         nodeObj.getOutputPorts().each(function(portIndex, portObj){
-          if (portObj.getUserData().executionOrder < 0){
+          if (portObj.getUserData().executionOrder &lt; 0){
             var userData = portObj.getUserData();
             userData.executionOrder = actualStepNum;
             portObj.setUserData(userData);
@@ -768,7 +796,7 @@ GraphLang.Utils.runNodesInOrder = function(canvas){
     }
   });
 
-  for (var actualStepNum = 1; actualStepNum < 20; actualStepNum++){
+  for (var actualStepNum = 1; actualStepNum &lt; 20; actualStepNum++){
     allNodes.each(function(nodeIndex, nodeObj){
       if (nodeObj.userData.executionOrder == actualStepNum) nodeObj.onRun3();
     });
@@ -798,7 +826,7 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
 }
 
 GraphLang.Utils.translateToCppCode = function(canvas){
-  var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
+  var allNodes = canvas.getFigures(); //&lt;--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
   var allLoops = new draw2d.util.ArrayList();
 
   //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
@@ -816,12 +844,12 @@ GraphLang.Utils.translateToCppCode = function(canvas){
 
   /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
   var cCode = "";
-  for (var actualStep = 0; actualStep < 20; actualStep++){
+  for (var actualStep = 0; actualStep &lt; 20; actualStep++){
     var allNodes = canvas.getFigures();
 
     /*
       Translating nodes to C++ code, if there are tunnels of loops, it's going also to translate their definitions, like:
-        while(...condition...){ <--- this is translate just for first tunnel hwne going through nodes to run
+        while(...condition...){ &lt;--- this is translate just for first tunnel hwne going through nodes to run
           ...do something....
         }
     */
@@ -834,7 +862,7 @@ GraphLang.Utils.translateToCppCode = function(canvas){
           // FOR TUNNELS MATTER IF IT SHOULD BE ALREADY EXECUTED, BECAUSE THERE COULD BE ANOTHER TUNNELS ON THE SAME LOOP WITH LATER EXEDCUTION ORDER
           // NEED TO REWORK EXECUTION ORDER OF TUNNELS
           if (nodeObj.getUserData().executionOrder == actualStep){
-            if (loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
+            if (loopObjIndex >= 0 &amp;&amp; loopObj.getUserData() != undefined &amp;&amp; loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
               cCode += loopObj.translateToCppCode();
 
               /*
@@ -846,12 +874,12 @@ GraphLang.Utils.translateToCppCode = function(canvas){
               */
 
               //allLoops.removeElementAt(loopObjIndex);
-              loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
+              loopObj.getUserData().wasTranslatedToCppCode = true;  //&lt;--- mark loop as translated, to be sure
             }
           }
         }
-        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 && nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder != undefined && nodeObj.getUserData().executionOrder == actualStep){
-          for (var k = 0; k < actualStep; k++) cCode += "\t";
+        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &amp;&amp; nodeObj.getUserData() != undefined &amp;&amp; nodeObj.getUserData().executionOrder != undefined &amp;&amp; nodeObj.getUserData().executionOrder == actualStep){
+          for (var k = 0; k &lt; actualStep; k++) cCode += "\t";
           cCode += nodeObj.translateToCppCode() + "\n";
         }
     });
@@ -859,3 +887,26 @@ GraphLang.Utils.translateToCppCode = function(canvas){
 
   alert(cCode);
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="GraphLang.Utils.html">Utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Apr 06 2019 18:41:55 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
