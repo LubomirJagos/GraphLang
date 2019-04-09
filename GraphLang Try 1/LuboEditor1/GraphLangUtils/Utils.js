@@ -551,7 +551,7 @@ GraphLang.Utils.bringToBack = function(canvas){
 
 /**
  *  @method showNodes()
- *  @name GraphLang.Utils.executionOrder(canvas)
+ *  @name GraphLang.Utils.showNodes(canvas)
  *  @description Put label "-1" into middle of all nodes. This is method for debugging to see how IDE see nodes, what all is node.
  */
 GraphLang.Utils.showNodes = function(canvas){
@@ -588,7 +588,7 @@ GraphLang.Utils.showNodes = function(canvas){
 
 /**
  *  @method
- *  @name GraphLang.Utils.getNodeLoopOwner(canvas)
+ *  @name GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj/loopObj)
  *  @description Return loop which ownes node, if there's no loop return null.
  */
 GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
@@ -623,6 +623,22 @@ GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null)
     if ((figureObj.NAME.toLowerCase().search("loop") < 0) &&
         (figureObj.NAME.toLowerCase().search("tunnel") < 0) &&
         (GraphLang.Utils.getNodeLoopOwner(canvas, figureObj)) == parentLoop) allLayerNodes.push(figureObj);
+  });
+
+  return allLayerNodes;
+}
+
+/**
+ *  @method getDirectChildrenWithoutTunnels(canvas, parentObj = null)
+ *  @name GraphLang.Utils.getDirectChildrenWithoutTunnels
+ *  @description Returns direct children of provided object. These returns objects which are not nested inside loop. Also return loops objects. If parent object is not provided it returns direct canvas children.
+ */
+GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
+  var allLayerNodes = new draw2d.util.ArrayList();
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if ((figureObj.NAME.toLowerCase().search("tunnel") == -1) &&
+        GraphLang.Utils.getNodeLoopOwner(canvas, figureObj) == parentObj) allLayerNodes.push(figureObj);
   });
 
   return allLayerNodes;
@@ -741,6 +757,14 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
       inputPortCnt = 0;
     });
   }
+
+  //set EXECUTION ORDER for LOOPS
+  allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      nodeObj.setExecutionOrderByTunnels(canvas);
+    }
+  });
+
 }
 
 /**
@@ -797,6 +821,11 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
   auxLoopCnt++; //debugging moving through loop list
 }
 
+/**
+ * @method translateToCppCode(canvas)
+ * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
+ *
+ */
 GraphLang.Utils.translateToCppCode = function(canvas){
   var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
   var allLoops = new draw2d.util.ArrayList();
@@ -807,7 +836,7 @@ GraphLang.Utils.translateToCppCode = function(canvas){
       if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
       var loopTunnels = new draw2d.util.ArrayList();
       nodeObj.getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search("tunnel") > 0){
+        if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
           allNodes.push(childObj);
         }
       });
@@ -831,31 +860,108 @@ GraphLang.Utils.translateToCppCode = function(canvas){
           var loopObj = nodeObj.getParent();
           var loopObjIndex = allLoops.indexOf(loopObj)
 
-          // FOR TUNNELS MATTER IF IT SHOULD BE ALREADY EXECUTED, BECAUSE THERE COULD BE ANOTHER TUNNELS ON THE SAME LOOP WITH LATER EXEDCUTION ORDER
-          // NEED TO REWORK EXECUTION ORDER OF TUNNELS
-          if (nodeObj.getUserData().executionOrder == actualStep){
-            if (loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
-              cCode += loopObj.translateToCppCode();
-
-              /*
-                HERE SHOULD BE RECURSIVE TRANSCRITPING ALL LOOPS, BECAUSE UNTIL NOW PROCESS
-                SHOULD BE DONE FOR TOP ELEMENTS AND FOR ALL LOOP WHICH ARE EXECUTED IN THE
-                SAME STEP WHAT COULD BE FIGURE OUT BASED ON TUNNELS, ALWAYS ON THE TUNNEL
-                WHICH IS EXECUTED AS LATEST, SO EXECUTION ORDER FOR LOOP IS EXECUTION
-                ORDER OF TUNNEL WHICH IS THE HIGHEST FROM ALLS
-              */
-
-              //allLoops.removeElementAt(loopObjIndex);
-              loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
-            }
+          if (nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder == actualStep){
+            var tunnelHighestExecutionOrder = -1;
+            loopObj.getChildren().each(function(childIndex, childObj){
+              if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
+                var tunnelExecutionOrder = childObj.getUserData().executionOrder;
+                if (tunnelExecutionOrder > tunnelHighestExecutionOrder) tunnelHighestExecutionOrder = tunnelExecutionOrder;
+              }
+            });
           }
+          //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
+          if (actualStep == tunnelHighestExecutionOrder && loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){
+            cCode += loopObj.translateToCppCode() + "\n";
+            loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
+          }
+
+          // // FOR TUNNELS MATTER IF IT SHOULD BE ALREADY EXECUTED, BECAUSE THERE COULD BE ANOTHER TUNNELS ON THE SAME LOOP WITH LATER EXEDCUTION ORDER
+          // // NEED TO REWORK EXECUTION ORDER OF TUNNELS
+          // if (nodeObj.getUserData().executionOrder == actualStep){
+          //   if (loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
+          //     cCode += loopObj.translateToCppCode();
+          //
+          //     /*
+          //       HERE SHOULD BE RECURSIVE TRANSCRITPING ALL LOOPS, BECAUSE UNTIL NOW PROCESS
+          //       SHOULD BE DONE FOR TOP ELEMENTS AND FOR ALL LOOP WHICH ARE EXECUTED IN THE
+          //       SAME STEP WHAT COULD BE FIGURE OUT BASED ON TUNNELS, ALWAYS ON THE TUNNEL
+          //       WHICH IS EXECUTED AS LATEST, SO EXECUTION ORDER FOR LOOP IS EXECUTION
+          //       ORDER OF TUNNEL WHICH IS THE HIGHEST FROM ALLS
+          //     */
+          //
+          //     //allLoops.removeElementAt(loopObjIndex);
+          //     loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
+          //   }
+          // }
         }
+
+        //getting node c code representation (TUNNELS EXCLUDED)
         if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 && nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder != undefined && nodeObj.getUserData().executionOrder == actualStep){
-          for (var k = 0; k < actualStep; k++) cCode += "\t";
           cCode += nodeObj.translateToCppCode() + "\n";
         }
     });
   }
 
   alert(cCode);
+}
+
+/**
+ * @method translateToCppCode2(canvas)
+ * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
+ *
+ */
+GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, parentObj = null, nestedLevel = 0){
+  var allNodes = GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, parentObj);
+  var allLoops = new draw2d.util.ArrayList();
+
+  allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){ //put label just for nodes, for now suppose that's all shapes.basic
+      if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
+    }
+  });
+
+  /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
+  var cCode = "";
+  for (var actualStep = 0; actualStep < 20; actualStep++){
+    allNodes.each(function(nodeIndex, nodeObj){
+        if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+          var loopObj = nodeObj;
+          var loopObjIndex = allLoops.indexOf(loopObj)
+
+          //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
+          if (actualStep == loopObj.getUserData().executionOrder && loopObj.getUserData().wasTranslatedToCppCode != true){
+            for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
+            cCode += loopObj.translateToCppCode() + "\n";
+            loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
+
+            //recursively going into loops
+            cCode += translateToCppCode2(canvas, loopObj, nestedLevel+1);
+          }
+
+        }
+
+        //getting node c code representation (TUNNELS and LOOPS EXCLUDED)
+        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
+            nodeObj.NAME.toLowerCase().search("loop") == -1 &&
+            nodeObj.getUserData() != undefined &&
+            nodeObj.getUserData().executionOrder != undefined &&
+            nodeObj.getUserData().executionOrder == actualStep){
+          for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
+          cCode += nodeObj.translateToCppCode() + "\n";
+        }
+    });
+  }
+
+  if (parentObj == null) alert(cCode);
+  return cCode;
+}
+
+/**
+ *  @method loopsRecalculateAbroadFigures(canvas)
+ *  @description Reevaluate children nodes of every loop on canvas. This function was implemented because sometimes it looks like there are problems with this when new loops are added.
+ */
+GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
+  canvas.getFigures().each(function(loopIndex, loopObj){
+    if (loopObj.NAME.toLowerCase().search("loop") >= 0) loopObj.getAboardFigures(true);
+  });
 }

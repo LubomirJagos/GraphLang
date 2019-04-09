@@ -35,5 +35,31 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   translateToCppCode: function(){
     this.getUserData().wasTranslatedToCppCode = true;
     return "{Loop: " + this.getUserData().executionOrder + "}";
+  },
+  setExecutionOrderByTunnels: function(canvas){
+    //first get input tunnel with highest execution number, if there is no input tunnel it's needed to look for parent loop
+    var tunnelHighestExecutionOrder = -1;
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
+        var tunnelExecutionOrder = childObj.getUserData().executionOrder;
+        if (tunnelExecutionOrder > tunnelHighestExecutionOrder) tunnelHighestExecutionOrder = tunnelExecutionOrder;
+      }
+    });
+
+    //in case there are no input tunnels on loop is needed to look for parent and used it's execution order, if parent is directly canvas, then this loop without input tunnels is executed as first, so it's execution order is 1
+    // HERE CAN BE PROBLEM IF PARENT HASN'T SET UP ITS EXECUTION ORDER, SO THEN SHOULD BE RECURSIVELY LOOKIN UP, for now suppose that this will not happen
+    if (tunnelHighestExecutionOrder == -1){
+      var thisLoopOwner = GraphLang.Utils.getNodeLoopOwner(canvas, this);
+      var ownerExecutionOrder = thisLoopOwner.getUserData().executionOrder;
+      if ( ownerExecutionOrder != undefined){
+        this.getUserData().executionOrder = ownerExecutionOrder;  //<--- HERE SHOULD BE RECURSIVELY LOOKING UP for execution order
+      }else{
+        this.getUserData().executionOrder = 1;
+      }
+    }else{
+      this.getUserData().executionOrder = tunnelHighestExecutionOrder;
+    }
+
+    this.getUserData().wasTranslatedToCppCode = false;
   }
 });

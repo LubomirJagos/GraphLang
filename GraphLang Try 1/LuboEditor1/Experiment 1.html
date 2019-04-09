@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded",function () {
             }));
 
             /**************************************
-             *  BUTTON "runNodeInOrder"
+             *  BUTTON "showPortExecutionOrder"
              **************************************/
              $("#showPortExecutionOrderButton").button().click($.proxy(function(){
                GraphLang.Utils.showPortExecutionOrder(appCanvas);
@@ -206,6 +206,20 @@ document.addEventListener("DOMContentLoaded",function () {
            **************************************/
            $("#translateToCppCodeButton").button().click($.proxy(function(){
              GraphLang.Utils.translateToCppCode(appCanvas);
+           }));
+
+           /**************************************
+            *  BUTTON "translateToCppCode2Button"
+            **************************************/
+            $("#translateToCppCode2Button").button().click($.proxy(function(){
+              GraphLang.Utils.translateToCppCode2(appCanvas);
+            }));
+
+          /**************************************
+           *  BUTTON "loopsRecalculateAbroadFigures"
+           **************************************/
+           $("#loopsRecalculateAbroadFiguresButton").button().click($.proxy(function(){
+             GraphLang.Utils.loopsRecalculateAbroadFigures(appCanvas);
            }));
 
            /**************************************

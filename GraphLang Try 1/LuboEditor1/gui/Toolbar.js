@@ -111,7 +111,7 @@ example.Toolbar = Class.extend({
 			/**
  		  *	Execution order
  			*/
- 			this.executionOrderButton  = $("<button id=\"executionOrderButton\">Execution order</button>");
+ 			this.executionOrderButton  = $("<button id=\"executionOrderButton\">executionOrder</button>");
  			this.html.append(this.executionOrderButton);
 
 			/**
@@ -151,7 +151,19 @@ example.Toolbar = Class.extend({
  			this.html.append(this.translateToCppCodeButton);
 
 			/**
- 		  *	Auxiliary Buttonr
+ 		  *	TranslateToCppCode2 Button
+ 			*/
+ 			this.translateToCppCode2Button  = $("<button id=\"translateToCppCode2Button\">translateToCppCode2</button>");
+ 			this.html.append(this.translateToCppCode2Button);
+
+			/**
+ 		  *	LoopsRecalculateAbroadFigures Button
+ 			*/
+ 			this.loopsRecalculateAbroadFiguresButton  = $("<button id=\"loopsRecalculateAbroadFiguresButton\">loopsRecalculateAbroadFigures</button>");
+ 			this.html.append(this.loopsRecalculateAbroadFiguresButton);
+
+			/**
+ 		  *	Auxiliary Button
  			*/
  			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");
  			this.html.append(this.auxButton);
