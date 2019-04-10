@@ -1,6 +1,5 @@
 /**
  *  @class GraphLang.Utils
- *  @name GraphLang.Utils
  *  @description Base class for GraphLang utils
  */
 GraphLang.Utils = Class.extend({
@@ -17,8 +16,9 @@ GraphLang.Utils = Class.extend({
 });
 
 /**
- *  @name GraphLang.Utils.runInterpreter
- *  @description Go through all nodes by execution order and run onRun4() function on each of them. It should return string which represent chunk of code for each node. THIS IS NOW WORKING ON LAYER null WHAT MEANS ON TOP NODES JUST TO SEE IF IT'S TRANSCRIPTING SOMETHING, LOOKS OK, THIS WILL BE RECURSIVE FUNCTION!
+ *  @method GraphLang.Utils.runInterpreter
+ *  @param {draw2d.Canvas} canvas - from where is taken schematic
+ *  @description Go through all nodes by execution order and run onRun() function on each of them. It should return string which represent chunk of code for each node. <br/><br/>THIS IS NOW WORKING ON LAYER null WHAT MEANS ON TOP NODES JUST TO SEE IF IT'S TRANSCRIPTING SOMETHING, LOOKS OK, THIS WILL BE RECURSIVE FUNCTION!
  */
 GraphLang.Utils.runInterpreter = function(canvas){
   var nodesToRun = GraphLang.Utils.getLoopDirectChildrenNodes(canvas, null);
@@ -42,7 +42,8 @@ GraphLang.Utils.runInterpreter = function(canvas){
 }
 
 /**
- *  @name GraphLang.Utils.run(canvas)
+ *  @method GraphLang.Utils.run(canvas)
+ *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description Testing feunction for every my node to see if it's invoked. I want to use this to see if nodes are running in right order when graph interpreter is running.
  */
 GraphLang.Utils.run = function(canvas){
@@ -79,11 +80,11 @@ GraphLang.Utils.run = function(canvas){
     alert("GraphLang.Shapes.Numeric.Add found: " + String(numberofNumericAdd));
 }
 
-/**************************************
- *  @title "Detect Joints"
- *  @name GraphLang.Utils.detectJoints(canvas)
+/**
+ *  @method GraphLang.Utils.detectJoints(canvas)
+ *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description This function puts some mark at wires crossing. For now there will be point inserted.
- **************************************/
+ */
 GraphLang.Utils.detectJoints = function(canvas){
   //get objects from canvas
   //var jsonStr = displayJSON(appCanvas);
@@ -124,8 +125,7 @@ GraphLang.Utils.detectJoints = function(canvas){
 }
 
 /**
- *  @method
- *  @name GraphLang.Utils.goThroughGraph(canvas)
+ *  @method GraphLang.Utils.goThroughGraph(canvas)
  *  @description Going through nodes and hit them and run them if possible. This is now just for testing how to traverse graph through wires which connect nodes.
  */
 GraphLang.Utils.goThroughGraph = function(canvas){
@@ -159,9 +159,12 @@ GraphLang.Utils.goThroughGraph = function(canvas){
   });
 }
 
-/******************************************************************************
- *  CREATES wire connection btw source and target
- ******************************************************************************/
+/**
+ *  @method createConnection(sourcePort, targetPort)
+ *  @param {draw2d.InputPort} sourcePort - beginning of wire
+ *  @param {draw2d.OutputPort} targetPort - end of wire
+ *  @description CREATES wire connection btw source and target
+ */
 var createConnection=function(sourcePort, targetPort){
 
     var conn= new draw2d.Connection({
@@ -189,8 +192,7 @@ var createConnection=function(sourcePort, targetPort){
 };
 
 /**
- *  @method
- *  @name GraphLang.Utils.detectTunnels(canvas)
+ *  @method detectTunnels(canvas)
  *  @description Returns coordinates and put point where wires intersect with loop border (for loop, while loop, case structure, ...)
  */
 GraphLang.Utils.detectTunnels = function(canvas){
@@ -422,7 +424,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
 
 /**
  *  @method auxFunc(canvas)
- *  @name GraphLang.Utils.auxFunc(canvas)
+ *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description This is auxiliary function for debugging to see something.
  */
 GraphLang.Utils.auxFunc = function(canvas){
@@ -434,8 +436,8 @@ GraphLang.Utils.auxFunc = function(canvas){
 };
 
 /**
- *  @method
- *  @name GraphLang.Utils.initAllPortToDefault(canvas)
+ *  @method initAllPortToDefault(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic where ports will be set to default
  *  @description Set default value for all ports. FOR NOW SET VALUE OF EACH PORT TO 0.
  */
 GraphLang.Utils.initAllPortToDefault = function(canvas){
@@ -493,8 +495,8 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
 }
 
 /**
- *  @method
- *  @name GraphLang.Utils.showPortExecutionOrder(canvas)
+ *  @method showPortExecutionOrder(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic where will be displayed execution order for nodes and tunnels
  *  @description Put label with port execution order next to each port which is children of canvas. Means it was added to canvas no to object like loop.
  */
 GraphLang.Utils.showPortExecutionOrder = function(canvas){
@@ -524,6 +526,7 @@ GraphLang.Utils.showPortExecutionOrder = function(canvas){
 /**
  *  @method bringToFront(canvas)
  *  @name GraphLang.Utils.bringToFront(canvas)
+ *  @param {draw2d.Canvas} canvas - from where is taken actual selection
  *  @description Bring to front actual selected figure in canvas.
  */
 GraphLang.Utils.bringToFront = function(canvas){
@@ -537,7 +540,6 @@ GraphLang.Utils.bringToFront = function(canvas){
 
 /**
  *  @method bringToBack(canvas)
- *  @name GraphLang.Utils.bringToFront(canvas)
  *  @description Moves selected objects to back.
  */
 GraphLang.Utils.bringToBack = function(canvas){
@@ -550,8 +552,8 @@ GraphLang.Utils.bringToBack = function(canvas){
 }
 
 /**
- *  @method showNodes()
- *  @name GraphLang.Utils.showNodes(canvas)
+ *  @method showNodes(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic where will be place labels next to ports
  *  @description Put label "-1" into middle of all nodes. This is method for debugging to see how IDE see nodes, what all is node.
  */
 GraphLang.Utils.showNodes = function(canvas){
@@ -587,7 +589,9 @@ GraphLang.Utils.showNodes = function(canvas){
 };
 
 /**
- *  @method
+ *  @method getNodeLoopOwner(canvas, nodeObj/loopObj)
+ *  @param {draw2d.Canvas} canvas - schematic from which is node or loop
+ *  @param {draw2d.shape.Node} nodeObj - node or loop objec which is insepcted for its loop owner
  *  @name GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj/loopObj)
  *  @description Return loop which ownes node, if there's no loop return null.
  */
@@ -613,7 +617,8 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
 
 /**
  *  @method getLoopDirectChildrenNodes(canvas, parentLoop = null)
- *  @name GraphLang.Utils.getLoopDirectChildrenNodes
+ *  @param {draw2d.Canvas} canvas - schematic in which is loop located
+ *  @param {GraphLang.Shapes.Basic.Loop} parentLoop - loop which children are required
  *  @description Returns nodes which are direct descendant of loop, so there are no nodes nested inside other inner loops. If parent loop is not provided or undefined it return all nodes which are direct children of canvas.
  */
 GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null){
@@ -630,7 +635,6 @@ GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null)
 
 /**
  *  @method getDirectChildrenWithoutTunnels(canvas, parentObj = null)
- *  @name GraphLang.Utils.getDirectChildrenWithoutTunnels
  *  @description Returns direct children of provided object. These returns objects which are not nested inside loop. Also return loops objects. If parent object is not provided it returns direct canvas children.
  */
 GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
@@ -645,8 +649,7 @@ GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
 }
 
 /**
- *  @method
- *  @name GraphLang.Utils.executionOrder(canvas)
+ *  @method executionOrder(canvas)
  *  @description Returns execution order in which nodes run.
  */
 GraphLang.Utils.executionOrder = function executionOrder(canvas){
@@ -769,7 +772,6 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 
 /**
  *  @method runNodeInOrder(canvas)
- *  @name GraphLang.Utils.runNodeInOrder(canvas)
  *  @description Returns execution order in which nodes run.
  */
 GraphLang.Utils.runNodesInOrder = function(canvas){
@@ -801,7 +803,7 @@ GraphLang.Utils.runNodesInOrder = function(canvas){
 
 /**
  *  @method highlightNodesByExecutionOrder(canvas)
- *  @name GraphLang.Utils.highlightNodesByExecutionOrder(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic in which will be highlited nodes step by step by clicking on button
  *  @description Returns execution order in which nodes run.
  */
 var auxLoopCnt = 0;
@@ -823,6 +825,7 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
 
 /**
  * @method translateToCppCode(canvas)
+ * @param {draw2d.Canvas} canvas - place from where to take schematic which will be transcripted into C/C++ code
  * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
  *
  */
@@ -907,8 +910,8 @@ GraphLang.Utils.translateToCppCode = function(canvas){
 
 /**
  * @method translateToCppCode2(canvas)
+ * @param {draw2d.Canvas} canvas - schematic which will be transcritped into C/C++ code
  * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
- *
  */
 GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, parentObj = null, nestedLevel = 0){
   var allNodes = GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, parentObj);
@@ -958,10 +961,68 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
 /**
  *  @method loopsRecalculateAbroadFigures(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic which will be recalculated
  *  @description Reevaluate children nodes of every loop on canvas. This function was implemented because sometimes it looks like there are problems with this when new loops are added.
  */
 GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
   canvas.getFigures().each(function(loopIndex, loopObj){
     if (loopObj.NAME.toLowerCase().search("loop") >= 0) loopObj.getAboardFigures(true);
   });
+}
+
+/**
+ *  @methos initLoopsZOrder(canvas)
+ *  @param {draw2d.Canvas} canvas - schematic where correcting z-order should happen
+ *  @description EXPERIMENTAL! STILL WRONG. <br/><br/>Go through all loops in schematic and setup right their z-order. This function is implemented because z-order is probably not right after loading schematic, so this function set it. If it's loaded correctly it should have no imapct on schematic.
+ */
+GraphLang.Utils.initLoopsZOrder = function(canvas){
+  var allFigures = canvas.getFigures();
+
+  //first get list of all loops in schematic
+  var allLoops = new draw2d.util.ArrayList();
+  allFigures.each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("loop") >= 0){
+
+      allLoops.push(figureObj);
+    }
+  });
+
+  //then order loops by their ownership
+  // THIS IS RECURSIVE .............................AND NOW WRONG WRONG WRONG!
+
+  /*
+    This is not going to work, beacause I need to reimplement if loop contain another loop,
+    imagine I load file and I have there some loop which are rectangles and their boundaries
+    are set right what means that I need to figure out by looking on picture if they contains
+    each other what means I need to just check their geometry, so here will be some simple math
+    chekcing algorithm over array list items.
+
+    UNDER HEAVY CONSTRUCTION, beer out, no battery need to go to sleep mode...
+  */
+
+  // var orderedLoops = new draw2d.util.ArrayList();
+  // allLoops.each(function(loopIndex, loopObj){ //init root of tree, all loops which are descendant of undefined what means top loops
+  //   if (GraphLang.Utils.getNodeLoopOwner(canvas, loopObj) == undefined){
+  //      orderedLoops.push(loopObj);
+  //   }
+  // });
+  // allLoops.each(function serializeLoopTreeIntoList(loopIndex, loopObj){
+  //   var localOrderedLoops = new draw2d.util.ArrayList();
+  //   //get direct descendants
+  //   if (GraphLang.Utils.getNodeLoopOwner(canvas, loopObj) != undefined && orderedLoops.contains(GraphLang.Utils.getNodeLoopOwner(canvas, loopObj))){
+  //      localOrderedLoops.push(loopObj);
+  //   }
+  //   //put each descendant into list of ordered loops and go further deeper into tree
+  //   localOrderedLoops.each(function(loopIndex, loopObj){
+  //     orderedLoops.push(loopObj);
+  //   });
+  //   localOrderedLoops.each(serializeLoopTreeIntoList(loopIndex, loopObj));
+  // });
+  //
+  // /* at the end just go through loops list from end to begin and push them to back, so loop which
+  //    contains all loops would be pushed last and therefore will be visible */
+  // for (var k = orderedLoops.getSize()-1; k >= 0; k--){
+  //   orderedLoops.get(k).toBack();
+  // }
+
 }

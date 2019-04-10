@@ -163,6 +163,12 @@ example.Toolbar = Class.extend({
  			this.html.append(this.loopsRecalculateAbroadFiguresButton);
 
 			/**
+ 		  *	initLoopsZOrder Button
+ 			*/
+ 			this.initLoopsZOrderButton  = $("<button id=\"initLoopsZOrderButton\">initLoopsZOrderButton</button>");
+ 			this.html.append(this.initLoopsZOrderButton);
+
+			/**
  		  *	Auxiliary Button
  			*/
  			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");

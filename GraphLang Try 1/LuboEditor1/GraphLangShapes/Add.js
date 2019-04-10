@@ -1,5 +1,5 @@
 /**
- *  Here is important difference between inheritance in this framewor, because, here is not created class but new class is inheriting first prototype, so NO WORD 'new', just assignements of object with parameter extend({...})
+ *  Here is important difference between inheritance in this framework, because, here is not created class but new class is inheriting first prototype, so NO WORD 'new', just assignements of object with parameter extend({...})
  */
 GraphLang.Shapes.Numeric.Add = GraphLang.Shapes.Numeric.extend({
   NAME: "GraphLang.Shapes.Numeric.Add",

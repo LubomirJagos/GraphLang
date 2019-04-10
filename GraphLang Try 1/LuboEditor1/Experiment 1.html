@@ -104,130 +104,142 @@ document.addEventListener("DOMContentLoaded",function () {
   	      }
   	  });
 
-      //Reading default objects on canvas
+      /*****************************************************************************
+       * READING DEFAULT SCHEMATIC AND DRAW IT
+       *****************************************************************************/
       var reader = new draw2d.io.json.Reader();
       reader.unmarshal(appCanvas, jsonDocument);
 
+      /****************************************
+       * BUTTONS
+       ****************************************/
       // Function to button Run is assigned in Toolbar.js
       //GraphLang.Utils.run(function(){alert("Anonymous functions given to run()");});
       //This here is just click() handler, because here appCanvas has visibility
       //I put it in front of HTML file so now should be visible everywhere.
       $("#runButton").button().click($.proxy(function(){
         GraphLang.Utils.run(appCanvas);
-  		}));
+      }));
 
       /**************************************
        *  BUTTON "Detect Joints"
        **************************************/
       $("#detectJointsButton").button().click($.proxy(function(){
         GraphLang.Utils.detectJoints(appCanvas);
-   		}));
+      	}));
 
       /**************************************
        *  BUTTON "Run Interpreter"
        **************************************/
       $("#runInterpreterButton").button().click($.proxy(function(){
         GraphLang.Utils.runInterpreter(appCanvas);
-  		}));
+      }));
 
       /**************************************
        *  BUTTON "Go Through Graph"
        **************************************/
-       $("#goThroughGraphButton").button().click($.proxy(function(){
-         GraphLang.Utils.goThroughGraph(appCanvas);
+      $("#goThroughGraphButton").button().click($.proxy(function(){
+       GraphLang.Utils.goThroughGraph(appCanvas);
+      }));
+
+      /**************************************
+      *  BUTTON "Show Nodes"
+      **************************************/
+      $("#showNodesButton").button().click($.proxy(function(){
+        GraphLang.Utils.showNodes(appCanvas);
+      }));
+
+
+      /**************************************
+       *  BUTTON "Detect Tunnels"
+       **************************************/
+      $("#detectTunnelsButton").button().click($.proxy(function(){
+        GraphLang.Utils.detectTunnels(appCanvas);
+      }));
+
+      /**************************************
+       *  BUTTON "Init ports"
+       **************************************/
+       $("#initPortsToDefaultButton").button().click($.proxy(function(){
+         GraphLang.Utils.initAllPortToDefault(appCanvas);
        }));
 
-       /**************************************
-        *  BUTTON "Show Nodes"
-        **************************************/
-        $("#showNodesButton").button().click($.proxy(function(){
-          GraphLang.Utils.showNodes(appCanvas);
-        }));
+      /**************************************
+       *  BUTTON "Execution order"
+       **************************************/
+       $("#executionOrderButton").button().click($.proxy(function(){
+         GraphLang.Utils.executionOrder(appCanvas);
+       }));
 
+      /**************************************
+      *  BUTTON "Bring to Front"
+      **************************************/
+      $("#bringToFrontButton").button().click($.proxy(function(){
+        GraphLang.Utils.bringToFront(appCanvas);
+      }));
 
-       /**************************************
-        *  BUTTON "Detect Tunnels"
-        **************************************/
-        $("#detectTunnelsButton").button().click($.proxy(function(){
-          GraphLang.Utils.detectTunnels(appCanvas);
-        }));
+      /**************************************
+       *  BUTTON "Bring to Back"
+       **************************************/
+       $("#bringToBackButton").button().click($.proxy(function(){
+         GraphLang.Utils.bringToBack(appCanvas);
+       }));
 
-        /**************************************
-         *  BUTTON "Init ports"
-         **************************************/
-         $("#initPortsToDefaultButton").button().click($.proxy(function(){
-           GraphLang.Utils.initAllPortToDefault(appCanvas);
-         }));
+      /**************************************
+       *  BUTTON "runNodeInOrder"
+       **************************************/
+      $("#runNodesInOrderButton").button().click($.proxy(function(){
+        GraphLang.Utils.runNodesInOrder(appCanvas);
+      }));
 
-        /**************************************
-         *  BUTTON "Execution order"
-         **************************************/
-         $("#executionOrderButton").button().click($.proxy(function(){
-           GraphLang.Utils.executionOrder(appCanvas);
-         }));
+      /**************************************
+       *  BUTTON "showPortExecutionOrder"
+       **************************************/
+      $("#showPortExecutionOrderButton").button().click($.proxy(function(){
+        GraphLang.Utils.showPortExecutionOrder(appCanvas);
+      }));
 
-         /**************************************
-          *  BUTTON "Bring to Front"
-          **************************************/
-          $("#bringToFrontButton").button().click($.proxy(function(){
-            GraphLang.Utils.bringToFront(appCanvas);
-          }));
+      /**************************************
+       *  BUTTON "highlightNodesByExecutionOrderButton"
+       **************************************/
+      $("#highlightNodesByExecutionOrderButton").button().click($.proxy(function(){
+        GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
+      }));
 
-          /**************************************
-           *  BUTTON "Bring to Back"
-           **************************************/
-           $("#bringToBackButton").button().click($.proxy(function(){
-             GraphLang.Utils.bringToBack(appCanvas);
-           }));
+      /**************************************
+       *  BUTTON "translateToCppCodeButton"
+       **************************************/
+      $("#translateToCppCodeButton").button().click($.proxy(function(){
+        GraphLang.Utils.translateToCppCode(appCanvas);
+      }));
 
-           /**************************************
-            *  BUTTON "runNodeInOrder"
-            **************************************/
-            $("#runNodesInOrderButton").button().click($.proxy(function(){
-              GraphLang.Utils.runNodesInOrder(appCanvas);
-            }));
+      /**************************************
+      *  BUTTON "translateToCppCode2Button"
+      **************************************/
+      $("#translateToCppCode2Button").button().click($.proxy(function(){
+        GraphLang.Utils.translateToCppCode2(appCanvas);
+      }));
 
-            /**************************************
-             *  BUTTON "showPortExecutionOrder"
-             **************************************/
-             $("#showPortExecutionOrderButton").button().click($.proxy(function(){
-               GraphLang.Utils.showPortExecutionOrder(appCanvas);
-             }));
+      /**************************************
+      *  BUTTON "loopsRecalculateAbroadFigures"
+      **************************************/
+      $("#loopsRecalculateAbroadFiguresButton").button().click($.proxy(function(){
+       GraphLang.Utils.loopsRecalculateAbroadFigures(appCanvas);
+      }));
 
-             /**************************************
-              *  BUTTON "highlightNodesByExecutionOrderButton"
-              **************************************/
-              $("#highlightNodesByExecutionOrderButton").button().click($.proxy(function(){
-                GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
-              }));
+      /**************************************
+      *  BUTTON "initLoopsZOrderButton"
+      **************************************/
+      $("#initLoopsZOrderButton").button().click($.proxy(function(){
+       GraphLang.Utils.initLoopsZOrder(appCanvas);
+      }));
 
-          /**************************************
-           *  BUTTON "translateToCppCodeButton"
-           **************************************/
-           $("#translateToCppCodeButton").button().click($.proxy(function(){
-             GraphLang.Utils.translateToCppCode(appCanvas);
-           }));
-
-           /**************************************
-            *  BUTTON "translateToCppCode2Button"
-            **************************************/
-            $("#translateToCppCode2Button").button().click($.proxy(function(){
-              GraphLang.Utils.translateToCppCode2(appCanvas);
-            }));
-
-          /**************************************
-           *  BUTTON "loopsRecalculateAbroadFigures"
-           **************************************/
-           $("#loopsRecalculateAbroadFiguresButton").button().click($.proxy(function(){
-             GraphLang.Utils.loopsRecalculateAbroadFigures(appCanvas);
-           }));
-
-           /**************************************
-            *  BUTTON "Auxiliary"
-            **************************************/
-            $("#auxButton").button().click($.proxy(function(){
-              GraphLang.Utils.auxFunc(appCanvas);
-            }));
+      /**************************************
+      *  BUTTON "Auxiliary"
+      **************************************/
+      $("#auxButton").button().click($.proxy(function(){
+        GraphLang.Utils.auxFunc(appCanvas);
+      }));
 });
 
 /**
