@@ -423,39 +423,17 @@ GraphLang.Utils.detectTunnels = function(canvas){
 };
 
 /**
- *  @method auxFunc(canvas)
- *  @param {draw2d.Canvas} canvas - from where is taken schematic
- *  @description This is auxiliary function for debugging to see something.
- */
-GraphLang.Utils.auxFunc = function(canvas){
-  var selectedFigures = canvas.getSelection();
-  if (selectedFigures){
-    //alert(selectedFigures.getAll().get(0).NAME);
-    alert(GraphLang.Utils.getNodeLoopOwner(canvas, selectedFigures.getAll().get(0)).NAME + "\n" + GraphLang.Utils.getNodeLoopOwner(canvas, selectedFigures.getAll().get(0)).getId());
-  }
-};
-
-/**
  *  @method initAllPortToDefault(canvas)
  *  @param {draw2d.Canvas} canvas - schematic where ports will be set to default
  *  @description Set default value for all ports. FOR NOW SET VALUE OF EACH PORT TO 0.
  */
 GraphLang.Utils.initAllPortToDefault = function(canvas){
-  var allPorts = appCanvas.getAllPorts();
+  var allPorts = canvas.getAllPorts();
+  var allNodes = canvas.getFigures();
 
-  // var allNodes = appCanvas.getFigures();
-  // allNodes.each(function(nodeIndex, nodeObj){
-  //   if (nodeObj.NAME.toLowerCase().search("loop") >= 0){ //put label just for nodes, for now suppose that's all shapes.basic
-  //     var loopTunnels = new draw2d.util.ArrayList();
-  //     nodeObj.getChildren().each(function(childIndex, childObj){
-  //       if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
-  //         allPorts.push(childObj.getInputPort(0));
-  //         allPorts.push(childObj.getOutputPort(0));
-  //       }
-  //     });
-  //   }
-  // });
-
+  /*
+   *  Set executionOrder of ALL PORTS to appropriate defualt value
+   */
   allPorts.each(function(portIndex, portObj){
     if (portObj.userData == undefined) portObj.userData = {};
     portObj.userData.value = 0;
@@ -490,6 +468,18 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
         portObj.getParent().remove(childObj);
       }
     });
+  });
+
+  //set to defualt values execution order of LOOPS AND NODES
+  allNodes.each(function(nodeIndex, nodeObj){
+    //init execution order for all nodes
+    if (nodeObj.getUserData() != undefined){
+      nodeObj.getUserData().executionOrder = undefined;
+    }
+    //for loops there is flag about they were transcripted to C/C++
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      nodeObj.getUserData().wasTranslatedToCppCode = false;
+    }
   });
 
 }
@@ -939,6 +929,11 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
             //recursively going into loops
             cCode += translateToCppCode2(canvas, loopObj, nestedLevel+1);
+
+            //after loop is translated
+            var delimiter = "";
+            for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
+            cCode += delimiter + "{end loop}\n";
           }
 
         }
@@ -954,6 +949,15 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
         }
     });
   }
+
+  /* erase flag for for loops at the end of this operation, to be able run again correctly, otherwise
+  there will be orphans flags that loops were translated and it will make mess when multiple times
+  executed this function without initializing ports */
+  allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      nodeObj.getUserData().wasTranslatedToCppCode = false;
+    }
+  });
 
   if (parentObj == null) alert(cCode);
   return cCode;
@@ -971,7 +975,7 @@ GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
 }
 
 /**
- *  @methos initLoopsZOrder(canvas)
+ *  @method initLoopsZOrder(canvas)
  *  @param {draw2d.Canvas} canvas - schematic where correcting z-order should happen
  *  @description EXPERIMENTAL! STILL WRONG. <br/><br/>Go through all loops in schematic and setup right their z-order. This function is implemented because z-order is probably not right after loading schematic, so this function set it. If it's loaded correctly it should have no imapct on schematic.
  */
@@ -1025,4 +1029,13 @@ GraphLang.Utils.initLoopsZOrder = function(canvas){
   //   orderedLoops.get(k).toBack();
   // }
 
+}
+
+/**
+ *  @method showSelectedObjExecutionOrder(canvas)
+ *  @param {draw2d.Canvas} canvas - fromt here is taken selected object
+ *  @description Display execution order of current highlighted object.
+ */
+GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
+    alert(canvas.getSelection().getAll().first().getUserData().executionOrder);
 }

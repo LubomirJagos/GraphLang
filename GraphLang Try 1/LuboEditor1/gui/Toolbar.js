@@ -169,10 +169,11 @@ example.Toolbar = Class.extend({
  			this.html.append(this.initLoopsZOrderButton);
 
 			/**
- 		  *	Auxiliary Button
+ 		  *	showSelectedObjExecutionOrder Button
  			*/
- 			this.auxButton  = $("<button id=\"auxButton\">Auxiliary</button>");
- 			this.html.append(this.auxButton);
+ 			this.showSelectedObjExecutionOrderButton  = $("<button id=\"showSelectedObjExecutionOrderButton\">showSelectedObjExecutionOrderButton</button>");
+ 			this.html.append(this.showSelectedObjExecutionOrderButton);
+
 	},
 
 	/**

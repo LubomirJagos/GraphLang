@@ -61,6 +61,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 5.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 6.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 7.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 8.js"></script> -->
     <script src="./GraphLangSchematics/Default Schematic 6.js"></script>
     <!--
     <script type="text/javascript">
@@ -235,11 +236,12 @@ document.addEventListener("DOMContentLoaded",function () {
       }));
 
       /**************************************
-      *  BUTTON "Auxiliary"
+      *  BUTTON "showSelectedObjExecutionOrderButton"
       **************************************/
-      $("#auxButton").button().click($.proxy(function(){
-        GraphLang.Utils.auxFunc(appCanvas);
+      $("#showSelectedObjExecutionOrderButton").button().click($.proxy(function(){
+       GraphLang.Utils.showSelectedObjExecutionOrder(appCanvas);
       }));
+
 });
 
 /**
