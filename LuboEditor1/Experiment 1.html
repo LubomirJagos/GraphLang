@@ -14,7 +14,7 @@
     <script src="./lib/jquery.browser.js"></script>
     <script src="./lib/jquery.layout.js"></script>
 
-    <script src="../../draw2d/dist/draw2d.js"></script>
+    <script src="../draw2d/dist/draw2d.js"></script>
 
     <script type="text/javascript">
       /**
@@ -45,6 +45,15 @@
       <script src="./GraphLangShapes/RightTunnel.js"></script>
     <!-- End of GraphLang shapes-->
 
+    <!-- These are mine arduino shapes added. LuboJ. -->
+      <script src="./ArduinoLib/Node/DecoratedInputPort.js"></script>
+      <script src="./ArduinoLib/Node/MarkerFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="./ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="./ArduinoLib/Node/MarkerStateBFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="./ArduinoLib/Node/Add.js"></script>
+      <script src="./ArduinoLib/Node/digitalWrite.js"></script>
+    <!-- End of GraphLang shapes-->
+
     <script src="./GraphLangUtils/Utils.js"></script>
     <script src="./GraphLangUtils/RightRelPortLocator.js"></script>
     <script src="./GraphLangUtils/BottomRelPortLocator.js"></script>
@@ -62,12 +71,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 6.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 7.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 8.js"></script> -->
-    <script src="./GraphLangSchematics/Default Schematic 6.js"></script>
-    <!--
-    <script type="text/javascript">
-      var jsonDocument = [];
-    </script>
-  -->
+    <script type="text/javascript">var jsonDocument = [];</script>
 
  <script type="text/javascript">
 
@@ -241,7 +245,6 @@ document.addEventListener("DOMContentLoaded",function () {
       $("#showSelectedObjExecutionOrderButton").button().click($.proxy(function(){
        GraphLang.Utils.showSelectedObjExecutionOrder(appCanvas);
       }));
-
 });
 
 /**
@@ -283,7 +286,8 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.Shapes.Numeric.Subtract" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Subtract</div>
       <div data-shape="GraphLang.Shapes.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">GL PropertyNode</div>
       <div data-shape="GraphLang.Shapes.Basic.Loop" data-width="300" data-height="300" data-label="GraphLang Loop" class="palette_node_element draw2d_droppable">GL Loop</div>
-
+      <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="GraphLang Arduino Add" class="palette_node_element draw2d_droppable">Arduino Add</div>
+      <div data-shape="GraphLang.ArduinoLib.Node.digitalWrite" data-label="GraphLang Arduino digtalWrite" class="palette_node_element draw2d_droppable">Arduino digitalWrite</div>
    </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">

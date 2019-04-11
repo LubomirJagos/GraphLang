@@ -3,12 +3,16 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   constructor(obj){
     obj && Object.assign(this, obj);
   },
-  userData: {
-    executionOdrder: -1,
-    wasTranslatedToCppCode: false
-  },
+  // //This doesn't run, don't know why, so initialization for userData is done in init()
+  // userData: {
+  //   executionOdrder: -1,
+  //   wasTranslatedToCppCode: false
+  // },
   init:function(attr, setter, getter){
     this._super(attr, setter, getter);
+    this.userData = {};
+    this.userData.executionOrder = 1;
+    this.userData.wasTranslatedToCppCode = false;
   },
   onRun3: function(){
     alert("THIS IS ANOTHER FUNCTION \n Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);

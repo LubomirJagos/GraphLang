@@ -12,9 +12,10 @@ GraphLang.Utils.KeyboardDeletePolicy = draw2d.policy.canvas.DefaultKeyboardPolic
 
     //in case of deleteing loop it's needed to remove also all tunnels (it will also remove all wires connected to tunnels)
     if (node.NAME.toLowerCase().search("loop") >= 0){
-      var cmdStack = canvas.getCommandStack();
+
       node.getChildren().each(function(tunnelIndex, tunnelObj){
         if (tunnelObj.NAME.toLowerCase().search("tunnel") >= 0){
+          var cmdStack = canvas.getCommandStack();
           var cmdDel = new GraphLang.Utils.CommandDelete(tunnelObj);
           cmdStack.execute(cmdDel);
         }

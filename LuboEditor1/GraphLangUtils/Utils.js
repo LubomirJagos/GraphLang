@@ -474,10 +474,11 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
   allNodes.each(function(nodeIndex, nodeObj){
     //init execution order for all nodes
     if (nodeObj.getUserData() != undefined){
-      nodeObj.getUserData().executionOrder = undefined;
+      nodeObj.getUserData().executionOrder = -1;
     }
     //for loops there is flag about they were transcripted to C/C++
     if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      if (nodeObj.getUserData() == undefined) nodeObj.userData.wasTranslatedToCppCode = false;
       nodeObj.getUserData().wasTranslatedToCppCode = false;
     }
   });
@@ -649,6 +650,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
   allNodes.each(function(nodeIndex, nodeObj){
     if (nodeObj.NAME.toLowerCase().search("loop") > 0){ //put label just for nodes, for now suppose that's all shapes.basic
       var loopTunnels = new draw2d.util.ArrayList();
+      nodeObj.getUserData().executionOrder = 1;   // default value for loops if other it will change in next calculations
       nodeObj.getChildren().each(function(childIndex, childObj){
         if (childObj.NAME.toLowerCase().search("tunnel") > 0){
           allNodes.push(childObj);
@@ -689,7 +691,10 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
             var nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas, portObj.getParent());
             var leftTunnelCnt = 0;
             while (nodeParentLoop != undefined && inPortPrepared == true){
-              nodeParentLoop.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00")); //highlight current loop
+
+              //DEBUG PURPOSES, this was to paint loop background to yellow
+              //nodeParentLoop.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00")); //highlight current loop
+
               //check if all input tunnels are prepared, if not, input port of current node is set to wait, executionOrder left as it is
               nodeParentLoop.getChildren().each(function(tunnelIndex, tunnelObj){
                 if (tunnelObj.NAME.toLowerCase().search("lefttunnel") >= 0){
@@ -709,8 +714,14 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
             //IF PORT IS PREPARED SET ITS EXECUTION ORDER
             if (inPortPrepared == true){
               var userData = portObj.getUserData();
-              userData.executionOrder = actualStepNum;
-              portObj.setUserData(userData);
+              //here was problem that sometime loop doesnt had userdata so this should correct it
+              if (userData != undefined){
+                userData.executionOrder = actualStepNum;
+                portObj.setUserData(userData);
+              }else{
+                portObj.userData = actualStepNum;
+              }
+
             }
           }
           inputPortCnt++;
@@ -726,7 +737,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
         nodeObj.getOutputPorts().each(function(portIndex, portObj){
           if (portObj.getUserData().executionOrder < 0){
             var userData = portObj.getUserData();
-            userData.executionOrder = actualStepNum;
+            userData.executionOrder = actualStepNum + 1;  //result is on output in next step that's why +1
             portObj.setUserData(userData);
           }
 

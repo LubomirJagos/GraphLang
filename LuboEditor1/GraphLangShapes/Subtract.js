@@ -15,6 +15,6 @@ GraphLang.Shapes.Numeric.Subtract = GraphLang.Shapes.Numeric.extend({
   },
 
   translateToCppCode: function(){
-    return "{Subtract: executionOrder: " + this.getUserData().executionOrder + "}";
+    return "{Subtract: " + this.getUserData().executionOrder + "}";
   }
 });
