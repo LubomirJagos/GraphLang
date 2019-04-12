@@ -16,24 +16,25 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:130.8515625,height:83},attr), setter, getter);
      var port;
      // Port
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(87.46790853185264, 46.98795180722892));
+     //port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(87.46790853185264, 46.98795180722892));
+     port = this.addPort(new draw2d.OutputPort(), new draw2d.layout.locator.XYRelPortLocator(87.46790853185264, 46.98795180722892));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("out1");
      port.setMaxFanOut(20);
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("in1");
      port.setMaxFanOut(20);
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("in2");
      port.setMaxFanOut(20);
      this.persistPorts=false;
    },
@@ -274,6 +275,11 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      * NEXT PART ADDED BY LuboJ TO MAKE IT RUNNABLE IN GraphLangUtils
      *****************************************************************************************/
      translateToCppCode: function(){
-       return "{ArduinoLib.Node.Add: " + this.getUserData().executionOrder + "}";
+       cCode = "";
+       var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
+       var in2 = this.getInputPort("in2"); if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
+       var out1 = this.getOutputPort("out1"); if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId(); else out1 = "/*out1 default value*/";
+       cCode += out1 + " = " + in1 + " + " + in2;
+       return cCode;
      }
 });

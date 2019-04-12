@@ -5,10 +5,10 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     this._super( $.extend({},attr), setter, getter);
     var port;
     // Port
-    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100, 90));
-    port.setConnectionDirection(1);
+    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(100, 90));
+    port.setConnectionDirection(3);
     port.setBackgroundColor("#FF0000");
-    port.setName("out1");
+    port.setName("stopTerminal");
     port.setMaxFanOut(20);
 
     this.userData = {};
@@ -19,7 +19,15 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
   },
   translateToCppCode: function(){
     this.getUserData().wasTranslatedToCppCode = true;
-    return "while(TBD){";
+
+    var cCode = "";
+    var endCondition = "";
+    var stopTerminal = this.getInputPort("stopTerminal");
+    if (stopTerminal.getConnections().getSize() > 0){
+      endCondition = stopTerminal.getConnections().get(0).getId();
+    }
+    cCode += "while(!" + endCondition + "){";
+    return cCode;
   },
   translateToCppCodePost: function(){
     return "} //hello world";
