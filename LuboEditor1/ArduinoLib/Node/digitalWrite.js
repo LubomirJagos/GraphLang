@@ -13,6 +13,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
    {
      this._super( $.extend({stroke:0, bgColor:null, width:102.43333435058594,height:89},attr), setter, getter);
      var port;
+
      // Port
      //port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 48.31460674157304));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 48.31460674157304));
@@ -20,12 +21,10 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
-     // Port
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(98.0475105953743, 87.64044943820225));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
-     port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "int32";
+
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 69.66292134831461));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 69.66292134831461));
@@ -33,6 +32,10 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "bool";
+
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 87.64044943820225));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 87.64044943820225));
@@ -40,6 +43,20 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "error";
+
+     // Port
+     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(98.0475105953743, 87.64044943820225));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("Port");
+     port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "error";
+
      this.persistPorts=false;
    },
 

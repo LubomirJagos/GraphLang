@@ -5,8 +5,6 @@
 // Go to the Designer http://www.draw2d.org
 // to design your own shape or download user generated
 //
-GraphLang.ArduinoLib = {};
-GraphLang.ArduinoLib.Node = {};
 GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
 
    NAME: "GraphLang.ArduinoLib.Node.Add",
@@ -22,6 +20,10 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("out1");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "int32";
+
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
@@ -29,6 +31,10 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "int32";
+
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
@@ -36,6 +42,10 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("in2");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "int32";
+
      this.persistPorts=false;
    },
 
@@ -279,7 +289,7 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
        var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
        var in2 = this.getInputPort("in2"); if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
        var out1 = this.getOutputPort("out1"); if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId(); else out1 = "/*out1 default value*/";
-       cCode += out1 + " = " + in1 + " + " + in2;
+       cCode += out1 + " = " + in1 + " + " + in2 + ";";
        return cCode;
      }
 });

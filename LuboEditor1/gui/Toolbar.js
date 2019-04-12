@@ -165,14 +165,20 @@ example.Toolbar = Class.extend({
 			/**
  		  *	initLoopsZOrder Button
  			*/
- 			this.initLoopsZOrderButton  = $("<button id=\"initLoopsZOrderButton\">initLoopsZOrderButton</button>");
+ 			this.initLoopsZOrderButton  = $("<button id=\"initLoopsZOrderButton\">initLoopsZOrder</button>");
  			this.html.append(this.initLoopsZOrderButton);
 
 			/**
  		  *	showSelectedObjExecutionOrder Button
  			*/
- 			this.showSelectedObjExecutionOrderButton  = $("<button id=\"showSelectedObjExecutionOrderButton\">showSelectedObjExecutionOrderButton</button>");
+ 			this.showSelectedObjExecutionOrderButton  = $("<button id=\"showSelectedObjExecutionOrderButton\">showSelectedObjExecutionOrder</button>");
  			this.html.append(this.showSelectedObjExecutionOrderButton);
+
+			/**
+ 		  *	setWiresColorByPorts Button
+ 			*/
+ 			this.setWiresColorByPortsButton  = $("<button id=\"setWiresColorByPortsButton\">setWiresColorByPorts</button>");
+ 			this.html.append(this.setWiresColorByPortsButton);
 
 	},
 

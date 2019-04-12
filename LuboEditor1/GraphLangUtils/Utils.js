@@ -1052,3 +1052,28 @@ GraphLang.Utils.initLoopsZOrder = function(canvas){
 GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
     alert(canvas.getSelection().getAll().first().getUserData().executionOrder);
 }
+
+/**
+ * @method getDirectChildrenWires()
+ * @param {draw2d.Canvas} canvas - schematic
+ * @param {draw2d.Figure} parentObj - returned wires are direct descendant of this object
+ * @description Returns wires which are direct descendant of provided object.
+ */
+GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObj = null){
+  alert("getDirectChildrenWires() entered");
+}
+
+/**
+ * @method setWiresColorByPorts()
+ * @param {draw2d.Canvas} canvas - schematic where wire will be colorized
+ * @description Colorize all wires in schematic according to port datatypes.
+ */
+GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
+  canvas.getLines().each(function(lineIndex, lineObj){
+    var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
+    // if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+    // else var lineColor = color.getByName("broken");
+    var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+    lineObj.setColor(lineColor);  //set wire color
+  });
+}

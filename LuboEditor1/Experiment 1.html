@@ -40,6 +40,7 @@
       <script src="./GraphLangShapes/Numeric.js"></script>
       <script src="./GraphLangShapes/Subtract.js"></script>
       <script src="./GraphLangShapes/Add.js"></script>
+      <script src="./GraphLangShapes/Label.js"></script>
       <script src="./GraphLangShapes/Property Node.js"></script>
       <script src="./GraphLangShapes/Loop.js"></script>
       <script src="./GraphLangShapes/Tunnel.js"></script>
@@ -55,11 +56,14 @@
       <script src="./ArduinoLib/Node/MarkerFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/MarkerStateBFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="./ArduinoLib/Node/__initEnv.js"></script>
       <script src="./ArduinoLib/Node/Add.js"></script>
       <script src="./ArduinoLib/Node/Subtract.js"></script>
       <script src="./ArduinoLib/Node/digitalWrite.js"></script>
       <script src="./ArduinoLib/Node/digitalRead.js"></script>
       <script src="./ArduinoLib/Node/waitUntilNextMs.js"></script>
+      <script src="./ArduinoLib/Node/Math.Abs.js"></script>
+      <script src="./ArduinoLib/Node/pinMode.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -254,6 +258,14 @@ document.addEventListener("DOMContentLoaded",function () {
       $("#showSelectedObjExecutionOrderButton").button().click($.proxy(function(){
        GraphLang.Utils.showSelectedObjExecutionOrder(appCanvas);
       }));
+
+      /**************************************
+      *  BUTTON "showSelectedObjExecutionOrderButton"
+      **************************************/
+      $("#setWiresColorByPortsButton").button().click($.proxy(function(){
+       GraphLang.Utils.setWiresColorByPorts(appCanvas);
+      }));
+
 });
 
 /**
@@ -303,7 +315,9 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="GraphLang Arduino waitUntilNextMs" class="palette_node_element draw2d_droppable">Arduino waitUntilNextMs</div>
       <div data-shape="GraphLang.Shapes.Basic.Loop.WhileLoop" data-label="GraphLang Arduino WhileLoop" class="palette_node_element draw2d_droppable">WhileLoop</div>
       <div data-shape="GraphLang.Shapes.Basic.Loop.ForLoop" data-label="GraphLang Arduino ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
-   </div>
+      <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="GraphLang Arduino Math Abs" class="palette_node_element draw2d_droppable">Arduino Math.Abs</div>
+      <div data-shape="GraphLang.ArduinoLib.Node.pinMode" data-label="GraphLang Arduino pinMode" class="palette_node_element draw2d_droppable">Arduino pinMode</div>
+  </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>

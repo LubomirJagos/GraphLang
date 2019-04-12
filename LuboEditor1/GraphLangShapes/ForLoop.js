@@ -5,10 +5,10 @@ GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop.extend({
     this._super( $.extend({color: "#0000FF"},attr), setter, getter);
     var port;
     // Port
-    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(0, 10));
-    port.setConnectionDirection(1);
+    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0, 10));
+    port.setConnectionDirection(3);
     port.setBackgroundColor("#0000FF");
-    port.setName("out1");
+    port.setName("iterationTerminal");
     port.setMaxFanOut(20);
 
     this.userData = {};
@@ -19,10 +19,21 @@ GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop.extend({
   },
   translateToCppCode: function(){
     this.getUserData().wasTranslatedToCppCode = true;
-    return "while(TBD){";
+    // return "for (TBD){";
+
+    var cCode = "";
+    var endCondition = "";
+    var iterationTerminal = this.getInputPort("iterationTerminal");
+    if (stopTerminal.getConnections().getSize() > 0){
+      iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go
+    }
+    cCode += "for (var hardwiredForLoopIterator = 0; hardwiredForLoopIterator < " + iterationCount + "; hardwiredForLoopIterator++){";
+    return cCode;
+
   },
+
   translateToCppCodePost: function(){
-    return "} //hello world";
+    return "}";
   }
 /*
   NEEDS TO BE DONE n TERMINAL AND maybe some other stuff

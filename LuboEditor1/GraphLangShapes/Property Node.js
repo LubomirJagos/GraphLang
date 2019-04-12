@@ -1,21 +1,7 @@
 /**
- *  @descritpition This is property node item, it's defined as list with some attributes.
- *  Here will be also implemented ddefault function onRun3() which run after heartbeat.
+ *  @class GraphLang.Shapes.PropertyNode
+ *  @description Thisi s property node for GraphLang.
  */
-GraphLang.Shapes.Basic = {};
-GraphLang.Shapes.Basic.Label = draw2d.shape.basic.Label.extend({
-    /**
-     * @author LuboJ.
-     * @name onRun3()
-     * @description Runned when interpreter is traversing through graph.
-     */
-    onRun3: function(){
-      alert("THIS IS ANOTHER FUNCTION \n Actual property node item ID: " + this.id + "\n" + "Node type: " + this.NAME);
-    }
-});
-
-//end of Property Node Item definition
-
 GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
 
 	NAME: "GraphLang.Shapes.PropertyNode",
@@ -41,6 +27,8 @@ GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
 
         //at least here is added one item into list
         this.addEntity("_new_");
+        this.userData = {};
+        this.userData.executionOrder = -1;
 
         //LuboJ. add ID on top of each property node for debugging
         //this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({}));
@@ -214,5 +202,11 @@ GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
          }
 
          return this;
+     },
+
+     translateToCppCode: function(){
+       cCode = "";
+       cCode += "/*Property Node*/";
+       return cCode;
      }
 });

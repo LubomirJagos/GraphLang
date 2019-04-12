@@ -5,26 +5,37 @@
 // Go to the Designer http://www.draw2d.org
 // to design your own shape or download user generated
 //
-GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
+GraphLang.ArduinoLib.Node.pinMode = draw2d.SetFigure.extend({
 
-   NAME: "GraphLang.ArduinoLib.Node.Subtract",
+   NAME: "GraphLang.ArduinoLib.Node.pinMode",
+
 
       init:function(attr, setter, getter)
       {
-        this._super( $.extend({stroke:0, bgColor:null, width:84.39610736639997,height:60},attr), setter, getter);
+        this._super( $.extend({stroke:0, bgColor:null, width:93.9794281741074,height:95.05718040466309},attr), setter, getter);
         var port;
-        // in1
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
-        port.setConnectionDirection(3);
+        // errorOut
+        port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(104.44695083712287, 90.46837380444822));
+        port.setConnectionDirection(1);
         port.setBackgroundColor("#37B1DE");
-        port.setName("in1");
+        port.setName("errorOut");
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "error";
+
+        // errorIn
+        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.5168198327560168, 90.46837380444822));
+        port.setConnectionDirection(3);
+        port.setBackgroundColor("#37B1DE");
+        port.setName("errorIn");
+        port.setMaxFanOut(20);
+
+        port.userData = {};
+        port.userData.datatype = "error";
 
         // in2
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
+        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.5168198327560168, 65.81005257925187));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("in2");
@@ -33,23 +44,24 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         port.userData = {};
         port.userData.datatype = "int32";
 
-        // out1
-        port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.21706472401709, 48.919565994667));
-        port.setConnectionDirection(1);
+        // in1
+        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.5168198327560168, 42.97805632114052));
+        port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
-        port.setName("out1");
+        port.setName("in1");
         port.setMaxFanOut(20);
-        this.persistPorts=false;
 
         port.userData = {};
         port.userData.datatype = "int32";
+
+        this.persistPorts=false;
       },
 
       createShapeElement : function()
       {
          var shape = this._super();
-         this.originalWidth = 84.39610736639997;
-         this.originalHeight= 60;
+         this.originalWidth = 93.9794281741074;
+         this.originalHeight= 95.05718040466309;
          return shape;
       },
 
@@ -58,57 +70,57 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
           this.canvas.paper.setStart();
 
            // BoundingBox
-           shape = this.canvas.paper.path("M0,0 L84.39610736639997,0 L84.39610736639997,60 L0,60");
+           shape = this.canvas.paper.path("M0,0 L93.9794281741074,0 L93.9794281741074,95.05718040466309 L0,95.05718040466309");
            shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
            shape.data("name","BoundingBox");
 
+           // Rectangle
+           shape = this.canvas.paper.path('M15.60756623240377 29.057180404663086L79.60756623240377 29.057180404663086L79.60756623240377 95.05718040466309L15.60756623240377 95.05718040466309Z');
+           shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});
+           shape.data("name","Rectangle");
+
+           // Label
+           shape = this.canvas.paper.text(0,0,'pinMode');
+           shape.attr({"x":13.233668679913535,"y":14.028590202331543,"text-anchor":"start","text":"pinMode","font-family":"\"Arial\"","font-size":16,"stroke":"none","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+           shape.data("name","Label");
+
            // Line_shadow
-           shape = this.canvas.paper.path('M23.5 1.5L23.5,60.5L63.5,29.5L23.5,0.5');
+           shape = this.canvas.paper.path('M15.5 41.5L1.5,41.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line_shadow");
 
            // Line
-           shape = this.canvas.paper.path('M23.5 1.5L23.5,60.5L63.5,29.5L23.5,0.5');
+           shape = this.canvas.paper.path('M15.5 41.5L1.5,41.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line");
 
            // Line_shadow
-           shape = this.canvas.paper.path('M23.5 11.5L0.5,11.5');
+           shape = this.canvas.paper.path('M15.5 62.5L0.5,62.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line_shadow");
 
            // Line
-           shape = this.canvas.paper.path('M23.5 11.5L0.5,11.5');
+           shape = this.canvas.paper.path('M15.5 62.5L0.5,62.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line");
 
            // Line_shadow
-           shape = this.canvas.paper.path('M24.5 49.5L0.5,49.5');
+           shape = this.canvas.paper.path('M15.5 86.5L1.5,86.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line_shadow");
 
            // Line
-           shape = this.canvas.paper.path('M24.5 49.5L0.5,49.5');
+           shape = this.canvas.paper.path('M15.5 86.5L1.5,86.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line");
 
            // Line_shadow
-           shape = this.canvas.paper.path('M64.5 29.5L84.5,29.5');
+           shape = this.canvas.paper.path('M79.5 85.5L93.5,85.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line_shadow");
 
            // Line
-           shape = this.canvas.paper.path('M64.5 29.5L84.5,29.5');
-           shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
-           shape.data("name","Line");
-
-           // Line_shadow
-           shape = this.canvas.paper.path('M34.5 29.5L46.5,30.5');
-           shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
-           shape.data("name","Line_shadow");
-
-           // Line
-           shape = this.canvas.paper.path('M34.5 29.5L46.5,30.5');
+           shape = this.canvas.paper.path('M79.5 85.5L93.5,85.5');
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line");
 
@@ -251,7 +263,6 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
                this.add(figure, locator);
            },this));
        },
-
     /*****************************************************************************************
      * NEXT PART ADDED BY LuboJ TO MAKE IT RUNNABLE IN GraphLangUtils
      *****************************************************************************************/
@@ -259,8 +270,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
        cCode = "";
        var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
        var in2 = this.getInputPort("in2"); if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
-       var out1 = this.getOutputPort("out1"); if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId(); else out1 = "/*out1 default value*/";
-       cCode += out1 + " = " + in1 + " - " + in2 + ";";
+       cCode += "pinMode(" + in1 + "," + in2 + ")";
        return cCode;
      }
 });

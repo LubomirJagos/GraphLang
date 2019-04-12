@@ -7,21 +7,23 @@ var HoverConnection = draw2d.Connection.extend({
             radius: 5,
             source: sourcePort,
             target: targetPort,
-            stroke: 1.35
+            stroke: 1.35,
+            // color: sourcePort == "int32" ? "#0000FF" : "#FFFF00" //LuboJ experiment
         });
 
         this.on("dragEnter", function (emitter, event) {
             self.attr({
                 outlineColor: "#303030",
                 outlineStroke: 2,
-                color: "#00a8f0"
+                // color: "#00a8f0"     //LuboJ. wire color must remain same after edit
             });
         });
+
         this.on("dragLeave", function (emitter, event) {
             self.attr({
                 outlineColor: "#303030",
                 outlineStroke: 0,
-                color: "#000000"
+                // color: "#000000"   //LuboJ. wire color must remain same after edit
             });
         });
     },
