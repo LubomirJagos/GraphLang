@@ -19,18 +19,30 @@ GraphLang.ArduinoLib.Node.waitUntilNextMs = draw2d.SetFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "int32";
+
      // in2
      port = this.addPort(new GraphLang.InputPort(), new draw2d.layout.locator.XYRelPortLocator(2.962962962962963, 69.01408450704224));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in2");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "error";
+
      // out1
      port = this.addPort(new GraphLang.OutputPort(), new draw2d.layout.locator.XYRelPortLocator(100, 74.64788732394365));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out1");
      port.setMaxFanOut(20);
+
+     port.userData = {};
+     port.userData.datatype = "error";
+
      this.persistPorts=false;
    },
 
