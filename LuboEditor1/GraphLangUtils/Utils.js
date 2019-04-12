@@ -203,7 +203,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
     //alert(figureObj.NAME);
 
     //remember loop object reference to not lose access to it
-    if (figureObj.NAME == "GraphLang.Shapes.Basic.Loop"){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") >= 0){
       // loopObj = figureObj;
       // loopBoundingRect = figureObj.getBoundingBox();
       loopList.push(figureObj);
@@ -944,7 +944,9 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             //after loop is translated
             var delimiter = "";
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
-            cCode += delimiter + "{end loop}\n";
+            if (loopObj.translateToCppCodePost != undefined || loopObj.translateToCppCodePost != null) cCode += delimiter + nodeObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+            else cCode += delimiter + "{end loop}\n";
+            // cCode += delimiter + "{end loop}\n";
           }
 
         }

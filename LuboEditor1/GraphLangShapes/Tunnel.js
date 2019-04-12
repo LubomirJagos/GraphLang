@@ -6,7 +6,7 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
         this._super(attr);
         this.setBackgroundColor("#fdc11d");
         this.setHeight(15);
-        this.setWidth(25);
+        this.setWidth(15);
         //this.add(new draw2d.shape.basic.Label({text: "tunnel"}), new draw2d.layout.locator.CenterLocator(this));
     },
     onRun3:function(){
