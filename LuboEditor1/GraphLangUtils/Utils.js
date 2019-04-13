@@ -431,6 +431,35 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
   var allPorts = canvas.getAllPorts();
   var allNodes = canvas.getFigures();
 
+  //set to defualt values execution order of LOOPS AND NODES
+  allNodes.each(function(nodeIndex, nodeObj){
+    //init execution order for all nodes
+    if (nodeObj.getUserData() != undefined){
+      nodeObj.getUserData().executionOrder = -1;
+    }else{
+      nodeObj.userData = {};
+      nodeObj.userData.executionOrder = -1;
+    }
+
+    //for loops there is flag about they were transcripted to C/C++
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      if (nodeObj.getUserData() == undefined) nodeObj.userData.wasTranslatedToCppCode = false;
+      nodeObj.getUserData().wasTranslatedToCppCode = false;
+    }
+
+    // //THIS DOESN'T HELP that execution order is somehow changed after first recalculation
+    // //add ports from ItemsNode
+    // if (nodeObj.NAME.toLowerCase().search("itemsnode") >= 0){
+    //   nodeObj.getChildren().each(function(childIndex, childObj){
+    //     if (childIndex > 0){
+    //       childObj.getPorts().each(function(portIndex, portObj){
+    //         allPorts.push(portObj);
+    //       });
+    //     }
+    //   });
+    // }
+  });
+
   /*
    *  Set executionOrder of ALL PORTS to appropriate defualt value
    */
@@ -479,20 +508,6 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
       });
     }
   });
-
-  //set to defualt values execution order of LOOPS AND NODES
-  allNodes.each(function(nodeIndex, nodeObj){
-    //init execution order for all nodes
-    if (nodeObj.getUserData() != undefined){
-      nodeObj.getUserData().executionOrder = -1;
-    }
-    //for loops there is flag about they were transcripted to C/C++
-    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
-      if (nodeObj.getUserData() == undefined) nodeObj.userData.wasTranslatedToCppCode = false;
-      nodeObj.getUserData().wasTranslatedToCppCode = false;
-    }
-  });
-
 }
 
 /**
@@ -663,11 +678,22 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
       nodeObj.userData.executionOrder = -1;
     }
 
-    if (nodeObj.NAME.toLowerCase().search("loop") > 0){ //put label just for nodes, for now suppose that's all shapes.basic
+    //ADD ALL LOOP'S TUNNELS into node list
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
       var loopTunnels = new draw2d.util.ArrayList();
       nodeObj.getUserData().executionOrder = 1;   // default value for loops if other it will change in next calculations
       nodeObj.getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search("tunnel") > 0){
+        if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
+          allNodes.push(childObj);
+        }
+      });
+    }
+
+    //ADD ALL PROPERTY NODE ITEMS
+    if (nodeObj.NAME.toLowerCase().search("itemsnode") >= 0){
+      var loopTunnels = new draw2d.util.ArrayList();
+      nodeObj.getChildren().each(function(childIndex, childObj){
+        if (childIndex > 0 && childObj.NAME.toLowerCase().search("label") >= 0){  //skip property node label
           allNodes.push(childObj);
         }
       });
@@ -738,12 +764,26 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
         inputPortCnt++; //conting input ports of node
       });
 
+      //PROPERTY NODE, waiting until all items are set to continue
+      if (nodeObj.getParent() != undefined && nodeObj.getParent().NAME.toLowerCase().search("itemsnode") >= 0){
+        var isPropertyNodePrepared = true;
+        nodeObj.getParent().getChildren().each(function(childIndex, childObj){  //check all items if their inputs are prepared
+          if (childIndex > 0){  //skip property name label
+            childObj.getInputPorts().each(function(inPortIndex, inPortObj){
+              if (inPortObj.userData.executionOrder == -1) isPropertyNodePrepared = false;
+            });
+          }
+        });
+        if (!isPropertyNodePrepared){cnt1 = 0; inputPortCnt = 1;} //if inputs are not prepared just set counters into invalid state and execution order is not generated
+        else if (nodeObj.getParent().userData.executionOrder == -1) nodeObj.getParent().userData.executionOrder = actualStepNum;  //set PropertyNode executionOrder
+      }
+
       /***************************************************************************************
        *  PLACING LABEL INTO MIDDLE OF NODE
        ***************************************************************************************/
 
       if (cnt1 == inputPortCnt){
-        //update output ports execution order
+        //OUTPUT PORT EXECUTION ORDER UPDATE
         var isNodeLabelAdded = false;
         nodeObj.getOutputPorts().each(function(portIndex, portObj){
           if (portObj.getUserData().executionOrder < 0){
@@ -751,13 +791,11 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
           }
         });
 
-        //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE
-        if (nodeObj.userData.executionOrder == -1){
+        //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE, execept for property and invoke node, they have subelements with labels
+        if (nodeObj.userData.executionOrder == -1 && nodeObj.NAME.toLowerCase().search("itemsnode") == -1){
           nodeObj.userData.executionOrder = actualStepNum;
           nodeObj.add(
             new draw2d.shape.basic.Label({
-              // x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
-              // y: portObj.getY() + portObj.getParent().getY(),
               text:new String(actualStepNum),
               stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
             }),
@@ -765,6 +803,8 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
           );
         }
       }
+
+      //COUNTERS RESET, cnt1 = counter of prepared inputs, inputPortCnt = count of input ports
       cnt1 = 0;
       inputPortCnt = 0;
     });
@@ -954,12 +994,19 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
             if (loopObj.translateToCppCodePost != undefined || loopObj.translateToCppCodePost != null) cCode += delimiter + nodeObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
             else cCode += delimiter + "{end loop}\n";
-            // cCode += delimiter + "{end loop}\n";
           }
-
         }
 
-        //getting node c code representation (TUNNELS and LOOPS EXCLUDED)
+        if (nodeObj.getParent() != null && nodeObj.getParent().NAME.toLowerCase().search("itemsnode") >= 0){
+          if (nodeObj.getParent().getUserData().wasTranslatedToCppCode == false &&
+              nodeObj.getParent().getUserData().executionOrder == actualStep){
+            nodeObj.getParent().getUserData().wasTranslatedToCppCode = true;
+            for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
+            cCode += nodeObj.translateToCppCode() + "\n";
+          }
+          return;
+        }
+
         if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
             nodeObj.NAME.toLowerCase().search("loop") == -1 &&
             nodeObj.getUserData() != undefined &&

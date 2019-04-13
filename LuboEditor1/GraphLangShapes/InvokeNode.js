@@ -2,9 +2,9 @@
  *  @class GraphLang.Shapes.PropertyNode
  *  @description Thisi s property node for GraphLang.
  */
-GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
+GraphLang.Shapes.ItemsNode.InvokeNode = draw2d.shape.layout.VerticalLayout.extend({
 
-	NAME: "GraphLang.Shapes.PropertyNode",
+	NAME: "GraphLang.Shapes.ItemsNode.InvokeNode",
 
     init : function(attr)
     {
@@ -22,13 +22,19 @@ GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
           resizeable:true,
           editor:new draw2d.ui.LabelInplaceEditor()
         });
+				//LuboJ part
 
         this.add(this.classLabel);
 
         //at least here is added one item into list
         this.addEntity("_new_");
+				this.addEntity("_new_");
+				this.addEntity("_new_");
+
+				//DEFAULT EXECUTION ORDER
         this.userData = {};
         this.userData.executionOrder = -1;
+				this.userData.wasTranslatedToCppCode = false;
 
         //LuboJ. add ID on top of each property node for debugging
         //this.add(new draw2d.shape.basic.Label({text:this.id}), new draw2d.layout.locator.TopLocator({}));
@@ -56,7 +62,13 @@ GraphLang.Shapes.PropertyNode = draw2d.shape.layout.VerticalLayout.extend({
              editor:new draw2d.ui.LabelEditor()
 	   	 });
 
-//        label.installEditor(new draw2d.ui.LabelEditor());
+			 //LuboJ
+			 label.translateToCppCode = function(){
+				 var parent = this.getParent();
+				 return this.getParent().translateToCppCode();
+			 }
+
+			 // label.installEditor(new draw2d.ui.LabelEditor());
 	     var input = label.createPort("input");
 	     var output= label.createPort("output");
 
