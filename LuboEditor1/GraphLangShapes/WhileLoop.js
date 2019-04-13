@@ -23,18 +23,17 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
 
   translateToCppCode: function(){
     this.getUserData().wasTranslatedToCppCode = true;
-
+    return "do{";
+  },
+  translateToCppCodePost: function(){
     var cCode = "";
     var endCondition = "";
     var stopTerminal = this.getInputPort("stopTerminal");
     if (stopTerminal.getConnections().getSize() > 0){
       endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
     }
-    cCode += "while(!" + endCondition + "){";
+    cCode += "}while(!" + endCondition + ")";
     return cCode;
-  },
-  translateToCppCodePost: function(){
-    return "}";
   }
 /*
   NEEDS TO BE DONE STOP TERMINAL it will go to end condition

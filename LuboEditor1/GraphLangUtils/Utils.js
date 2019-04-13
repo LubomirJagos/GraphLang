@@ -1070,7 +1070,14 @@ GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
  * @description Returns wires which are direct descendant of provided object.
  */
 GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObj = null){
-  alert("getDirectChildrenWires() entered");
+  // alert("getDirectChildrenWires() entered");
+  var directChildrenWires = new draw2d.util.ArrayList();
+  canvas.getLines().each(function(lineIndex, lineObj){
+    if (lineObj.getParent() == parentObj){
+      directChildrenWires.push(lineObj);
+    }
+  });
+  alert(directChildrenWires.getSize());
 }
 
 /**

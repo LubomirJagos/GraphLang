@@ -180,6 +180,12 @@ example.Toolbar = Class.extend({
  			this.setWiresColorByPortsButton  = $("<button id=\"setWiresColorByPortsButton\">setWiresColorByPorts</button>");
  			this.html.append(this.setWiresColorByPortsButton);
 
+			/**
+ 		  *	show Button
+ 			*/
+ 			this.getDirectChildrenWiresButton  = $("<button id=\"getDirectChildrenWiresButton\">getDirectChildrenWires</button>");
+ 			this.html.append(this.getDirectChildrenWiresButton);
+
 	},
 
 	/**

@@ -33,6 +33,8 @@ GraphLang.Shapes.Basic.Constant.int32 = draw2d.shape.basic.Rectangle.extend({
       port.userData.datatype = "int32";
 
       this.label.installEditor(new draw2d.ui.LabelInplaceEditor());
+
+      this.persistPorts=false;  //LuboJ, don't know but THIS MUST BE HERE to ports be saved correctly
     },
 
     //LuboJ function to return value inside label

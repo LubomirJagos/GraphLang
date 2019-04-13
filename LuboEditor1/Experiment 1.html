@@ -90,6 +90,7 @@
     <script src="./GraphLangUtils/KeyboardDeletePolicy.js"></script>
     <script src="./GraphLangUtils/Color.js"></script>
 
+    <script type="text/javascript">var jsonDocument = [];</script>
     <!-- <script src="./GraphLangSchematics/Default Schematic 1.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 2.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 3.js"></script> -->
@@ -99,7 +100,8 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 7.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 8.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 9.js"></script> -->
-    <script type="text/javascript">var jsonDocument = [];</script>
+    <!-- <script src="./GraphLangSchematics/Default Schematic 10.js"></script> -->
+    <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
 
  <script type="text/javascript">
 
@@ -279,6 +281,13 @@ document.addEventListener("DOMContentLoaded",function () {
       **************************************/
       $("#setWiresColorByPortsButton").button().click($.proxy(function(){
        GraphLang.Utils.setWiresColorByPorts(appCanvas);
+      }));
+
+      /**************************************
+      *  BUTTON "getDirectChildrenWiresButton"
+      **************************************/
+      $("#getDirectChildrenWiresButton").button().click($.proxy(function(){
+       GraphLang.Utils.getDirectChildrenWires(appCanvas);
       }));
 
 });

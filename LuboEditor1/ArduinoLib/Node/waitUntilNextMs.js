@@ -269,6 +269,9 @@ GraphLang.ArduinoLib.Node.waitUntilNextMs = draw2d.SetFigure.extend({
     },
 
     translateToCppCode: function(){
-        return "delay(TBD);";
+      cCode = "";
+      var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
+      cCode += "delay(" + in1 + ");";
+      return cCode;
     }
 });
