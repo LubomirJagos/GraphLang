@@ -243,6 +243,8 @@ GraphLang.Utils.detectTunnels = function(canvas){
           loopIntersections.push(intersectPoint);
           intersectedLines.push(lineObj);
 
+          //GETTING KNOW WHICH LINE OF LOOP RECTANGLE WAS CROSSED
+          // 1 = right, 2 = bottom, 3 = left, 4 = top
           if (intersectPoint.data.length > 0){
             if (intersectPoint.data[0].x == loopBoundingRect.getX()) intersectionEdge.push(3);
             else if (intersectPoint.data[0].y == loopBoundingRect.getY()) intersectionEdge.push(0);
@@ -336,13 +338,18 @@ GraphLang.Utils.detectTunnels = function(canvas){
            //var tunnelObj = new draw2d.HybridPort({stroke: 2, color: "#FF0000", bgColor: "#00FF00"});
            var tunnelObj;
            // tunnelObj = new GraphLang.Shapes.Basic.Tunnel();
-           if (intersectionInOutDirection[k+1] == 0) tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
-           else if (intersectionInOutDirection[k+1] == 1) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+           if (intersectionInOutDirection[k] == 0) tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+           else if (intersectionInOutDirection[k] == 1) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 
            //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
            if (intersectionEdge[k+i] == 0 || intersectionEdge[k+i] == 2){
-             if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(90);
-             if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(90);
+             if (intersectionInOutDirection[k] == 0){
+               if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(270);
+               if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(90);
+            }else{
+              if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(90);
+              if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(270);              
+            }
              var objWidth = tunnelObj.getWidth();
              var objHeight = tunnelObj.getHeight();
              tunnelObj.setWidth(objHeight);
@@ -410,9 +417,9 @@ GraphLang.Utils.detectTunnels = function(canvas){
            var oldSource = intersectedLines[k+i].getSource();
            intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
            var additionalConnection = createConnection();
-           appCanvas.add(additionalConnection);
            additionalConnection.setSource(oldSource);
            additionalConnection.setTarget(tunnelObj.getInputPort(0));
+           appCanvas.add(additionalConnection);
            tunnelObj.setSelectable(true);
 
         });
