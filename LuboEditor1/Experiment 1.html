@@ -292,6 +292,20 @@ document.addEventListener("DOMContentLoaded",function () {
        GraphLang.Utils.getDirectChildrenWires(appCanvas);
       }));
 
+      /**************************************
+      *  BUTTON "getDirectChildrenWiresButton"
+      **************************************/
+      $("#getSelectedLoopTunnelCountButton").button().click($.proxy(function(){
+       GraphLang.Utils.getSelectedLoopTunnelCount(appCanvas);
+      }));
+
+      /**************************************
+      *  BUTTON "getCanvasJsonButtonButton"
+      **************************************/
+      $("#getCanvasJsonButton").button().click($.proxy(function(){
+       GraphLang.Utils.getCanvasJson(appCanvas);
+      }));
+
 });
 
 /**
@@ -302,8 +316,20 @@ function displayJSON(canvas){
     var writer = new draw2d.io.json.Writer();
     var jsonStr = "";
     writer.marshal(appCanvas,function(json){
-        jsonStr = JSON.stringify(json, null, 2);
-        $("#json").text(jsonStr);
+      //LuboJ modification to remove Tunnels, tehy appear in json after executionOrder, THIS IS PROBLEM, this solution is just for now
+      var clearedJson = [];
+      var wrongJson = [];
+      for (var k = 0; k < json.length; k++){
+        if (json[k].type.toLowerCase().search("tunnel") == -1) clearedJson.push(json[k]);
+        else wrongJson.push(json[k]);
+      }
+
+      jsonStr = JSON.stringify(clearedJson, null, 2);
+      $("#json").text(jsonStr);
+
+      //LuboJ auxiliary view
+      jsonStr = JSON.stringify(wrongJson, null, 2);
+      $("#json2").text(jsonStr);
     });
     return jsonStr;
 }
@@ -362,7 +388,8 @@ function displayJSON(canvas){
    </div>
 
    <!-- window with JSON representation of schematic -->
-   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray">
+   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>
+   <div id="json2" style="overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray">
    </div>
 
 </body>

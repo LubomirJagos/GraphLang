@@ -338,8 +338,8 @@ GraphLang.Utils.detectTunnels = function(canvas){
            //var tunnelObj = new draw2d.HybridPort({stroke: 2, color: "#FF0000", bgColor: "#00FF00"});
            var tunnelObj;
            // tunnelObj = new GraphLang.Shapes.Basic.Tunnel();
-           if (intersectionInOutDirection[k] == 0) tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
-           else if (intersectionInOutDirection[k] == 1) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+           if (intersectionInOutDirection[k] == 1) tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+           else if (intersectionInOutDirection[k] == 0) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 
            //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
            if (intersectionEdge[k+i] == 0 || intersectionEdge[k+i] == 2){
@@ -348,7 +348,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
                if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(90);
             }else{
               if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(90);
-              if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(270);              
+              if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(270);
             }
              var objWidth = tunnelObj.getWidth();
              var objHeight = tunnelObj.getHeight();
@@ -823,7 +823,6 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
       nodeObj.setExecutionOrderByTunnels(canvas);
     }
   });
-
 }
 
 /**
@@ -1145,5 +1144,52 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
     // else var lineColor = color.getByName("broken");
     var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
     lineObj.setColor(lineColor);  //set wire color
+  });
+}
+
+/**
+ * @method getSelectedLoopTunnelCount(canvas)
+ * @param {draw2d.Canvas} canvas - schematic
+ * @description For selected loop show number of tunnels.
+ */
+GraphLang.Utils.getSelectedLoopTunnelCount = function setWiresColorByPorts(canvas){
+  var node = canvas.getPrimarySelection();
+  var tunnelCount = 0;
+
+  if (node.NAME.toLowerCase().search("loop") >= 0){
+    node.getChildren().each(function(tunnelIndex, tunnelObj){
+      if (tunnelObj.NAME.toLowerCase().search("tunnel") >= 0){
+        tunnelCount++;
+      }
+    });
+  }
+  alert(tunnelCount);
+  return tunnelCount;
+}
+
+/**
+ * @method getCanvasJson(canvas)
+ * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @description For selected loop show number of tunnels.
+ */
+GraphLang.Utils.getCanvasJson = function(canvas){
+  var writer = new draw2d.io.json.Writer();
+  writer.marshal(canvas,function(json){
+      var clearedJson = [];
+      var wrongJson = [];
+      for (var k = 0; k < json.length; k++){
+        if (json[k].type.toLowerCase().search("tunnel") == -1) clearedJson.push(json[k]);
+        else wrongJson.push(json[k]);
+      }
+      jsonStr = JSON.stringify(clearedJson, null, 2);
+      // jsonStr = JSON.stringify(wrongJson, null, 2);
+
+      var copyElement = document.createElement('textarea');
+
+      copyElement.innerHTML= "var jsonDocument = " + jsonStr + ";";
+      copyElement = document.body.appendChild(copyElement);
+      copyElement.select();
+      document.execCommand('copy');
+      copyElement.remove();
   });
 }

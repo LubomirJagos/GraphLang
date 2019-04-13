@@ -181,11 +181,22 @@ example.Toolbar = Class.extend({
  			this.html.append(this.setWiresColorByPortsButton);
 
 			/**
- 		  *	show Button
+ 		  *	getDirectChildrenWiresButton Button
  			*/
  			this.getDirectChildrenWiresButton  = $("<button id=\"getDirectChildrenWiresButton\">getDirectChildrenWires</button>");
  			this.html.append(this.getDirectChildrenWiresButton);
 
+			/**
+ 		  *	getSelectedLoopTunnelCount Button
+ 			*/
+ 			this.getSelectedLoopTunnelCountButton  = $("<button id=\"getSelectedLoopTunnelCountButton\">getSelectedLoopTunnelCount</button>");
+ 			this.html.append(this.getSelectedLoopTunnelCountButton);
+
+			/**
+ 		  *	getCanvasJson Button
+ 			*/
+ 			this.getCanvasJsonButton  = $("<button id=\"getCanvasJsonButton\">getCanvasJson</button>");
+ 			this.html.append(this.getCanvasJsonButton);
 	},
 
 	/**
