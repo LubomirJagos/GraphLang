@@ -463,11 +463,21 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
     }
 
     //remove label nodes from all nodes, this is because these labels are execution order for debugging
-    portObj.getParent().getChildren().each(function(childIndex, childObj){
-      if (childObj.NAME.toLowerCase().search("label") >= 0){
-        portObj.getParent().remove(childObj);
-      }
-    });
+    if (portObj.getParent().NAME.toLowerCase().search(".constant.") == -1){ //if node is constant don't remove label, it's part of functionality!
+      portObj.getParent().getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("label") >= 0){
+          portObj.getParent().remove(childObj);
+        }
+      });
+    }else{            //if CONSTANT NODE, THEN ALL LABELS EXCEPT AT INDEX 0. ARE REMOVED, BECAUSE CONSTANT IS WRITTEN ISIDE 0.LABEL
+      var cnt = 0;
+      portObj.getParent().getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("label") >= 0){
+          if (cnt > 0) portObj.getParent().remove(childObj);    //don't remove 0.element
+          cnt++;
+        }
+      });
+    }
   });
 
   //set to defualt values execution order of LOOPS AND NODES
@@ -747,7 +757,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
               x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
               y: portObj.getY() + portObj.getParent().getY(),
               text:new String(portObj.getUserData().executionOrder),
-              stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+              stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
             }),
             new draw2d.layout.locator.CenterLocator(nodeObj)
           );

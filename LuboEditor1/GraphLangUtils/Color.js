@@ -12,15 +12,15 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "red") return "#FF0000";
     else if (colorName == "blue") return "#0000FF";
 
-    else if (colorName == "char") return "#0000FF";
-    else if (colorName == "long") return "#0000FF";
-    else if (colorName == "word") return "#0000FF";
-    else if (colorName == "int8") return "#0000FF";
-    else if (colorName == "uint8") return "#0000FF";
-    else if (colorName == "int16") return "#0000FF";
-    else if (colorName == "uint16") return "#0000FF";
-    else if (colorName == "int32") return "#0000FF";
-    else if (colorName == "uint32") return "#0000FF";
+    else if (colorName == "char") return "#4286f4";
+    else if (colorName == "long") return "#4286f4";
+    else if (colorName == "word") return "#4286f4";
+    else if (colorName == "int8") return "#4286f4";
+    else if (colorName == "uint8") return "#4286f4";
+    else if (colorName == "int16") return "#4286f4";
+    else if (colorName == "uint16") return "#4286f4";
+    else if (colorName == "int32") return "#4286f4";
+    else if (colorName == "uint32") return "#4286f4";
     else if (colorName == "single") return "#AA2200";
     else if (colorName == "float") return "#AA2200";
     else if (colorName == "double") return "#AA2200";

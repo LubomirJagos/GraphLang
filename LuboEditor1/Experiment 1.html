@@ -23,6 +23,10 @@
       //save reference to canvas to have it globally acessible
       var appCanvas;
       var GraphLang = {};
+      GraphLang.Shapes = {};
+      GraphLang.Shapes.Basic = {};
+      GraphLang.Shapes.Basic.Constant = {};
+      GraphLang.geo = new Object();
     </script>
 
 
@@ -32,6 +36,7 @@
     <script src="./gui/HoverConnection.js"></script>
 
     <!-- These are mine shapes added. LuboJ. -->
+      <script src="./GraphLangShapes/__initEnv.js"></script>
       <script src="./GraphLangShapes/Geo.js"></script>
       <script src="./GraphLangShapes/Port.js"></script>
       <script src="./GraphLangShapes/InputPort.js"></script>
@@ -40,12 +45,16 @@
       <script src="./GraphLangShapes/Numeric.js"></script>
       <script src="./GraphLangShapes/Subtract.js"></script>
       <script src="./GraphLangShapes/Add.js"></script>
-      <script src="./GraphLangShapes/Label.js"></script>
+      <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
       <script src="./GraphLangShapes/Property Node.js"></script>
       <script src="./GraphLangShapes/Loop.js"></script>
       <script src="./GraphLangShapes/Tunnel.js"></script>
       <script src="./GraphLangShapes/LeftTunnel.js"></script>
       <script src="./GraphLangShapes/RightTunnel.js"></script>
+      <script src="./GraphLangShapes/constantString.js"></script>
+      <script src="./GraphLangShapes/constantInt32.js"></script>
+      <script src="./GraphLangShapes/constantBool.js"></script>
+      <script src="./GraphLangShapes/constantFloat.js"></script>
 
       <script src="./GraphLangShapes/WhileLoop.js"></script>
       <script src="./GraphLangShapes/ForLoop.js"></script>
@@ -329,6 +338,10 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.ArduinoLib.Node.Divide" data-label="GraphLang Arduino Divide" class="palette_node_element draw2d_droppable">Arduino Divide</div>
       <div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="GraphLang Arduino analogRead" class="palette_node_element draw2d_droppable">Arduino analogRead</div>
       <div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="GraphLang Arduino toStr" class="palette_node_element draw2d_droppable">Arduino toStr</div>
+      <div data-shape="GraphLang.Shapes.Basic.Constant.String" data-label="GraphLang Constant String" class="palette_node_element draw2d_droppable">GraphLang Constant String</div>
+      <div data-shape="GraphLang.Shapes.Basic.Constant.int32" data-label="GraphLang Constant int32" class="palette_node_element draw2d_droppable">GraphLang Constant int32</div>
+      <div data-shape="GraphLang.Shapes.Basic.Constant.bool" data-label="GraphLang Constant bool" class="palette_node_element draw2d_droppable">GraphLang Constant bool</div>
+      <div data-shape="GraphLang.Shapes.Basic.Constant.float" data-label="GraphLang Constant float" class="palette_node_element draw2d_droppable">GraphLang Constant float</div>
   </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">

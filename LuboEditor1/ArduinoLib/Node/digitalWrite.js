@@ -19,7 +19,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 48.31460674157304));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("in1");
      port.setMaxFanOut(20);
 
      port.userData = {};
@@ -30,7 +30,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 69.66292134831461));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("in2");
      port.setMaxFanOut(20);
 
      port.userData = {};
@@ -41,7 +41,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 87.64044943820225));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("errorIn");
      port.setMaxFanOut(20);
 
      port.userData = {};
@@ -51,7 +51,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(98.0475105953743, 87.64044943820225));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("errorOut");
      port.setMaxFanOut(20);
 
      port.userData = {};
@@ -293,8 +293,11 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
     },
 
     translateToCppCode: function(){
-      // return "{ArduinoLib.Node.digitalWrite: " + this.getUserData().executionOrder + "}";
-      return "digitalWrite(TBD, TBD);";
+      cCode = "";
+      var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
+      var in2 = this.getInputPort("in2"); if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
+      cCode += "digitalWrite(" + in1 + ", " + in2 + ");";
+      return cCode;
     }
 
 });
