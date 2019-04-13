@@ -658,6 +658,11 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 
   //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
   allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.userData != undefined || nodeObj.userData == null){
+      nodeObj.userData = {};
+      nodeObj.userData.executionOrder = -1;
+    }
+
     if (nodeObj.NAME.toLowerCase().search("loop") > 0){ //put label just for nodes, for now suppose that's all shapes.basic
       var loopTunnels = new draw2d.util.ArrayList();
       nodeObj.getUserData().executionOrder = 1;   // default value for loops if other it will change in next calculations
@@ -684,20 +689,21 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
   for (var actualStepNum = 1; actualStepNum < 20; actualStepNum++){
     allNodes.each(function(nodeIndex, nodeObj){
 
-        //gathering information about input ports, checking if all of them are already prepared
-        nodeObj.getInputPorts().each(function(portIndex, portObj){
-          if (portObj.getUserData().executionOrder > 0) cnt1++;
-          else if (portObj.getUserData().executionOrder < 0){
-            /* if input port is not ready, check connected ports for which is this port waiting
-            and check their status */
-            let inPortPrepared = true;
+      //gathering information about input ports, checking if all of them are already prepared
+      nodeObj.getInputPorts().each(function(portIndex, portObj){
+        if (portObj.getUserData().executionOrder > 0) cnt1++; //counting prepared input ports
+        else if (portObj.getUserData().executionOrder < 0){
+          /* if input port is not ready, check connected ports for which is this port waiting
+          and check their status */
+          let inPortPrepared = true;
 
-            //CHECK STATE OF CONNECTED OUTPUTS BEFORE THIS PORT
-            portObj.getConnections().each(function(wireIndex, wireObj){
-              if (wireObj.getSource() && wireObj.getSource().getUserData().executionOrder < 0) inPortPrepared = false;
-            });
+          //CHECK STATE OF CONNECTED OUTPUTS BEFORE THIS PORT
+          portObj.getConnections().each(function(wireIndex, wireObj){
+            if (wireObj.getSource() && wireObj.getSource().getUserData().executionOrder < 0) inPortPrepared = false;
+          });
 
-            //CHECK FOR CONTENT INSIDE LOOP IF WAIT FOR INPUT TUNNELS
+          //CHECK FOR CONTENT INSIDE LOOP IF WAIT FOR INPUT TUNNELS
+          if (nodeObj.NAME.toLowerCase().search("tunnel") >= 0){
             var nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas, portObj.getParent());
             var leftTunnelCnt = 0;
             while (nodeParentLoop != undefined && inPortPrepared == true){
@@ -720,52 +726,44 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
               if (leftTunnelCnt == 0) nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas,nodeParentLoop);
               else nodeParentLoop = undefined;
             }
-
-            //IF PORT IS PREPARED SET ITS EXECUTION ORDER
-            if (inPortPrepared == true){
-              var userData = portObj.getUserData();
-              //here was problem that sometime loop doesnt had userdata so this should correct it
-              if (userData != undefined){
-                userData.executionOrder = actualStepNum;
-                portObj.setUserData(userData);
-              }else{
-                portObj.userData = actualStepNum;
-              }
-
-            }
           }
-          inputPortCnt++;
-        });
+
+          //IF PORT IS PREPARED SET ITS EXECUTION ORDER
+          if (inPortPrepared == true){
+            //here was problem that sometime loop doesnt had userdata so this should correct it
+            if (portObj.userData != undefined)  portObj.userData = {};
+            portObj.userData.executionOrder = actualStepNum;
+          }
+        }
+        inputPortCnt++; //conting input ports of node
+      });
 
       /***************************************************************************************
        *  PLACING LABEL INTO MIDDLE OF NODE
        ***************************************************************************************/
 
       if (cnt1 == inputPortCnt){
-        //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE
-        //if all inputs are available then mark to output ports number of step when they run
+        //update output ports execution order
+        var isNodeLabelAdded = false;
         nodeObj.getOutputPorts().each(function(portIndex, portObj){
           if (portObj.getUserData().executionOrder < 0){
-            var userData = portObj.getUserData();
-            userData.executionOrder = actualStepNum + 1;  //result is on output in next step that's why +1
-            portObj.setUserData(userData);
+            portObj.userData.executionOrder = actualStepNum + 1;  //result is on output in next step that's why +1
           }
+        });
 
-          //ADD LABEL INSIDE MIDDLE OF EACH NODE
+        //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE
+        if (nodeObj.userData.executionOrder == -1){
+          nodeObj.userData.executionOrder = actualStepNum;
           nodeObj.add(
             new draw2d.shape.basic.Label({
-              x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
-              y: portObj.getY() + portObj.getParent().getY(),
-              text:new String(portObj.getUserData().executionOrder),
+              // x: portObj.getX() + portObj.getParent().getX(), //ports have relative position to parent obj
+              // y: portObj.getY() + portObj.getParent().getY(),
+              text:new String(actualStepNum),
               stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
             }),
             new draw2d.layout.locator.CenterLocator(nodeObj)
           );
-          nodeObj.setUserData($.extend({executionOrder: portObj.getUserData().executionOrder},nodeObj.getUserData()));
-
-        });
-        //reset counters
-
+        }
       }
       cnt1 = 0;
       inputPortCnt = 0;
@@ -1060,7 +1058,8 @@ GraphLang.Utils.initLoopsZOrder = function(canvas){
  *  @description Display execution order of current highlighted object.
  */
 GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
-    alert(canvas.getSelection().getAll().first().getUserData().executionOrder);
+    var element = canvas.getSelection().getAll().first();
+    alert(element.getUserData().executionOrder);
 }
 
 /**

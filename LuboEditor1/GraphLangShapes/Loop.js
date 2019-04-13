@@ -54,7 +54,8 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     // HERE CAN BE PROBLEM IF PARENT HASN'T SET UP ITS EXECUTION ORDER, SO THEN SHOULD BE RECURSIVELY LOOKIN UP, for now suppose that this will not happen
     if (tunnelHighestExecutionOrder == -1){
       var thisLoopOwner = GraphLang.Utils.getNodeLoopOwner(canvas, this);
-      var ownerExecutionOrder = thisLoopOwner.getUserData().executionOrder;
+      var ownerExecutionOrder;
+      if (thisLoopOwner != null) ownerExecutionOrder = thisLoopOwner.getUserData().executionOrder;
       if ( ownerExecutionOrder != undefined){
         this.getUserData().executionOrder = ownerExecutionOrder;  //<--- HERE SHOULD BE RECURSIVELY LOOKING UP for execution order
       }else{
