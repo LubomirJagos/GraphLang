@@ -36,10 +36,6 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   getUserData: function(){
     return this.userData;
   },
-  translateToCppCode: function(){
-    this.getUserData().wasTranslatedToCppCode = true;
-    return "{Loop: " + this.getUserData().executionOrder + "}";
-  },
   setExecutionOrderByTunnels: function(canvas){
     //first get input tunnel with highest execution number, if there is no input tunnel it's needed to look for parent loop
     var tunnelHighestExecutionOrder = -1;
@@ -66,5 +62,21 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     }
 
     this.getUserData().wasTranslatedToCppCode = false;
+  },
+
+  translateToCppCode: function(){
+    this.getUserData().wasTranslatedToCppCode = true;
+
+    //CASE STATEMENT GENERATION
+    var cCode = "";
+    cCode += "switch(" + "/* ..selector wire.. */" + "){\n";
+    cCode += "\t\tcase " + "/* ..something 1.. */" + ":{\n";
+    cCode += "\t\t}break;";
+    return cCode;
+  },
+
+  translateToCppCodePost: function(){
+    return "}";
   }
+
 });
