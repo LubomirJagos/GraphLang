@@ -980,6 +980,22 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
   /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
   var cCode = "";
+
+
+  //WIRES DECLARATION
+  // LuboJ, for now all global
+  if (nestedLevel == 0){
+    canvas.getLines().each(function(lineIndex, lineObj){
+      //LuboJ, for now we trust that each line is wire
+      //if (lineObj.NAME.toLowerCase().search(""))
+      var wireDatatype = lineObj.getSource().getUserData().datatype;
+      //if ( wireDatatype == "") cCode +=
+      cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
+    });
+  }
+
+
+
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
         if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
