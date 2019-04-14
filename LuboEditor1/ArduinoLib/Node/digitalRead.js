@@ -299,8 +299,11 @@ GraphLang.ArduinoLib.Node.digitalRead = draw2d.SetFigure.extend({
    },
 
    translateToCppCode: function(){
-      var in1ConnectionsCount = this.getInputPort("in1").getConnections().getSize();
-      // return "{ArduinoLib.Node.digitalRead: " + this.getUserData().executionOrder + ", in1 connections num: " + in1ConnectionsCount + "}";
-      return "digitalRead(TBD);";
+     cCode = "";
+     var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
+     var out1 = this.getOutputPort("out1"); if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId(); else out1 = null;
+     if (out1 != null) cCode += out1 + " = digitalRead(" + in1 + ")";
+     else  cCode += "digitalRead(" + in1 + ")";
+     return cCode;
    }
 });
