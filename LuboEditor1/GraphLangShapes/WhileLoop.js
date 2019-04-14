@@ -6,7 +6,7 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     this._super( $.extend({},attr), setter, getter);
     var port;
     // Port
-    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(100, 90));
+    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(99, 90));
     port.setConnectionDirection(3);
     port.setBackgroundColor("#FF0000");
     port.setName("stopTerminal");

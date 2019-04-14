@@ -197,6 +197,12 @@ example.Toolbar = Class.extend({
  			*/
  			this.getCanvasJsonButton  = $("<button id=\"getCanvasJsonButton\">getCanvasJson</button>");
  			this.html.append(this.getCanvasJsonButton);
+
+			/**
+ 		  *	getCppCode2 Button
+ 			*/
+ 			this.getCppCode2Button  = $("<button id=\"getCppCode2Button\">getCppCode2</button>");
+ 			this.html.append(this.getCppCode2Button);
 	},
 
 	/**

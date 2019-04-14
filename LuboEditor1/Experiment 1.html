@@ -105,7 +105,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 10.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
-    <script src="./GraphLangSchematics/Default Schematic 13.js"></script>
+    <script src="./GraphLangSchematics/Default Schematic 14.js"></script>
 
  <script type="text/javascript">
 
@@ -308,6 +308,12 @@ document.addEventListener("DOMContentLoaded",function () {
        GraphLang.Utils.getCanvasJson(appCanvas);
       }));
 
+      /**************************************
+      *  BUTTON "getCanvasJsonButtonButton"
+      **************************************/
+      $("#getCppCode2Button").button().click($.proxy(function(){
+       GraphLang.Utils.getCppCode2(appCanvas);
+      }));
 });
 
 /**

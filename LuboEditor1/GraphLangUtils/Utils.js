@@ -1209,3 +1209,20 @@ GraphLang.Utils.getCanvasJson = function(canvas){
       copyElement.remove();
   });
 }
+
+/**
+ * @method getCppCode2(canvas)
+ * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
+ */
+GraphLang.Utils.getCppCode2 = function(canvas){
+        var copyElement = document.createElement('textarea');
+
+        //this is element which content is placed into clipboard
+        copyElement.innerHTML= GraphLang.Utils.translateToCppCode2(canvas);
+        copyElement = document.body.appendChild(copyElement);
+        copyElement.select();
+        document.execCommand('copy');
+        copyElement.remove();
+
+}
