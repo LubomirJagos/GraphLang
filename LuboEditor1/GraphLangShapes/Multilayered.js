@@ -45,6 +45,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect1.setColor(new GraphLang.Utils.Color("#FF0000"));
     rect1.setBackgroundColor(new GraphLang.Utils.Color("#0000FF"));
     // this.add(rect1, new draw2d.layout.locator.XYRelPortLocator(0,0));
+    rect1.translateToCppCode = function(){
+      return "{Multilayered Node}";
+    };
     appCanvas.add(rect1, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     var rect2 = new draw2d.shape.composite.Jailhouse();
@@ -99,8 +102,29 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
 
+    //LAYERS Init, into each layer and protective rectangle is added reference to this parent translation function
+    var translateToCppCode2FuncRef = this.translateToCppCode;
+    this.layers.each(function(layerIndex, layerObj){
+      layerObj.translateToCppCode = translateToCppCode2FuncRef;
+    });
+    this.rect0.translateToCppCode = translateToCppCode2FuncRef;
+
+    //luboJ missing condition when jailhouse is not getting smaller because nodes inside it
+    this.on("resize", function(emitter){
+      emitter.layers.each(function(layerIndex, layerObj){
+        layerObj.setWidth(emitter.getWidth());
+        layerObj.setHeight(emitter.getHeight());
+      });
+      emitter.rect0.setWidth(emitter.getWidth());
+      emitter.rect0.setHeight(emitter.getHeight());
+    });
+
+    this.on("show", function(emitter){
+      emitter.moveActiveLayer();
+    });
   },
 
+  //this function is also called in gui/View.js after placing multilayer node to canvas to right placed layers
   moveActiveLayer: function(){
     var x = this.getX();
     var y = this.getY();
@@ -233,4 +257,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       }
     });
   },  //this comma doesn't matter it's ok and for future at least I don't forget, this has no effect on functionality of this class
+
+  translateToCppCode: function(){
+    return "{Multilayered Node}";
+  }
 });

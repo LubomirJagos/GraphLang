@@ -70,6 +70,14 @@ example.View = draw2d.Canvas.extend({
         // create a command for the undo/redo support
         var command = new draw2d.command.CommandAdd(this, figure, x, y);
         this.getCommandStack().execute(command);
+
+				// LuboJ
+				// if adding multilayere node, then move its layers to its mposition, it's updatet internally
+				// but here called, because these nodes are composed from more layers and they don''t know
+				// at init time position where on canvas  should be placed so they were before placed at 0,0
+				// what is worng
+				if (type.toLowerCase().search("multilayered") >= 0) figure.moveActiveLayer();
+
 				$("#logitem1").html("Obj type: " + type);
 
 				/*
