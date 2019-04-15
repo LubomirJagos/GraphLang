@@ -32,8 +32,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.setStroke(2);
 
     //TESTING LAYERS
-    var x = 10;
-    var y = 10;
+    var x = this.getX();
+    var y = this.getY();
 
     // var rect1 = new draw2d.shape.composite.Raft();
     var rect1 = new draw2d.shape.composite.Jailhouse();
@@ -67,6 +67,17 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     // this.add(rect3, new draw2d.layout.locator.XYRelPortLocator(0,0));
     appCanvas.add(rect3, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
+    //PROTECTIVE RECTANGLE
+    var rect0 = new draw2d.shape.basic.Rectangle();
+    rect0.setWidth(this.getWidth());
+    rect0.setHeight(this.getHeight());
+    rect0.setColor(new GraphLang.Utils.Color("#000000"));
+    rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
+    appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(x,y));
+    rect0.toBack();
+    this.rect0 = rect0;
+    this._onDragStart = this.onDragStart;
+
     // this.rect1 = rect1;
     // this.rect2 = rect2;
     this.layers = new draw2d.util.ArrayList();
@@ -93,48 +104,124 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   moveActiveLayer: function(){
     var x = this.getX();
     var y = this.getY();
-    this.layers.get(this.activeLayer).setX(x);
-    this.layers.get(this.activeLayer).setY(y);
-    this.layers.get(this.activeLayer).setSelectable(false);
-    this.layers.get(this.activeLayer).setDraggable(false);
+    var width = this.getWidth();
+    var height = this.getHeight();
+    this.layers.each(function(layerIndex, layerObj){
+      layerObj.setX(x);
+      layerObj.setY(y);
+      layerObj.setWidth(width);
+      layerObj.setHeight(height);
+      layerObj.setSelectable(false);
+      layerObj.setDraggable(false);
+    });
+    this.rect0.setX(x);
+    this.rect0.setY(y);
+    this.rect0.setWidth(width);
+    this.rect0.setHeight(height);
+    this.rect0.setSelectable(false);
+    this.rect0.setDraggable(false);
+    this.rect0.toBack();
   },
 
+  onDragStart: function(x,y,shiftKey, ctrlKey){
+    this.rect0.toFront(); //LuboJ, this is what I added here I must copy whole code, because don't know how to call original overloaded function
+
+    this.isInDragDrop =false;
+
+    // Check whenever the figures has a drag-handle. Allow drag&drop
+    // operation only if the x/y is inside this area.
+    //
+    // @since 5.6.0
+    var bbox = this.getHandleBBox();
+    if(bbox!==null && bbox.translate(this.getAbsolutePosition().scale(-1)).hitTest(x,y)===false){
+        // design failure: we must catch the figure below the mouse to forward
+        // the panning event to this figure. Special handling to provide sliders
+        // and other UI elements which requires the panning event. Hack.
+        this.panningDelegate = this.getBestChild(this.getX()+x,this.getY()+y);
+        if(this.panningDelegate!==null){
+            // transform x/y relative to the panning figure and request the dragStart event
+            this.panningDelegate.onDragStart(x-this.panningDelegate.x, y-this.panningDelegate.y, shiftKey, ctrlKey);
+        }
+        return false;
+    }
+
+    this.command = this.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.MOVE));
+
+    if(this.command!==null){
+       this.ox = this.getX();
+       this.oy = this.getY();
+       this.isInDragDrop =true;
+
+       // notify all installed policies
+       //
+       var _this = this;
+       var canStartDrag = true;
+
+       this.editPolicy.each(function(i,e){
+           if(e instanceof draw2d.policy.figure.DragDropEditPolicy){
+               canStartDrag = canStartDrag && e.onDragStart(_this.canvas, _this, x,y,shiftKey,ctrlKey);
+           }
+       });
+
+        if(canStartDrag) {
+            // fire an event
+            // @since 5.3.3
+            this.fireEvent("dragstart", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
+        }
+        return canStartDrag;
+    }
+
+    return false;
+  },
+
+
+
   switchActiveLayer: function(){
-    // this.toBack();
-
-    // var abFig = this.layers.get(this.activeLayer).getAboardFigures(true);
-    // alert(abFig.getSize());
-
     this.activeLayer++;
     if (this.activeLayer >= this.layers.getSize()) this.activeLayer = 0;
-
-    // var layerObjects = this.layers.get(this.activeLayer).getAboardFigures();
     var layerObjects = this.layers.get(this.activeLayer).getChildren();
-
-    this.layers.get(this.activeLayer).toFront();
-
-    // layerObjects.each(function(figureIndex, figureObj){
-    //   figureObj.toFront();
-    // });
-    // this.layers.get(this.activeLayer).repaint();
+    var activeLayer = this.layers.get(this.activeLayer);
+    activeLayer.toFront();
+    activeLayer.getChildren().each(function(childIndex, childObj){
+      childObj.toFront();
+    });
 
     this.bringsAllTunnelsToFront();
   },
 
   onDragEnd: function(x,y,shiftKey, ctrlKey){
-    // draggedFigure.
-    this.activeLayer = 0;
-    this.moveActiveLayer();
-    this.activeLayer = 1;
-    this.moveActiveLayer();
-    this.activeLayer = 2;
     this.moveActiveLayer();
   },
 
   bringsAllTunnelsToFront: function(){
+    var activeLayer = this.layers.get(this.activeLayer);
+
     this.getChildren().each(function(childIndex, childObj){
       if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
         childObj.toFront();
+      }
+
+      //SHOWING WIRES FROM LEFTTUNNELS
+      if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
+        childObj.getOutputPorts().each(function(portIndex, portObj){
+          portObj.getConnections().each(function(wireIndex, wireObj){
+            // wireObj.setVisible(activeLayer.contains(wireObj.getTarget().getParent()));
+            var insidePort = wireObj.getSource();
+            if (insidePort.getParent().NAME.toLowerCase().search("tunnel") >= 0) insidePort = wireObj.getTarget();
+            wireObj.setVisible(activeLayer.contains(insidePort.getParent()));
+          });
+        });
+      }
+
+      //SHOWING WIRES GOING INTO RIGHTTUNNELS
+      if (childObj.NAME.toLowerCase().search("righttunnel") >= 0){
+        childObj.getInputPorts().each(function(portIndex, portObj){
+          portObj.getConnections().each(function(wireIndex, wireObj){
+            var insidePort = wireObj.getSource();
+            if (insidePort.getParent().NAME.toLowerCase().search("tunnel") >= 0) insidePort = wireObj.getTarget();
+            wireObj.setVisible(activeLayer.contains(insidePort.getParent()));
+          });
+        });
       }
     });
   },
