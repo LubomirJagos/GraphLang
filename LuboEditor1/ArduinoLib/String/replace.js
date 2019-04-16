@@ -5,7 +5,7 @@
 // Go to the Designer http://www.draw2d.org
 // to design your own shape or download user generated
 //
-GraphLang.ArduinoLib.Node.String.replace = draw2d.SetFigure.extend({
+GraphLang.ArduinoLib.String.replace = draw2d.SetFigure.extend({
 
    NAME: "GraphLang.ArduinoLib.String.replace",
 

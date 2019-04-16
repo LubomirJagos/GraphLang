@@ -64,11 +64,12 @@
     <!-- End of GraphLang shapes-->
 
     <!-- These are mine arduino shapes added. LuboJ. -->
+      <script src="./ArduinoLib/__initEnv.js"></script>
+      <script src="./ArduinoLib/Node/__initEnv.js"></script>
       <script src="./ArduinoLib/Node/DecoratedInputPort.js"></script>
       <script src="./ArduinoLib/Node/MarkerFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/MarkerStateBFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
-      <script src="./ArduinoLib/Node/__initEnv.js"></script>
       <script src="./ArduinoLib/Node/Add.js"></script>
       <script src="./ArduinoLib/Node/Subtract.js"></script>
       <script src="./ArduinoLib/Node/Multiply.js"></script>
@@ -85,6 +86,10 @@
       <script src="./ArduinoLib/Node/toStr.js"></script>
       <script src="./ArduinoLib/Node/String/replace.js"></script>
       <script src="./ArduinoLib/Node/ternarOperator.js"></script>
+      <script src="./ArduinoLib/Node/LJ42.js"></script>
+
+      <script src="./ArduinoLib/String/__initEnv.js"></script>
+      <script src="./ArduinoLib/String/replace.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -110,6 +115,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 14.js"></script> -->
+    <script src="./GraphLangSchematics/Default Schematic 15.js"></script>
 
  <script type="text/javascript">
 
@@ -394,8 +400,9 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.Shapes.Basic.Constant.int32" data-label="GraphLang Constant int32" class="palette_node_element draw2d_droppable">GraphLang Constant int32</div>
       <div data-shape="GraphLang.Shapes.Basic.Constant.bool" data-label="GraphLang Constant bool" class="palette_node_element draw2d_droppable">GraphLang Constant bool</div>
       <div data-shape="GraphLang.Shapes.Basic.Constant.float" data-label="GraphLang Constant float" class="palette_node_element draw2d_droppable">GraphLang Constant float</div>
-      <div data-shape="GraphLang.ArduinoLib.Node.String.replace" data-label="GraphLang Arduino String.replace()" class="palette_node_element draw2d_droppable">Arduino String.replace()</div>
+      <div data-shape="GraphLang.ArduinoLib.Node.StringReplace" data-label="GraphLang Arduino StringReplace" class="palette_node_element draw2d_droppable">Arduino StringReplace</div>
       <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="GraphLang Arduino ternarOperator" class="palette_node_element draw2d_droppable">Arduino ternarOperator</div>
+      <div data-shape="GraphLang.ArduinoLib.Node.LJ42" data-label="GraphLang Arduino LJ42" class="palette_node_element draw2d_droppable">Arduino LJ42</div>
   </div>
 
    <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
