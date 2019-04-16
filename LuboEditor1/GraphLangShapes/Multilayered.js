@@ -114,9 +114,15 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       emitter.layers.each(function(layerIndex, layerObj){
         layerObj.setWidth(emitter.getWidth());
         layerObj.setHeight(emitter.getHeight());
+
+        //not ideal, but it's someho helpfulwhen this is here, then can structure resized from all corners and it's running ok
+        layerObj.setX(emitter.getX());
+        layerObj.setY(emitter.getY());
       });
       emitter.rect0.setWidth(emitter.getWidth());
       emitter.rect0.setHeight(emitter.getHeight());
+      emitter.rect0.setX(emitter.getX());
+      emitter.rect0.setY(emitter.getY());
     });
 
     this.on("show", function(emitter){
