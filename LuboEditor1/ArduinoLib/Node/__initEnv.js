@@ -3,3 +3,4 @@ GraphLang.ArduinoLib = {};
 GraphLang.ArduinoLib.Node = {};
 GraphLang.ArduinoLib.Node.Math = {};
 GraphLang.ArduinoLib.Node.Serial = {};
+GraphLang.ArduinoLib.Node.String = {};

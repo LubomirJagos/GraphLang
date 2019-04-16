@@ -44,7 +44,7 @@ GraphLang.ArduinoLib.Node.analogWrite = draw2d.SetFigure.extend({
      port.userData.datatype = "error";
 
      // in2
-     port = this.createPort("hybrid", new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 63.12225206574263));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 63.12225206574263));
      port.setConnectionDirection();
      port.setBackgroundColor("#37B1DE");
      port.setName("in2");
