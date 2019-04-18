@@ -48,6 +48,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect1.translateToCppCode = function(){
       return "{Multilayered Node}";
     };
+    rect1.setId("jailhouseLayer1");
     appCanvas.add(rect1, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     var rect2 = new draw2d.shape.composite.Jailhouse();
@@ -58,6 +59,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect2.setColor(new GraphLang.Utils.Color("#FF0000"));
     rect2.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00"));
     // this.add(rect2, new draw2d.layout.locator.XYRelPortLocator(0,0));
+    rect2.setId("jailhouseLayer2");
     appCanvas.add(rect2, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     var rect3 = new draw2d.shape.composite.Jailhouse();
@@ -68,6 +70,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect3.setColor(new GraphLang.Utils.Color("#00FF00"));
     rect3.setBackgroundColor(new GraphLang.Utils.Color("#88BB66"));
     // this.add(rect3, new draw2d.layout.locator.XYRelPortLocator(0,0));
+    rect3.setId("jailhouseLayer3");
     appCanvas.add(rect3, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     //PROTECTIVE RECTANGLE
@@ -76,6 +79,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect0.setHeight(this.getHeight());
     rect0.setColor(new GraphLang.Utils.Color("#000000"));
     rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
+    rect0.setId("jalihouseLayerProtection0");
     appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(x,y));
     rect0.toBack();
     this.rect0 = rect0;
@@ -94,6 +98,46 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
       emitter.getParent().moveActiveLayer();
+    });
+    this.layerChooser.on("contextmenu", function(emitter, event){
+        $.contextMenu({
+            selector: 'body',
+            events:
+            {
+                hide:function(){ $.contextMenu( 'destroy' ); }
+            },
+            callback: $.proxy(function(key, options)
+            {
+               switch(key){
+               case "rename":
+                   setTimeout(function(){
+                       emitter.onDoubleClick();
+                   },10);
+                   break;
+               case "new":
+                   setTimeout(function(){
+                       _table.addEntity("_new_").onDoubleClick();
+                   },10);
+                   break;
+               case "delete":
+                   // with undo/redo support
+                   var cmd = new draw2d.command.CommandDelete(emitter);
+                   emitter.getCanvas().getCommandStack().execute(cmd);
+               default:
+                   break;
+               }
+
+            },this),
+            x:event.x,
+            y:event.y,
+            items:
+            {
+                "rename": {name: "Rename"},
+                "new":    {name: "New Entity"},
+                "sep1":   "---------",
+                "delete": {name: "Delete"}
+            }
+        });
     });
     this.add(this.layerChooser, new draw2d.layout.locator.TopLocator(this));
 
@@ -263,6 +307,18 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       }
     });
   },  //this comma doesn't matter it's ok and for future at least I don't forget, this has no effect on functionality of this class
+
+  /**
+   *  @method getLayer(index)
+   *  @description Return layer object at specified index.
+   */
+  getLayer: function(layerIndex){
+    return this.layers.get(layerIndex);
+  },
+
+  getAllLayers: function(){
+    return this.layers;
+  },
 
   translateToCppCode: function(){
     return "{Multilayered Node}";
