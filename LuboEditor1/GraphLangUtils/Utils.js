@@ -978,6 +978,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
       if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
     }
     if (nodeObj.NAME.toLowerCase().search("multilayered") >= 0){
+
+      //ERROR: HERE SHOULD BE ALSO REMOVE FROM allNodes varaible!
       if (allMultilayeredNodes.indexOf(nodeObj) == -1) allMultilayeredNodes.push(nodeObj);
     }
   });
@@ -1002,13 +1004,13 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
+        /****************************************************************
+         *  LOOPS TRANSLATING
+         ****************************************************************/
+
         if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
           var loopObj = nodeObj;
           var loopObjIndex = allLoops.indexOf(loopObj)
-
-          /****************************************************************
-           *  LOOPS TRANSLATING
-           ****************************************************************/
 
           //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
           if (actualStep == loopObj.getUserData().executionOrder && loopObj.getUserData().wasTranslatedToCppCode != true){
@@ -1054,15 +1056,27 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
         /****************************************************************
          *  ADDING COMMENT ABOUT WHICH LAYER FOR MULTILAYER NODES.
          ****************************************************************/
-        //THIS DOESN'T RUN
-        // if (nodeObj.getParent() != undefined && nodeObj.getParent().NAME.toLowerCase().search("jailhouse") >= 0) cCode += nodeObj.translateToCppCode() + "      {" + nodeObj.getParent().getId() + "}\n";
-        // else cCode += nodeObj.translateToCppCode() + "\n";
+
+                //THIS DOESN'T RUN
+                // if (nodeObj.getParent() != undefined && nodeObj.getParent().NAME.toLowerCase().search("jailhouse") >= 0) cCode += nodeObj.translateToCppCode() + "      {" + nodeObj.getParent().getId() + "}\n";
+                // else cCode += nodeObj.translateToCppCode() + "\n";
 
         //first get all layer owner of specified node, it should be just one
         if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
         nodeObj.getUserData() != undefined &&
         nodeObj.getUserData().executionOrder != undefined &&
         nodeObj.getUserData().executionOrder == actualStep){
+
+
+
+                      /*************************************************
+                       *  HERE WILL BE PLACED RECURSIVE TRANSCRIPTING
+                       *  SAME AS FOR LOOP
+                       *                      .
+                       *                      .
+                       *                      .
+                       *************************************************/
+
           allMultilayeredNodes.each(function(multiLayerNodeIndex, multiLayerNodeObj){
             var isNodePartOfMultilayer = false;
             var nodeLayerOwner = new draw2d.util.ArrayList(); //node should be part of just one layer but in case I don't know what graphical error could happen so this should be bulletproof
@@ -1074,6 +1088,16 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
               }
             });
           });
+
+
+                      /*************************************************
+                       *  HERE WILL BE PLACED RECURSIVE TRANSCRIPTING
+                       *  SAME AS FOR LOOP
+                       *                      .
+                       *                      .
+                       *                      .
+                       *************************************************/
+
         }
 
     });
