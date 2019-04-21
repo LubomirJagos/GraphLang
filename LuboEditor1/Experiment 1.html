@@ -115,7 +115,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 14.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 15.js"></script> -->
-
+     <script src="./GraphLangSchematics/Default Schematic 17.js"></script>
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -358,8 +358,7 @@ function displayJSON(canvas){
 
    <div id="content">
    		<div id="toolbar"></div>
-   		<div id="canvas" class="" style="width:3000px; height:3000px;">
-      </div>
+   		<div id="canvas" style="width: 3000px; height: 3000px;"></div>
    </div>
 
    <div id="navigation" class="">
@@ -404,14 +403,14 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.ArduinoLib.Node.LJ42" data-label="GraphLang Arduino LJ42" class="palette_node_element draw2d_droppable">Arduino LJ42</div>
   </div>
 
-   <div style="position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
+   <div style="display: none; position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>
      Msg: <div id="logitem2"></div>
    </div>
 
    <!-- window with JSON representation of schematic -->
-   <div id="json" style="overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>
-   <div id="json2" style="overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray">
+   <div id="json" style="display: none; overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>
+   <div id="json2" style="display: none; overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray">
    </div>
 
 </body>

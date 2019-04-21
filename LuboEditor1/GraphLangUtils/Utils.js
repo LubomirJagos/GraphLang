@@ -1233,7 +1233,21 @@ GraphLang.Utils.getCanvasJson = function(canvas){
       var clearedJson = [];
       var wrongJson = [];
       for (var k = 0; k < json.length; k++){
-        if (json[k].type.toLowerCase().search("tunnel") == -1) clearedJson.push(json[k]);
+        if (
+          json[k].type.toLowerCase().search("tunnel") == -1 &&
+          // (json[k].type.toLowerCase().search("graphlang") >= 0 ||
+          //  json[k].type.toLowerCase().search("connection") >= 0)
+          1
+        )
+        {
+          clearedJson.push(json[k]);
+        }else if (json[k].type.toLowerCase().search("multilayered") >= 0){
+          var multilayerChooser = canvas.getFigure(json[k].id).getChildren().get(0);
+
+          var chooserObj =  new draw2d.shape.basic.Label(multilayerChooser);
+          clearedJson.push(chooserObj);
+          // alert(multilayerChooser.text);
+        }
         else wrongJson.push(json[k]);
       }
       jsonStr = JSON.stringify(clearedJson, null, 2);

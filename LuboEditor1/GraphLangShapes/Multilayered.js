@@ -9,16 +9,14 @@
  */
 GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   NAME: "GraphLang.Shapes.Basic.Loop.Multilayered",
-  constructor(obj){
-    obj && Object.assign(this, obj);
-  },
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
   //   executionOdrder: -1,
   //   wasTranslatedToCppCode: false
   // },
   init:function(attr, setter, getter){
-    this._super(attr, setter, getter);
+    // this._super(attr, setter, getter);
+    this._super( $.extend({},attr), setter, getter);
 
     // port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.7, 10));
     // port.setConnectionDirection(3);
@@ -32,8 +30,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.setStroke(2);
 
     //TESTING LAYERS
-    var x = this.getX();
-    var y = this.getY();
+    var x = 20;//this.getX();
+    var y = 20;//this.getY();
 
     // var rect1 = new draw2d.shape.composite.Raft();
     var rect1 = new draw2d.shape.composite.Jailhouse();
@@ -94,7 +92,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.activeLayer = 0;
 
     //TOP LAYER SELECTOR
-    this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
+    // this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
+    this.layerChooser = new draw2d.shape.basic.Label();
+    this.layerChooser.setText("aaaa...");
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
       emitter.getParent().moveActiveLayer();
@@ -172,6 +172,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.on("show", function(emitter){
       emitter.moveActiveLayer();
     });
+
   },
 
   //this function is also called in gui/View.js after placing multilayer node to canvas to right placed layers
@@ -319,6 +320,68 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   getAllLayers: function(){
     return this.layers;
   },
+
+  getLayerChooser: function(){
+    return this.layerChooser;
+  },
+
+
+
+
+
+
+
+  //added by LuboJ, here is showed how to add attributes which
+  //then are serialized into json and could be readed to load schematci
+
+
+  /**
+   * @method
+   * Return an objects with all important attributes for XML or JSON serialization
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes: function()
+  {
+      var memento = this._super();
+
+      this.myLabel = "myLabel changed";
+      this.graphlangLayerOwner = "...here should be id of owner parent.....";
+
+      memento.myLabel = this.myLabel;
+      memento.graphlangLayerOwner = this.graphlangLayerOwner;
+
+      return memento;
+  },
+
+  /**
+   * @method
+   * Read all attributes from the serialized properties and transfer them into the shape.
+   *
+   * @param {Object} memento
+   * @returns
+   */
+  setPersistentAttributes: function(memento)
+  {
+      this._super(memento);
+      if(typeof memento.myLabel !=="undefined"){
+          this.setText(memento.myLabel);
+      }
+      if(typeof memento.graphlangLayerOwner !=="undefined"){
+          //          ...do something with value...
+      }
+
+  },
+
+
+
+
+
+
+
+
+
+
 
   translateToCppCode: function(){
     return "{Multilayered Node}";
