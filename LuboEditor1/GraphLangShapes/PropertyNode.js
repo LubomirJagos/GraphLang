@@ -197,7 +197,7 @@ GraphLang.Shapes.ItemsNode.PropertyNode = draw2d.shape.layout.VerticalLayout.ext
       * Read all attributes from the serialized properties and transfer them into the shape.
       *
       * @param {Object} memento
-      * @return
+      * @return {Object}
       */
      setPersistentAttributes : function(memento)
      {

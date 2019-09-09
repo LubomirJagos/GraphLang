@@ -61,6 +61,7 @@
 
       <script src="./GraphLangShapes/WhileLoop.js"></script>
       <script src="./GraphLangShapes/ForLoop.js"></script>
+      <script src="./GraphLangShapes/FeedbackNode.js"></script>
     <!-- End of GraphLang shapes-->
 
     <!-- These are mine arduino shapes added. LuboJ. -->
@@ -333,7 +334,7 @@ function displayJSON(canvas){
     var writer = new draw2d.io.json.Writer();
     var jsonStr = "";
     writer.marshal(appCanvas,function(json){
-      //LuboJ modification to remove Tunnels, tehy appear in json after executionOrder, THIS IS PROBLEM, this solution is just for now
+      //LuboJ modification to remove Tunnels, they appear in json after executionOrder, THIS IS PROBLEM, this solution is just for now
       var clearedJson = [];
       var wrongJson = [];
       for (var k = 0; k < json.length; k++){
@@ -400,6 +401,7 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="GraphLang Arduino ternarOperator" class="palette_node_element draw2d_droppable">Arduino ternarOperator</div>
       <div data-shape="GraphLang.ArduinoLib.Node.LJ42" data-label="GraphLang Arduino LJ42" class="palette_node_element draw2d_droppable">Arduino LJ42</div>
       <div data-shape="GraphLang.ArduinoLib.Node.ArduinoNano" data-label="GraphLang Arduino ArduinoNano" class="palette_node_element draw2d_droppable">Arduino Nano</div>
+      <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="GraphLang FeedbackNode" class="palette_node_element draw2d_droppable">GraphLang FeedbackNode</div>
   </div>
 
    <div style="display: none; position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">

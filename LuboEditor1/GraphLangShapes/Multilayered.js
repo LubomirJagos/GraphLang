@@ -29,7 +29,10 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.setHeight(220);
     this.setStroke(2);
 
-    //TESTING LAYERS
+    /**********************************************************************************
+     *  LAYERS
+     **********************************************************************************/
+
     var x = 20;//this.getX();
     var y = 20;//this.getY();
 
@@ -46,7 +49,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect1.translateToCppCode = function(){
       return "{Multilayered Node}";
     };
-    rect1.setId("jailhouseLayer1");
+    rect1.setId("jailhouseLayer0");
     appCanvas.add(rect1, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     var rect2 = new draw2d.shape.composite.Jailhouse();
@@ -57,7 +60,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect2.setColor(new GraphLang.Utils.Color("#FF0000"));
     rect2.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00"));
     // this.add(rect2, new draw2d.layout.locator.XYRelPortLocator(0,0));
-    rect2.setId("jailhouseLayer2");
+    rect2.setId("jailhouseLayer1");
     appCanvas.add(rect2, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     var rect3 = new draw2d.shape.composite.Jailhouse();
@@ -68,7 +71,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect3.setColor(new GraphLang.Utils.Color("#00FF00"));
     rect3.setBackgroundColor(new GraphLang.Utils.Color("#88BB66"));
     // this.add(rect3, new draw2d.layout.locator.XYRelPortLocator(0,0));
-    rect3.setId("jailhouseLayer3");
+    rect3.setId("jailhouseLayer2");
     appCanvas.add(rect3, new draw2d.layout.locator.XYAbsPortLocator(x,y));
 
     //PROTECTIVE RECTANGLE
@@ -84,21 +87,27 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this._onDragStart = this.onDragStart;
 
     // this.rect1 = rect1;
-    // this.rect2 = rect2;
     this.layers = new draw2d.util.ArrayList();
     this.layers.push(rect1);
     this.layers.push(rect2);
     this.layers.push(rect3);
     this.activeLayer = 0;
 
-    //TOP LAYER SELECTOR
+    /**********************************************************************************
+     *  LAYER SELECTOR
+     **********************************************************************************/
+
     // this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
     this.layerChooser = new draw2d.shape.basic.Label();
-    this.layerChooser.setText("aaaa...");
+    this.layerChooser.setText(this.layers.get(0).getId());  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+
+    //CLICK ON LAYER NAME AT TOP OF MULTILAYER STRUCTURE WHERE ARE THEIR NAMES
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
       emitter.getParent().moveActiveLayer();
     });
+
+    //RIGHT CLICK ON LAYERS NAME SELECTOR
     this.layerChooser.on("contextmenu", function(emitter, event){
         $.contextMenu({
             selector: 'body',
@@ -106,23 +115,33 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
             {
                 hide:function(){ $.contextMenu( 'destroy' ); }
             },
+
+            //these functions are run after user click on some context menu option
             callback: $.proxy(function(key, options)
             {
                switch(key){
-               case "rename":
+               case "rename":                       // <--- Continue here, implement renaming layers, now it's static shit doing nothing
                    setTimeout(function(){
                        emitter.onDoubleClick();
                    },10);
                    break;
                case "new":
+                  /* this was part of code in example but it's not running so it's disabled, I need to change layer name no selector, it's updated based on active layer ID
                    setTimeout(function(){
                        _table.addEntity("_new_").onDoubleClick();
                    },10);
+                  */
+                   //alert("Layers count: " + emitter.getParent().layers.getSize());
+                   emitter.getParent().addLayer();
+
                    break;
                case "delete":
                    // with undo/redo support
+                   /*
                    var cmd = new draw2d.command.CommandDelete(emitter);
                    emitter.getCanvas().getCommandStack().execute(cmd);
+                   */
+                   emitter.getParent().removeLayer(this.activeLayer);
                default:
                    break;
                }
@@ -154,6 +173,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.rect0.translateToCppCode = translateToCppCode2FuncRef;
 
     //luboJ missing condition when jailhouse is not getting smaller because nodes inside it
+    //ERROR, MISSING CONDITION TO RESTRICT RESIZE ACCORDING TO NODES INSIDE LAYERS
     this.on("resize", function(emitter){
       emitter.layers.each(function(layerIndex, layerObj){
         layerObj.setWidth(emitter.getWidth());
@@ -249,8 +269,10 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     return false;
   },
 
-
-
+  /**
+   * @name switchActiveLayer
+   * @description Brings to front next layer from internal array and also all objects on this layer, when last layer is selected, then it starts from beginning.
+   */
   switchActiveLayer: function(){
     this.activeLayer++;
     if (this.activeLayer >= this.layers.getSize()) this.activeLayer = 0;
@@ -262,12 +284,18 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     });
 
     this.bringsAllTunnelsToFront();
+
+    this.layerChooser.setText(this.layers.get(this.activeLayer).getId());
   },
 
   onDragEnd: function(x,y,shiftKey, ctrlKey){
     this.moveActiveLayer();
   },
 
+  /**
+   * @name bringsAllTunnelsToFront
+   * @description Brings all tunnels owned by structure to front, tunnels are owned by Multilayer structure not by layers, so they are common for all layers and always should be displayed at front of structure to be visible. But wires which go from tunnel to particular layer are owned by that layer.
+   */
   bringsAllTunnelsToFront: function(){
     var activeLayer = this.layers.get(this.activeLayer);
 
@@ -359,7 +387,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
    * Read all attributes from the serialized properties and transfer them into the shape.
    *
    * @param {Object} memento
-   * @returns
    */
   setPersistentAttributes: function(memento)
   {
@@ -374,16 +401,73 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   },
 
 
-
-
-
-
-
-
-
-
+  /********************************************************************************************************************
+   *  Functions below are implemented by me (LuboJ)
+   ********************************************************************************************************************/
 
   translateToCppCode: function(){
     return "{Multilayered Node}";
+  },
+
+  /**
+  * @method addLayer
+  * @description Add new layer at the end of all layers.
+   */
+  addLayer: function(){
+    var newLayer = new draw2d.shape.composite.Jailhouse();
+    newLayer.setWidth(this.getWidth());
+    newLayer.setHeight(this.getHeight());
+    newLayer.setColor(new GraphLang.Utils.Color("#eb34c6"));  //layer border color
+
+    newLayer.setBackgroundColor(new GraphLang.Utils.Color("#eb34c6"));
+    newLayer.setBackgroundColor(new GraphLang.Utils.Color(
+      Math.round(Math.random()*255),
+      Math.round(Math.random()*255),
+      Math.round(Math.random()*255)
+    ));
+
+    newLayer.setId("jailhouseLayer" + this.layers.getSize());                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
+    this.layers.push(newLayer);
+    appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
+  },
+
+  /**
+   * @name removeLayer
+   * @param {Number} layer order which should be removed
+   * @description Removed layer from structure and also removes all contained nodes and wires. Remove function is call using CommandStack over all nodes contained inside layer. This way would be able to use "Undo" after layer is deleted. Now it's not needed, but it's proper way how to delete objects and have stored information about that for another purposes.
+   * NOTE, THERE IS IMPLEMENTED JUST REMOVING NODES INSIDE, NO OTHER ELEMENTS, SO THERE SHOULD BE RECURSIVELY CALL OF REMOVE FUNCTION OVER ALL OBJECTS INSIDE, BECAUSE IT'S OTHER THING TO REMOVE NODE AND REMOVE LOOP OR MULTILAYERED STRUCTURE, NEED TO THINK ABOUT THIS.
+   */
+  removeLayer: function(layerId){
+    if (this.layers.getSize() == 1) return; //DO NOTHING IF THERE IS JUST ONE LAYER, that's default layer it MUST BE THERE
+
+    var nodesToRemove = new draw2d.util.ArrayList();
+    this.layers.get(this.activeLayer).getAssignedFigures().each(function(nodeIndex, nodeObj){
+      nodesToRemove.push(nodeObj);
+    });
+    var activeLayerObj = this.layers.get(this.activeLayer);
+    for (var i = 0; i < nodesToRemove.getSize(); i++){
+      var cmd = new draw2d.command.CommandDelete(nodesToRemove.get(i));
+      nodesToRemove.get(i).getCanvas().getCommandStack().execute(cmd);  //remove from canvas
+
+      //delete object assignement to layer, but it will fire events to change layer position and dimension, so here I will reverse this action and set them back after calling function
+      var activeLayerX = activeLayerObj.getAbsoluteX();
+      var activeLayerY = activeLayerObj.getAbsoluteY();
+      var activeLayerWidth = activeLayerObj.getWidth();
+      var activeLayerHeight = activeLayerObj.getHeight();
+      //remove relation btw node and its layer
+      activeLayerObj.unassignFigure(nodesToRemove.get(i));  //remove from multilayer structure (jailhouse object)
+      //reversing dimensions and position change
+      activeLayerObj.setWidth(activeLayerWidth);
+      activeLayerObj.setHeight(activeLayerHeight);
+      activeLayerObj.setX(activeLayerX);
+      activeLayerObj.setY(activeLayerY);
+    }
+
+    var cmd = new draw2d.command.CommandDelete(activeLayerObj);
+    this.getCanvas().getCommandStack().execute(cmd);  //remove from canvas
+    this.layers.remove(activeLayerObj);
+    this.switchActiveLayer();
+
   }
+
 });
