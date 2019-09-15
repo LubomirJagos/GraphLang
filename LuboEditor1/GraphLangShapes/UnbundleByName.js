@@ -70,7 +70,12 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
                 {
                    switch(key){
                    case "add after this":
-									 		 emitter.getParent().add(new draw2d.shape.basic.Label({text:"    CC", resizeable:true, width: 50, height: 10, stroke:1}));
+									 		 //This add label without port, but context menu is set ok
+									 		 //emitter.getParent().add(new draw2d.shape.basic.Label({text:"    CC", resizeable:true, width: 50, height: 10, stroke:1}));
+
+											 //This add NumericConstant, and it has it's menu for choose, so context menu NOT RIGHT!, but it seems nice that it's running just so.
+											 emitter.getParent().add(new GraphLang.Shapes.Basic.NumericConstant({text:"__new__", resizeable:true, width: 50, height: 10, stroke:1}));
+
 											 emitter.getParent().getParent().updateAllItemsOncontext();	//Label (emitter) -> VerticalLayout (parent) -> UnbundleByName (parent)
                        break;
                    case "delete":
