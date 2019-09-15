@@ -78,8 +78,8 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
                 y:event.y,
                 items:
                 {
-                    "new":    {name: "New Entity"},
-                    "delete": {name: "Delete"}
+                    "add after this":    {name: "Add After This"},
+                    "delete": {name: "Delete This Item"}
                 }
             });
         });
