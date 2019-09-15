@@ -30,6 +30,16 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.setStroke(2);
 
     /**********************************************************************************
+     *  LAYER SELECTOR
+     **********************************************************************************/
+
+    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.7, 10));
+    port.setConnectionDirection(3);
+    port.setBackgroundColor("#00FF00");
+    port.setName("layerSelector");
+    port.setMaxFanOut(20);
+
+    /**********************************************************************************
      *  LAYERS
      **********************************************************************************/
 
@@ -121,9 +131,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
             {
                switch(key){
                case "rename":                       // <--- Continue here, implement renaming layers, now it's static shit doing nothing
-                   setTimeout(function(){
-                       emitter.onDoubleClick();
-                   },10);
+                   emitter.getParent().renameLayer();
                    break;
                case "new":
                   /* this was part of code in example but it's not running so it's disabled, I need to change layer name no selector, it's updated based on active layer ID
@@ -468,6 +476,13 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.layers.remove(activeLayerObj);
     this.switchActiveLayer();
 
+  },
+
+  renameLayer: function(){
+    //this.layerChooser.editor.start(this.layerChooser);
+    layerChooserEditor = new draw2d.ui.LabelEditor()
+    layerChooserEditor.start(this.layerChooser);
+    this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
   }
 
 });
