@@ -40,19 +40,23 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
       label3.installEditor(new draw2d.ui.LabelInplaceEditor());
 
       //create vertical list and push it into unbundler object
-      var container2 = new draw2d.shape.layout.VerticalLayout();
-      container2.add(label1);
-      container2.add(label2);
-      container2.add(label3);
-      this.add(container2, {row: 0, col:1});
+      this.items = new draw2d.shape.layout.VerticalLayout();
+      this.items.add(label1);
+      this.items.add(label2);
+      this.items.add(label3);
+      this.add(this.items, {row: 0, col:1});
 
 			//DEFAULT EXECUTION ORDER
       this.userData = {};
       this.userData.executionOrder = -1;
 			this.userData.wasTranslatedToCppCode = false;
 
-      //setting to show context menu when right click on each item in cluster, items are get from vertical layout which grouped them together
-      container2.getChildren().each(function(itemIndex, itemObj){
+			this.updateAllItemsOncontext();
+    },
+
+		updateAllItemsOncontext: function(){
+			//setting to show context menu when right click on each item in cluster, items are get from vertical layout which grouped them together
+      this.items.getChildren().each(function(itemIndex, itemObj){
         itemObj.on("contextmenu", function(emitter, event){
             $.contextMenu({
                 selector: 'body',
@@ -65,7 +69,9 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
                 callback: $.proxy(function(key, options)
                 {
                    switch(key){
-                   case "new":
+                   case "add after this":
+									 		 emitter.getParent().add(new draw2d.shape.basic.Label({text:"    CC", resizeable:true, width: 50, height: 10, stroke:1}));
+											 emitter.getParent().getParent().updateAllItemsOncontext();	//Label (emitter) -> VerticalLayout (parent) -> UnbundleByName (parent)
                        break;
                    case "delete":
                        break;
@@ -84,8 +90,7 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
             });
         });
       });
-    },
-
+		},
 
     /**
      * @method
