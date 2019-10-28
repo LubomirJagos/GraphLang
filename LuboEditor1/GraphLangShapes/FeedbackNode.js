@@ -19,12 +19,15 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.setBackgroundColor("#3F81F3");
      port.setName("out1");
      port.setMaxFanOut(20);
+     port.userData = {datatype: "undefined"};
+
      // Port
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(99.90984000000026, 16.393442622950822));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#F3D92E");
      port.setName("in1");
      port.setMaxFanOut(20);
+     port.userData = {datatype: "undefined"};
      this.persistPorts=false;
    },
 

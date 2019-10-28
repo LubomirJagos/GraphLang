@@ -20,6 +20,7 @@ GraphLang.Shapes.Basic.NumericConstant = draw2d.shape.basic.Label.extend({
     port.setName("out1");
     port.setMaxFanOut(20);
     port.userData = {};
+    port.userData.datatype = "undefined";
 
     /*****************************************************************************
      *  RIGHT CLICK CONTEXT MENU
@@ -39,31 +40,31 @@ GraphLang.Shapes.Basic.NumericConstant = draw2d.shape.basic.Label.extend({
                switch(key){
                case "int32":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
-                   port.userData.datatype = "int32";
+                   emitter.getOutputPort(0).userData.datatype = "int32";
                    break;
                case "uint":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
-                   port.userData.datatype = "uint";
+                   emitter.getOutputPort(0).userData.datatype = "uint";
                    break;
                case "float":
                    emitter.setColor(new draw2d.util.Color("#FFC300"));
-                   port.userData.datatype = "float";
+                   emitter.getOutputPort(0).userData.datatype = "float";
                    break;
                case "double":
                    emitter.setColor(new draw2d.util.Color("#900C3F"));
-                   port.userData.datatype = "double";
+                   emitter.getOutputPort(0).userData.datatype = "double";
                    break;
                case "bool":
                    emitter.setColor(new draw2d.util.Color("#75FF33"));
-                   port.userData.datatype = "bool";
+                   emitter.getOutputPort(0).userData.datatype = "bool";
                    break;
                case "String":
                    emitter.setColor(new draw2d.util.Color("#FF33F0"));
-                   port.userData.datatype = "String";
+                   emitter.getOutputPort(0).userData.datatype = "String";
                    break;
                default:
                    emitter.setColor(new draw2d.util.Color("#979595"));
-                   port.userData.datatype = "unknown";
+                   emitter.getOutputPort(0).userData.datatype = "unknown";
                    break;
                }
 

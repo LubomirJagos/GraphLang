@@ -24,6 +24,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       port.setBackgroundColor("#00FF00");
       port.setName("clusterInput");
       port.setMaxFanOut(20);
+			port.userData = {datatype: "cluster"};
 
 
 			//cluster type port
@@ -32,7 +33,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       portClusterType.setBackgroundColor("#7D1A4C");
       portClusterType.setName("clusterType");
       portClusterType.setMaxFanOut(20);
-
+			portClusterType.userData = {datatype: "cluster"};
 
       //create example labels, they will be pushed into unbundler object
       var label1 = new draw2d.shape.basic.Label({text:"AA", resizeable:true, width: 50, height: 10, stroke:1});
@@ -57,6 +58,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
 		updateAllItemsOncontext: function(){
 			//setting to show context menu when right click on each item in cluster, items are get from vertical layout which grouped them together
       this.items.getChildren().each(function(itemIndex, itemObj){
+//      	this.items.children.each(function(itemIndex, itemObj){
         itemObj.on("contextmenu", function(emitter, event){
             $.contextMenu({
                 selector: 'body',
@@ -73,13 +75,13 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
 									 		 //This add label without port, but context menu is set ok
 									 		 //emitter.getParent().add(new draw2d.shape.basic.Label({text:"    CC", resizeable:true, width: 50, height: 10, stroke:1}));
 
-											 //This add NumericConstant, and it has it's menu for choose, so context menu NOT RIGHT!, but it seems nice that it's running just so.
-											 emitter.getParent().add(new GraphLang.Shapes.Basic.NumericConstant({text:"__new__", resizeable:true, width: 50, height: 10, stroke:1}));
-
-											 emitter.getParent().getParent().updateAllItemsOncontext();	//Label (emitter) -> VerticalLayout (parent) -> UnbundleByName (parent)
+											 //This add item after item, index is get by searching object inside ArrayList to really get correct index of item
+											 insertAtIndex = emitter.getParent().getParent().items.getChildren().indexOf(emitter) + 1;
+ 											 emitter.getParent().getParent().addEntity("__new__", insertAtIndex);
                        break;
                    case "delete":
-                       break;
+									 		 emitter.getParent().getParent().removeEntity(itemObj);	//POSSIBLE TO ADD INDEX AFTER WHICH IT HAS TO ADD ITEM
+											 break;
                    default:
                        break;
                    }
@@ -96,6 +98,21 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
         });
       });
 		},
+
+		/**
+     * @method removeEntity(item)
+		 * @descritpitionRemove the entity with the given index from the DB table shape.<br>
+     * This method removes the entity without care of existing connections. Use
+     * a draw2d.command.CommandDelete command if you want to delete the connections to this entity too
+     *
+     * @param {String} txt the label to show
+     * @param {Number} [optionalIndex] index where to insert the entity
+     */
+    removeEntity: function(item)
+    {
+			this.items.remove(item);
+			this.updateAllItemsOncontext();
+    },
 
     /**
      * @method
@@ -126,72 +143,21 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
 
 			 // label.installEditor(new draw2d.ui.LabelEditor());
 	     var input = label.createPort("input");
+			 input.userData = {};
+			 input.userData.datatype = "bool";
 
-       input.setName("input_"+label.id);
+       input.setName("input_" + label.id);
 
-       var _table=this;
-       label.on("contextmenu", function(emitter, event){
-           $.contextMenu({
-               selector: 'body',
-               events:
-               {
-                   hide:function(){ $.contextMenu( 'destroy' ); }
-               },
-               callback: $.proxy(function(key, options)
-               {
-                  switch(key){
-                  case "rename":
-                      setTimeout(function(){
-                          emitter.onDoubleClick();
-                      },10);
-                      break;
-                  case "new":
-                      setTimeout(function(){
-                          _table.addEntity("_new_").onDoubleClick();
-                      },10);
-                      break;
-                  case "delete":
-                      // with undo/redo support
-                      var cmd = new draw2d.command.CommandDelete(emitter);
-                      emitter.getCanvas().getCommandStack().execute(cmd);
-                  default:
-                      break;
-                  }
-
-               },this),
-               x:event.x,
-               y:event.y,
-               items:
-               {
-                   "rename": {name: "Rename"},
-                   "new":    {name: "New Entity"},
-                   "sep1":   "---------",
-                   "delete": {name: "Delete"}
-               }
-           });
-       });
-
-	     if($.isNumeric(optionalIndex)){
-             this.items.add(label, null, optionalIndex+1);
+       var _table = this;
+	     if($.isNumeric(optionalIndex) && optionalIndex < this.items.getChildren().getSize()){
+             this.items.add(label, null, optionalIndex);
 	     }
 	     else{
 	         this.items.add(label);
 	     }
 
+			 this.updateAllItemsOncontext();	//Label (emitter) -> VerticalLayout (parent) -> UnbundleByName (parent)
 	     return label;
-    },
-
-    /**
-     * @method
-     * Remove the entity with the given index from the DB table shape.<br>
-     * This method removes the entity without care of existing connections. Use
-     * a draw2d.command.CommandDelete command if you want to delete the connections to this entity too
-     *
-     * @param {Number} index the index of the entity to remove
-     */
-    removeEntity: function(index)
-    {
-        this.remove(this.children.get(index+1).figure);
     },
 
     /**

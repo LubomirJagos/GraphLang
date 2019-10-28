@@ -12,37 +12,40 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
       init:function(attr, setter, getter)
       {
         this._super( $.extend({stroke:0, bgColor:null, width:84.39610736639997,height:60},attr), setter, getter);
+
         var port;
+        var portColor = new GraphLang.Utils.Color();
+
         // in1
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
         port.setConnectionDirection(3);
-        port.setBackgroundColor("#37B1DE");
         port.setName("in1");
         port.setMaxFanOut(20);
 
         port.userData = {};
         port.userData.datatype = "int32";
+        port.setBackgroundColor(portColor.getByName(port.userData.datatype));
 
         // in2
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
         port.setConnectionDirection(3);
-        port.setBackgroundColor("#37B1DE");
         port.setName("in2");
         port.setMaxFanOut(20);
 
         port.userData = {};
         port.userData.datatype = "int32";
+        port.setBackgroundColor(portColor.getByName(port.userData.datatype));
 
         // out1
         port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.21706472401709, 48.919565994667));
         port.setConnectionDirection(1);
-        port.setBackgroundColor("#37B1DE");
         port.setName("out1");
         port.setMaxFanOut(20);
         this.persistPorts=false;
 
         port.userData = {};
         port.userData.datatype = "int32";
+        port.setBackgroundColor(portColor.getByName(port.userData.datatype));
       },
 
       createShapeElement : function()

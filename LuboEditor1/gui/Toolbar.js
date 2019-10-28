@@ -210,6 +210,12 @@ example.Toolbar = Class.extend({
  			this.exportCanvasAsPNGButton  = $("<button id=\"exportCanvasAsPNGButton\">exportCanvasAsPNG</button>");
  			this.html.append(this.exportCanvasAsPNGButton);
 
+			/**
+ 		  *	setPortsColorByDatatype Button
+ 			*/
+ 			this.setPortsColorByDatatypeButton  = $("<button id=\"setPortsColorByDatatypeButton\">setPortsColorByDatatype</button>");
+ 			this.html.append(this.setPortsColorByDatatypeButton);
+
 	},
 
 	/**

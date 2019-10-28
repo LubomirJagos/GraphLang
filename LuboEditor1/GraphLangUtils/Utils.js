@@ -1377,3 +1377,19 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
            image.src = png;
         });
 }
+
+/**
+ * @method setPortsColorByDatatype(canvas)
+ * @param {draw2d.Canvas} canvas - schematic where ports will be colorized
+ * @description Colorize all ports in schematic according to theirs datatypes.
+ */
+GraphLang.Utils.setPortsColorByDatatype = function setWiresColorByPorts(canvas){
+  canvas.getAllPorts().each(function(portIndex, portObj){
+    var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
+    // if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+    // else var lineColor = color.getByName("broken");
+    var portColor = color.getByName(portObj.getUserData().datatype);  //get hexadecimal color string from it's name
+    portObj.useGradient = false;
+    portObj.setBackgroundColor(portColor);  //set wire color
+  });
+}

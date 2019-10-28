@@ -190,6 +190,13 @@ document.addEventListener("DOMContentLoaded",function () {
                 portDatatype = portDatatype ? portDatatype : 'broken';
                 lastCommand.connection.setColor(wireColor.getByName(portDatatype));
               }
+
+              /*
+               *  Recalculate all tunnels. This should be act just for particular wire, but for now I don't have this function just for one wire.
+               *  THIS IS NOT RUNNING HOW IT SHOULD BE, BUT FOR DEBUGGING PROBABLY ENOUGH GOOD
+               *    It's creating tunnels even when block is moved and wire goes through structures like while or case
+               */
+               GraphLang.Utils.detectTunnels(appCanvas);
   	      }
   	  });
 
@@ -372,6 +379,13 @@ document.addEventListener("DOMContentLoaded",function () {
        GraphLang.Utils.getCanvasAsPNG(appCanvas);
       }));
 
+      /**************************************
+      *  BUTTON "setPortsColorByDatatypeButton"
+      **************************************/
+      $("#setPortsColorByDatatypeButton").button().click($.proxy(function(){
+       GraphLang.Utils.setPortsColorByDatatype(appCanvas);
+      }));
+
 });
 
 /**
@@ -426,8 +440,14 @@ function displayJSON(canvas){
         <img src="GraphLangSymbols/Arduino_clusterDatatype.png" />
         GraphLang ClusterDatatype
       </div>
-      <div data-shape="GraphLang.Shapes.Basic.Array" data-label="GraphLang Array" class="palette_node_element draw2d_droppable">GraphLang Array</div>
-      <div data-shape="GraphLang.Shapes.Basic.NumericConstant" data-label="GraphLang NumericConstant" class="palette_node_element draw2d_droppable">GraphLang NumericConstant</div>
+      <div data-shape="GraphLang.Shapes.Basic.Array" data-label="GraphLang Array" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/Array.png" />
+        GraphLang Array
+      </div>
+      <div data-shape="GraphLang.Shapes.Basic.NumericConstant" data-label="GraphLang NumericConstant" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/NumericConstant.png" />
+        GraphLang NumericConstant
+      </div>
       <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="GraphLang BundleByName" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/bundleByName.png" />
         GraphLang BundleByName

@@ -21,7 +21,7 @@ GraphLang.ArduinoLib.Node.toStr = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "double";
+        port.userData.datatype = "string";
 
         // out1
         port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.20681380646752, 56.73058197766178));
