@@ -41,6 +41,9 @@ GraphLang.Shapes.Basic.ClusterDatatype = GraphLang.Shapes.Basic.Loop.extend({
     port.setName("layerSelector");
     port.setMaxFanOut(20);
 
+    port.userData = {};
+    port.userData.datatype = "cluster";
+
     //USER DATA/
     this.userData = {};
     this.userData.executionOrder = 1;

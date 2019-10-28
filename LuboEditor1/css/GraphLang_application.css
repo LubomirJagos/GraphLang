@@ -1,3 +1,7 @@
+.palette_node_element{
+ /* float: left; */
+}
+
 .palette_node_element img{
  width:100%;
 }

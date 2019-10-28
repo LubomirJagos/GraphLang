@@ -8,7 +8,7 @@ var HoverConnection = draw2d.Connection.extend({
             source: sourcePort,
             target: targetPort,
             stroke: 1.35,
-            // color: sourcePort == "int32" ? "#0000FF" : "#FFFF00" //LuboJ experiment
+            //color: sourcePort == "int32" ? "#0000FF" : "#FFFF00" //LuboJ experiment
         });
 
         this.on("dragEnter", function (emitter, event) {

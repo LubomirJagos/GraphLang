@@ -131,9 +131,16 @@
 document.addEventListener("DOMContentLoaded",function () {
      var app  = new example.Application();
 
+     /**
+      *   WIRE CONNECTION policy
+      */
      app.view.installEditPolicy(  new draw2d.policy.connection.DragConnectionCreatePolicy({
         createConnection: function(){
-            return new HoverConnection();
+            var newWire = new HoverConnection();
+            var newWireColor = new GraphLang.Utils.Color();
+            newWire.setColor(newWireColor.getByName('broken'));
+
+            return newWire;
         },
         delegateTarget: function(requestingFigure, connectTarget){
             // we allow that a figure with a special class is droppable to a connection
@@ -146,6 +153,15 @@ document.addEventListener("DOMContentLoaded",function () {
         }
       }));
 
+
+
+
+
+//draw2d.command.CommandStackListener
+
+
+
+
       /*
        *  KEYBOARD reactions
        */
@@ -153,12 +169,24 @@ document.addEventListener("DOMContentLoaded",function () {
       app.view.installEditPolicy(new GraphLang.Utils.KeyboardDeletePolicy());
 
       /**
+       *  Adding actions TRIGGERED AFTER COMMAND STACK WAS CHANGED, ie. some command run succesfully
        *  Update JSON representation of canvas
        */
       appCanvas = app.view;
       app.view.getCommandStack().addEventListener(function(e){
-  	      if(e.isPostChangeEvent()){
-  	          displayJSON(appCanvas);
+          //postChangeEvent is notification when command already run
+          if(e.isPostChangeEvent()){
+  	          displayJSON(appCanvas);              //update JSON string somewhere in log window on canvas
+
+
+              /*
+               *  Change wire color by source port.
+               */
+              var lastCommand = e.getCommand();
+              if (lastCommand.getLabel() == 'Connect Ports'){
+                var wireColor = new GraphLang.Utils.Color();
+                lastCommand.connection.setColor(wireColor.getByName(lastCommand.source.userData.datatype));
+              }
   	      }
   	  });
 
@@ -500,7 +528,7 @@ function displayJSON(canvas){
      Msg: <div id="logitem2"></div>
    </div>
 
-   <div style="position: absolute; left: 220px; bottom: 20px; width: 620px; height: 220px; background: none;">
+   <div style="position: absolute; left: 220px; bottom: 20px; width: 400px; height: 220px; background: none;">
      <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
 
      <div id="imgDiv" style="overflow: hidden; height: 200px; width: 200px; background: yellow;">
