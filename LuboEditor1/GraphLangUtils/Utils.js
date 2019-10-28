@@ -1330,9 +1330,13 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
            srcWidth = selection.getWidth() + 20;
            srcHeight = selection.getHeight() + 20;
 
+           srcRatio = srcWidth / srcHeight;
+
            //GRAB IMAGE CONTENT AND DRAW IT ONTO CANVAS, ADVATAGE IS THAT WE CAN DO CROP JUST PART OF CANVAS
            myCanvas = document.getElementById('myCanvas');
            ctx = myCanvas.getContext('2d');
+           targetWidth = myCanvas.width;
+           targetHeight = myCanvas.height;
 /*
            ctx.drawImage(img ,sx, sy, swidth, sheight, x, y, width, height);
 
@@ -1354,12 +1358,21 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
              ctx.fillStyle = "#FFFFFF";
              ctx.fill();
              //put on canvas currently selected object
-             ctx.drawImage(image,
-                 srcX, srcY,   // Start at 70/20 pixels from the left and the top of the image (crop),
-                 srcWidth, srcHeight,   // "Get" a `50 * 50` (w * h) area from the source image (crop),
-                 0, 0,     // Place the result at 0, 0 in the canvas,
-                 100, 100
-             ); // With as width / height: 100 * 100 (scale)
+             if (srcWidth > srcHeight){
+               ctx.drawImage(image,
+                   srcX, srcY,   // Start at 70/20 pixels from the left and the top of the image (crop),
+                   srcWidth, srcHeight,   // "Get" a `50 * 50` (w * h) area from the source image (crop),
+                   0, 0,     // Place the result at 0, 0 in the canvas,
+                   targetWidth, srcHeight * targetWidth / srcWidth
+               ); // With as width / height: 100 * 100 (scale)
+            }else{
+              ctx.drawImage(image,
+                  srcX, srcY,
+                  srcWidth, srcHeight,
+                  0, 0,
+                  srcWidth * targetHeight / srcHeight, targetHeight
+              ); // With as width / height: 100 * 100 (scale)
+            }
            };
            image.src = png;
         });
