@@ -332,6 +332,14 @@ document.addEventListener("DOMContentLoaded",function () {
       $("#getCppCode2Button").button().click($.proxy(function(){
        GraphLang.Utils.getCppCode2(appCanvas);
       }));
+
+      /**************************************
+      *  BUTTON "getExportCanvasAsPNGButton"
+      **************************************/
+      $("#exportCanvasAsPNGButton").button().click($.proxy(function(){
+       GraphLang.Utils.getCanvasAsPNG(appCanvas);
+      }));
+
 });
 
 /**
@@ -367,7 +375,7 @@ function displayJSON(canvas){
 
    <div id="content">
    		<div id="toolbar"></div>
-   		<div id="canvas" style="width: 3000px; height: 3000px;"></div>
+   		<div id="canvas" style="width: 500px; height: 500px;"></div>
    </div>
 
    <div id="navigation" class="">
@@ -420,9 +428,16 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="GraphLang FeedbackNode" class="palette_node_element draw2d_droppable">GraphLang FeedbackNode</div>
   </div>
 
+   <!--
+    Status bar and logs, display set to none!
+   -->
    <div style="display: none; position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>
      Msg: <div id="logitem2"></div>
+   </div>
+   <div style="position: absolute; left: 220px; bottom: 20px; width: 320px; height: 220px; background: none;">
+     <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;position:absolute; top:10px; left:10px; width:150; height:150;border:3px solid gray; background: #FFFFFF;"
+     />
    </div>
 
    <!-- window with JSON representation of schematic -->

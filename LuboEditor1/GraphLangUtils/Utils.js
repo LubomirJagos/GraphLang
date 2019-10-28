@@ -1303,3 +1303,24 @@ GraphLang.Utils.getCppCode2 = function(canvas){
         copyElement.remove();
 
 }
+
+
+/**
+ * @method getCanvasAsPNG(canvas)
+ * @param {draw2d.Canvas} canvas - schematic which will be exported as PNG base64 encoded.
+ * @description Copy diagram as PNG image.
+ */
+GraphLang.Utils.getCanvasAsPNG = function(canvas){
+        var writer = new draw2d.io.png.Writer();
+        writer.marshal(canvas,function(png){
+           $("#preview").attr("src",png);
+
+           //this is element which content is placed into clipboard
+           var copyElement = document.createElement('textarea');
+           copyElement.innerHTML = png;
+           copyElement = document.body.appendChild(copyElement);
+           copyElement.select();
+           document.execCommand('copy');
+           copyElement.remove();
+        });
+}

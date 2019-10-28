@@ -203,6 +203,13 @@ example.Toolbar = Class.extend({
  			*/
  			this.getCppCode2Button  = $("<button id=\"getCppCode2Button\">getCppCode2</button>");
  			this.html.append(this.getCppCode2Button);
+
+			/**
+ 		  *	exportCanvasAsPNG Button
+ 			*/
+ 			this.exportCanvasAsPNGButton  = $("<button id=\"exportCanvasAsPNGButton\">exportCanvasAsPNG</button>");
+ 			this.html.append(this.exportCanvasAsPNGButton);
+
 	},
 
 	/**
