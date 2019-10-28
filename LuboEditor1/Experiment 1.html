@@ -185,7 +185,10 @@ document.addEventListener("DOMContentLoaded",function () {
               var lastCommand = e.getCommand();
               if (lastCommand.getLabel() == 'Connect Ports'){
                 var wireColor = new GraphLang.Utils.Color();
-                lastCommand.connection.setColor(wireColor.getByName(lastCommand.source.userData.datatype));
+                if (lastCommand.source.userData == null) return lastCommand.connection.setColor(wireColor.getByName('broken'));
+                var portDatatype = lastCommand.source.userData.datatype;
+                portDatatype = portDatatype ? portDatatype : 'broken';
+                lastCommand.connection.setColor(wireColor.getByName(portDatatype));
               }
   	      }
   	  });
