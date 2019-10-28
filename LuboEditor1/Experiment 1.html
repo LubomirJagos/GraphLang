@@ -375,7 +375,7 @@ function displayJSON(canvas){
 
    <div id="content">
    		<div id="toolbar"></div>
-   		<div id="canvas" style="width: 500px; height: 500px;"></div>
+   		<div id="canvas" style="width: 1000px; height: 1000px;"></div>
    </div>
 
    <div id="navigation" class="">
@@ -435,9 +435,13 @@ function displayJSON(canvas){
      Dropped obj: <div id="logitem1"></div>
      Msg: <div id="logitem2"></div>
    </div>
-   <div style="position: absolute; left: 220px; bottom: 20px; width: 320px; height: 220px; background: none;">
-     <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;position:absolute; top:10px; left:10px; width:150; height:150;border:3px solid gray; background: #FFFFFF;"
-     />
+
+   <div style="position: absolute; left: 220px; bottom: 20px; width: 420px; height: 220px; background: none;">
+     <canvas id="myCanvas" width="150px" height="150px" style="background: red; float: left;"></canvas>
+
+     <div id="imgDiv" style="overflow: hidden; height: 200px; width: 200px; background: yellow;">
+       <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
+     </div>
    </div>
 
    <!-- window with JSON representation of schematic -->

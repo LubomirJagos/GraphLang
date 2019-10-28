@@ -1315,6 +1315,7 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
         writer.marshal(canvas,function(png){
            $("#preview").attr("src",png);
 
+           //GRAB WHOLE CANVAS AS IMAGE AND PUT IT AS base64 encoded PNG into <img>
            //this is element which content is placed into clipboard
            var copyElement = document.createElement('textarea');
            copyElement.innerHTML = png;
@@ -1322,5 +1323,44 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
            copyElement.select();
            document.execCommand('copy');
            copyElement.remove();
+
+           var selection = canvas.getPrimarySelection();
+           srcX = selection.getX() - 10;
+           srcY = selection.getY() - 10;
+           srcWidth = selection.getWidth() + 20;
+           srcHeight = selection.getHeight() + 20;
+
+           //GRAB IMAGE CONTENT AND DRAW IT ONTO CANVAS, ADVATAGE IS THAT WE CAN DO CROP JUST PART OF CANVAS
+           myCanvas = document.getElementById('myCanvas');
+           ctx = myCanvas.getContext('2d');
+/*
+           ctx.drawImage(img ,sx, sy, swidth, sheight, x, y, width, height);
+
+           img     - Specifies the image, canvas, or video element to use
+           sx      - Optional. The x coordinate where to start clipping
+           sy      - Optional. The y coordinate where to start clipping
+           swidth  - Optional. The width of the clipped image
+           sheight - Optional. The height of the clipped image
+           x       - The x coordinate where to place the image on the canvas
+           y       - The y coordinate where to place the image on the canvas
+           width	 - Optional. The width of the image to use (stretch or reduce the image)
+           height	 - Optional. The height of the image to use (stretch or reduce the image)
+*/
+           var image = new Image();
+           image.onload = function() {
+             //ctx.globalAlpha = 1; //NOT RUNNING
+             ctx.beginPath();
+             ctx.rect(0, 0, 300, 300);
+             ctx.fillStyle = "#FFFFFF";
+             ctx.fill();
+             //put on canvas currently selected object
+             ctx.drawImage(image,
+                 srcX, srcY,   // Start at 70/20 pixels from the left and the top of the image (crop),
+                 srcWidth, srcHeight,   // "Get" a `50 * 50` (w * h) area from the source image (crop),
+                 0, 0,     // Place the result at 0, 0 in the canvas,
+                 100, 100
+             ); // With as width / height: 100 * 100 (scale)
+           };
+           image.src = png;
         });
 }
