@@ -1388,8 +1388,40 @@ GraphLang.Utils.setPortsColorByDatatype = function setWiresColorByPorts(canvas){
     var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
     // if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
     // else var lineColor = color.getByName("broken");
-    var portColor = color.getByName(portObj.getUserData().datatype);  //get hexadecimal color string from it's name
+    var portColor = color.getByName(
+      portObj.getUserData() !== null ? portObj.getUserData().datatype : "undefined"
+    );  //get hexadecimal color string from it's name
     portObj.useGradient = false;
     portObj.setBackgroundColor(portColor);  //set wire color
+  });
+}
+
+/**
+ *  @method setTunnelColorByWire(canvas)
+ *  @param {draw2d.Canvas} canvas - source canvas from where take tunnels, all included one which belongs to loop structures
+ *  @description Change color of each tunnel by connected wire datatype.
+ */
+GraphLang.Utils.setTunnelColorByWire = function(canvas){
+  var allNodes = canvas.getFigures();
+  var allTunnels = new draw2d.util.ArrayList();
+
+  //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
+  allNodes.each(function(nodeIndex, nodeObj){
+    //ADD ALL LOOP'S TUNNELS into node list\
+    // first search for all loops, because tunnels are part of them and then go through tunnels list
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      nodeObj.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
+          allTunnels.push(childObj);
+        }
+      });
+    }
+    var colorPicker = new GraphLang.Utils.Color();
+    allTunnels.each(function(tunnelOrder, tunnelObj){
+      tunnelObj.setBackgroundColor(
+        colorPicker.getByName(
+            tunnelObj.getInputPort(0).getConnections().first().getSource().userData.datatype
+        ));
+    });
   });
 }

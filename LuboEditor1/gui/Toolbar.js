@@ -216,6 +216,13 @@ example.Toolbar = Class.extend({
  			this.setPortsColorByDatatypeButton  = $("<button id=\"setPortsColorByDatatypeButton\">setPortsColorByDatatype</button>");
  			this.html.append(this.setPortsColorByDatatypeButton);
 
+			/**
+ 		  *	setTunnelColorByWire Button
+ 			*/
+ 			this.setTunnelColorByWireButton  = $("<button id=\"setTunnelColorByWireButton\">setTunnelColorByWire</button>");
+ 			this.html.append(this.setTunnelColorByWireButton);
+
+
 	},
 
 	/**

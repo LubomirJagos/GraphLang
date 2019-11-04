@@ -16,7 +16,7 @@
     <script src="./lib/jquery.layout.js"></script>
 
 <!--     <script src="../draw2d/dist/draw2d.js"></script>   -->
-    <script src="../draw2d_hardCopy/draw2d.js"></script>   
+    <script src="../draw2d_hardCopy/draw2d.js"></script>
 
     <script type="text/javascript">
       /**
@@ -126,7 +126,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 14.js"></script> -->
-    <!-- <script src="./GraphLangSchematics/Default Schematic 15.js"></script> -->
+    <script src="./GraphLangSchematics/Default Schematic 20.js"></script>
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -387,6 +387,12 @@ document.addEventListener("DOMContentLoaded",function () {
        GraphLang.Utils.setPortsColorByDatatype(appCanvas);
       }));
 
+      /**************************************
+      *  BUTTON "setPortsColorByDatatypeButton"
+      **************************************/
+      $("#setTunnelColorByWireButton").button().click($.proxy(function(){
+       GraphLang.Utils.setTunnelColorByWire(appCanvas);
+      }));
 });
 
 /**

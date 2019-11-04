@@ -24,7 +24,6 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     this.getChildren().each(function(childIndex, childObj){
       if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
         output.push(childObj.getInputPort(0));
-        childObj.getInputPort(0).setColor(new draw2d.util.Color("#0000FF")).setStroke(5); //<-- set stroke thicker for outside loop port, just for debugging
       }
       // else if (childObj.NAME.toLowerCase().search("righttunnel") >= 0){
       //   output.push(childObj.getOutputPort(0));
