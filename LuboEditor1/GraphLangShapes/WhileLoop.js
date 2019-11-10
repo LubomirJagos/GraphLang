@@ -22,8 +22,23 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
   },
 
   translateToCppCode: function(){
+    var cCode = "";
     this.getUserData().wasTranslatedToCppCode = true;
-    return "do{";
+
+    /*
+     *  WIRES INSIDE LOOP DECLARATION
+     */
+    cCode += "/* WHILE LOOP WIRES DECLARATION */\n";
+    GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
+      cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
+    });
+
+    /*
+     *  TRANSLATE WHILE LOOP beginning
+     */
+    cCode += "do{";
+
+    return cCode;
   },
   translateToCppCodePost: function(){
     var cCode = "";

@@ -989,10 +989,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   var cCode = "";
 
 
-  //WIRES DECLARATION
-  // LuboJ, for now all global
+  /*
+   *  WIRES DECLARATION
+   *  globals at level of canvas
+   */
   if (nestedLevel == 0){
-    canvas.getLines().each(function(lineIndex, lineObj){
+    this.getDirectChildrenWires(canvas, null).each(function(lineIndex, lineObj){
       //LuboJ, for now we trust that each line is wire
       //if (lineObj.NAME.toLowerCase().search(""))
       var wireDatatype = lineObj.getSource().getUserData().datatype;
@@ -1001,6 +1003,9 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
     });
   }
 
+  /*
+   *  TUNNELs declaration
+   */
 
 
   for (var actualStep = 0; actualStep < 20; actualStep++){
@@ -1201,15 +1206,50 @@ GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
  * @param {draw2d.Figure} parentObj - returned wires are direct descendant of this object
  * @description Returns wires which are direct descendant of provided object.
  */
-GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObj = null){
-  // alert("getDirectChildrenWires() entered");
+GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObjId = null){
   var directChildrenWires = new draw2d.util.ArrayList();
-  canvas.getLines().each(function(lineIndex, lineObj){
-    if (lineObj.getParent() == parentObj){
-      directChildrenWires.push(lineObj);
+  var allLoops = new draw2d.util.ArrayList();
+
+  //first get all loops, wire could be inside them
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("loop") >= 0){
+      allLoops.push(figureObj);
     }
   });
-  alert(directChildrenWires.getSize());
+
+  //clear all lines parents
+  canvas.getLines().each(function(lineIndex, lineObj){
+    if (lineObj.userData == null) lineObj.userData = {};
+    lineObj.userData.wireOwnerId = null;
+  });
+
+  //go through all loops and write into their abroad lines that it's their parent
+  allLoops.each(function(loopIndex, loopObj){
+    loopObj.getAboardFigures().each(function(aboardFigureIndex, aboardFigureObj){
+      aboardFigureObj.getPorts().each(function(portIndex, portObj){
+        portObj.getConnections().each(function(connectionIndex, connectionObj){
+          if (connectionObj.userData == null) connectionObj.userData = {};
+          connectionObj.userData.wireOwnerId = loopObj.getId();
+        });
+      });
+    });
+  });
+
+  //go thorugh all wires and push that which has right parent
+  canvas.getLines().each(function(lineIndex, lineObj){
+    if (parentObjId != null){
+      if (lineObj.userData.wireOwnerId != null && lineObj.userData.wireOwnerId.search(parentObjId) > -1){
+        directChildrenWires.push(lineObj);
+      }
+    }else{
+      if (lineObj.userData.wireOwnerId == null){
+        directChildrenWires.push(lineObj);
+      }
+    }
+  });
+  //alert(directChildrenWires.getSize());
+
+  return directChildrenWires;
 }
 
 /**

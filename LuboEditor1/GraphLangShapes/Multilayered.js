@@ -372,8 +372,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
 
   /**
-   * @method
-   * Return an objects with all important attributes for XML or JSON serialization
+   * @method getPersistentAttributes()
+   * @description Return an objects with all important attributes for XML or JSON serialization
    *
    * @returns {Object}
    */
@@ -391,8 +391,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   },
 
   /**
-   * @method
-   * Read all attributes from the serialized properties and transfer them into the shape.
+   * @method setPersistentAttributes(memento)
+   * @description Read all attributes from the serialized properties and transfer them into the shape.
    *
    * @param {Object} memento
    */

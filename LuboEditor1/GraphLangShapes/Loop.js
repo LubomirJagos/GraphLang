@@ -73,9 +73,7 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     cCode += "\t\t}break;";
     return cCode;
   },
-
   translateToCppCodePost: function(){
     return "}";
   }
-
 });

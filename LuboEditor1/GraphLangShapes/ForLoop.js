@@ -23,20 +23,31 @@ GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop.extend({
     // return "for (TBD){";
 
     var cCode = "";
-    var endCondition = "";
     var iterationCount = "/* forLoop iterationCount value */"
     var iterationTerminal = this.getInputPort("iterationTerminal");
     if (iterationTerminal.getConnections().getSize() > 0){
       iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go
     }
+
+    /*
+     *  WIRES INSIDE LOOP DECLARATION
+     */
+     GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
+       cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
+     });
+
+    /*
+     *  TRANSLATE FOR LOOP
+     */
+
     cCode += "for (var hardwiredForLoopIterator = 0; hardwiredForLoopIterator < " + iterationCount + "; hardwiredForLoopIterator++){";
     return cCode;
 
   },
-
   translateToCppCodePost: function(){
     return "}";
   }
+
 /*
   NEEDS TO BE DONE n TERMINAL AND maybe some other stuff
 */
