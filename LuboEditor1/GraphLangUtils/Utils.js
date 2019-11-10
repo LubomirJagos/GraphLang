@@ -982,7 +982,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
       if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
     }
     if (nodeObj.NAME.toLowerCase().search("multilayered") >= 0){
-      if (allMultilayeredNodes.indexOf(nodeObj) == -1) allMultilayeredNodes.push(nodeObj);
+      if (allMultilayeredNodes.indexOf(nodeObj) == -1){
+        allMultilayeredNodes.push(nodeObj);
+
+        //remove multilayered from all nodes to not be translated as node
+        //allNodes.remove(nodeObj);
+      }
     }
   });
 
@@ -1005,7 +1010,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   }
 
   /*
-   *  TUNNELs declaration
+   *  EXTERANL PORTS declaration
+   *    this would be in fact input parameter into function which wrapp this whole diagram
    */
 
 
@@ -1014,9 +1020,11 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
         /****************************************************************
          *  LOOPS TRANSLATING
+         *    must to differentiate between loops and multilayered structures
+         *    here are process just loops no multilayered objects (case structures, but they have datataype GraphLang.Shapes.Basic.Loop.Multilayered)
          ****************************************************************/
-
-        if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+        if (nodeObj.NAME.toLowerCase().search("loop") >= 0 &&
+            nodeObj.NAME.toLowerCase().search("multilayered") == -1){
           var loopObj = nodeObj;
           var loopObjIndex = allLoops.indexOf(loopObj)
 
@@ -1037,10 +1045,15 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           }
         }
 
+
         /****************************************************************
          *  PROPERTY, INVOKE NODE ITEMS TRANSCRIPTING INTO C/C++ CODE
          ****************************************************************/
 
+/* now debugging Multilayered nodes and this is probably causing prooblems due to there are not handled their datatypes and thus this is putting them to output
+  THIS NEED REWORK TO WORK PROPERLY, NEED TO DO SELECTING IN FIRST IF THAT IT'S REALLY JUST PROPERTY OR INVOKE NODE
+*/
+/*
         if (nodeObj.getParent() != null && nodeObj.getParent().NAME.toLowerCase().search("itemsnode") >= 0){
           if (nodeObj.getParent().getUserData().wasTranslatedToCppCode == false &&
               nodeObj.getParent().getUserData().executionOrder == actualStep){
@@ -1050,14 +1063,13 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           }
           return;
         }
-
+*/
         if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
             nodeObj.NAME.toLowerCase().search("loop") == -1 &&
             nodeObj.getUserData() != undefined &&
             nodeObj.getUserData().executionOrder != undefined &&
             nodeObj.getUserData().executionOrder == actualStep){
           for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
-          // cCode += nodeObj.translateToCppCode() + "\n";  //original, newline at the end
           cCode += nodeObj.translateToCppCode() + "\n";
         }
 
@@ -1069,8 +1081,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
                 // if (nodeObj.getParent() != undefined && nodeObj.getParent().NAME.toLowerCase().search("jailhouse") >= 0) cCode += nodeObj.translateToCppCode() + "      {" + nodeObj.getParent().getId() + "}\n";
                 // else cCode += nodeObj.translateToCppCode() + "\n";
 
+        /*
+         *  THIS IS WRONG DEFINITELY NEED REWORK FOR MULTILAYERED NODES
+         */
+
         //first get all layer owner of specified node, it should be just one
-        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
+        if (nodeObj.NAME.toLowerCase().search("multilayered") == -1 &&
         nodeObj.getUserData() != undefined &&
         nodeObj.getUserData().executionOrder != undefined &&
         nodeObj.getUserData().executionOrder == actualStep){
@@ -1085,6 +1101,10 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
                        *                      .
                        *************************************************/
 
+          /*
+           *  THIS IS WRONG BUT STILL AT LEAST DOING SOMETHING
+           *  it translates whole layer when found node inside mulitlayered object
+           */
           allMultilayeredNodes.each(function(multiLayerNodeIndex, multiLayerNodeObj){
             var isNodePartOfMultilayer = false;
             var nodeLayerOwner = new draw2d.util.ArrayList(); //node should be part of just one layer but in case I don't know what graphical error could happen so this should be bulletproof
@@ -1093,6 +1113,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
                 isNodePartOfMultilayer = true;
                 nodeLayerOwner.push(layerObj);
                 cCode += "        /* <---- multilayer, owner id:" + layerObj.getId() + "*/\n";
+                cCode += layerObj.translateToCppCode() + "\n";
+                cCode += "/* end of layer code */\n";
               }
             });
           });
