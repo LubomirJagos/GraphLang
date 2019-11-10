@@ -75,5 +75,72 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   },
   translateToCppCodePost: function(){
     return "}";
+  },
+
+  /*
+   *  TUNNELS DECLARATION
+   */
+  getTunnelsDeclarationCppCode:function(){
+    cCode = "";
+    cCode += "//tunnel declaration, if connected to wire also assignement\n";
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+        //if tunnel connected on its input assign value to it
+        if (childObj.getInputPort(0).getConnections().getSize() > 0){
+          cCode += childObj.getInputPort(0).userData.datatype + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }else{
+          cCode += childObj.getInputPort(0).userData.datatype + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }
+      }
+    });
+    return cCode;
+  },
+
+  /*
+   *  WIRES INSIDE LOOP DECLARATION
+   */
+ getWiresInsideLoopDeclarationCppCode:function(){
+    cCode = "";
+    cCode += "//inside loop wires declaration\n";
+    GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
+      cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
+    });
+    return cCode;
+ },
+
+ /*
+  * LEFT TUNNEL LOOP WIRES INPUT ASSIGNEMENTS
+  */
+  getLeftTunnelsWiresAssignementCppCode:function(){
+    cCode = "";
+    this.getChildren().each(function(childIndex, childObj){
+     if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+       if (childObj.getOutputPort(0).getConnections().getSize() > 0){
+         childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+           cCode += "wire_" + connectionObj.getId() + " = tunnel_" + childObj.getId() + ";\n";
+         });
+       }
+     }
+    });
+    return cCode;
+  },
+
+  /*
+   * RIGHT TUNNEL ASSIGNEMENTS OUTPUT
+   *  copy value of wire at left side to the wire at right side
+   *  ERROR this is WRONG for multilayered structure when there is more than one input into output tunnel
+   */
+  getRightTunnelsAssignementOutputCppCode:function(){
+    cCode = "";
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+        if (childObj.getOutputPort(0).getConnections().getSize() > 0){
+          cCode += "wire_" + childObj.getOutputPort(0).getConnections().get(0).getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }
+      }
+    });
+    return cCode;
   }
+
+
 });

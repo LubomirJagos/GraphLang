@@ -3,7 +3,7 @@
  *  @descritpition Numeric constant. For now implemented just integers and floats.
  */
 GraphLang.Shapes.Basic.NumericConstant = draw2d.shape.basic.Label.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop.NumericConstant",
+  NAME: "GraphLang.Shapes.Basic.NumericConstant",
   init:function(attr, setter, getter){
     this._super( $.extend({},attr), setter, getter);
     this.installEditor(new draw2d.ui.LabelInplaceEditor());
@@ -82,9 +82,16 @@ GraphLang.Shapes.Basic.NumericConstant = draw2d.shape.basic.Label.extend({
             }
         });
     });
+  },
+  translateToCppCode:function(){
+    cCode = "";
+    var constDatatype = this.getOutputPort(0).userData.datatype;
 
-
-
-
+    if (constDatatype.toLowerCase().search("string") > -1){
+      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";";
+    }else{
+      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";";
+    }
+    return cCode;
   }
 });

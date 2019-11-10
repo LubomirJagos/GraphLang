@@ -25,21 +25,16 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     var cCode = "";
     this.getUserData().wasTranslatedToCppCode = true;
 
-    /*
-     *  WIRES INSIDE LOOP DECLARATION
-     */
-    cCode += "/* WHILE LOOP WIRES DECLARATION */\n";
-    GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
-      cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
-    });
+    cCode += this.getTunnelsDeclarationCppCode();
 
-    /*
-     *  TRANSLATE WHILE LOOP beginning
-     */
-    cCode += "do{";
+    cCode += "do{\n";
+
+    cCode += this.getWiresInsideLoopDeclarationCppCode();
+    cCode += this.getLeftTunnelsWiresAssignementCppCode()
 
     return cCode;
   },
+
   translateToCppCodePost: function(){
     var cCode = "";
     var endCondition = "";
@@ -47,7 +42,10 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     if (stopTerminal.getConnections().getSize() > 0){
       endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
     }
+
+    cCode += this.getRightTunnelsAssignementOutputCppCode();
     cCode += "}while(!" + endCondition + ")";
+
     return cCode;
   }
 /*

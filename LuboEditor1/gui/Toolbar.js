@@ -183,8 +183,8 @@ example.Toolbar = Class.extend({
 			/**
  		  *	getDirectChildrenWiresButton Button
  			*/
- 			this.getDirectChildrenWiresButton  = $("<button id=\"getDirectChildrenWiresButton\">getDirectChildrenWires</button>");
- 			this.html.append(this.getDirectChildrenWiresButton);
+ 			this.getDirectChildrenOfSelectedNodeButton  = $("<button id=\"getDirectChildrenOfSelectedNodeButton\">getDirectChildrenOfSelectedNode</button>");
+ 			this.html.append(this.getDirectChildrenOfSelectedNodeButton);
 
 			/**
  		  *	getSelectedLoopTunnelCount Button

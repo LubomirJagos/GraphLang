@@ -502,7 +502,8 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
     //remove label nodes from all nodes, this is because these labels are execution order for debugging
     if (portObj.getParent().NAME.toLowerCase().search(".constant.") == -1){ //if node is constant don't remove label, it's part of functionality!
       portObj.getParent().getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search("label") >= 0){
+        //check if label was placed as execution order, it's written in its user data as datatype
+        if (childObj.NAME.toLowerCase().search("label") >= 0 && childObj.userData != null && childObj.userData.datatype != null && childObj.userData.datatype.search("executionOrder") > -1){
           portObj.getParent().remove(childObj);
         }
       });
@@ -806,6 +807,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
             new draw2d.shape.basic.Label({
               text:new String(actualStepNum),
               stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
+              userData: {datatype: "executionOrder"}
             }),
             new draw2d.layout.locator.CenterLocator(nodeObj)
           );
@@ -975,12 +977,11 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   var allMultilayeredNodes = new draw2d.util.ArrayList(); //new list for this special kind of node
 
   allNodes.each(function(nodeIndex, nodeObj){
-    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){ //put label just for nodes, for now suppose that's all shapes.basic
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0 &&
+        nodeObj.NAME.toLowerCase().search("multilayered") == -1){ //put label just for nodes, for now suppose that's all shapes.basic
       if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
     }
     if (nodeObj.NAME.toLowerCase().search("multilayered") >= 0){
-
-      //ERROR: HERE SHOULD BE ALSO REMOVE FROM allNodes varaible!
       if (allMultilayeredNodes.indexOf(nodeObj) == -1) allMultilayeredNodes.push(nodeObj);
     }
   });
@@ -1010,6 +1011,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
+
         /****************************************************************
          *  LOOPS TRANSLATING
          ****************************************************************/
@@ -1020,15 +1022,15 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
           //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
           if (actualStep == loopObj.getUserData().executionOrder && loopObj.getUserData().wasTranslatedToCppCode != true){
-            for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
-            cCode += loopObj.translateToCppCode() + "\n";
+            var delimiter = "";
+            for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
+            cCode += delimiter + loopObj.translateToCppCode() + "\n";
             loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
 
             //recursively going into loops
             cCode += translateToCppCode2(canvas, loopObj, nestedLevel+1);
 
             //after loop is translated
-            var delimiter = "";
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
             if (loopObj.translateToCppCodePost != undefined || loopObj.translateToCppCodePost != null) cCode += delimiter + nodeObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
             else cCode += delimiter + "{end loop}\n";
@@ -1312,6 +1314,7 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
     }
     wireColor = colorPicker.getByName(inputPortDatatype);
     tunnelObj.getOutputPort(0).userData.datatype = inputPortDatatype; //copy input datatype to output port
+    tunnelObj.getInputPort(0).userData.datatype = inputPortDatatype; //copy input datatype to output port
     tunnelObj.setBackgroundColor(wireColor);                          //change tunnel color
   });
 
@@ -1542,4 +1545,18 @@ GraphLang.Utils.showLoopsExecutionOrder = function(canvas){
       new draw2d.layout.locator.CenterLocator(loopObj)
     );
   });
+}
+
+/**
+ *  @method getDirectChildrenOfSelectedNode(canvas)
+ *  @param {draw2d.Canvas} canvas
+ *  @description Change background of nodes to be red for direct children of selected node. This function is here mostly for debug
+ *  to see red nodes which should be children of loop if loop is selected, just to see how it's visible in javascript inside editor..
+ */
+GraphLang.Utils.getDirectChildrenOfSelectedNode = function(canvas){
+  var selectedFigures = canvas.getSelection().getAll();
+  GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, selectedFigures.get(0)).each(function(childrenIndex, childrenObj){
+    childrenObj.setBackgroundColor(new GraphLang.Utils.Color("#FF0000"));
+  });
+
 }
