@@ -222,6 +222,11 @@ example.Toolbar = Class.extend({
  			this.setTunnelColorByWireButton  = $("<button id=\"setTunnelColorByWireButton\">setTunnelColorByWire</button>");
  			this.html.append(this.setTunnelColorByWireButton);
 
+			/**
+ 		  *	setTunnelColorByWire Button
+ 			*/
+ 			this.showLoopsExecutionOrderButton  = $("<button id=\"showLoopsExecutionOrderButton\">showLoopsExecutionOrder</button>");
+ 			this.html.append(this.showLoopsExecutionOrderButton);
 
 	},
 

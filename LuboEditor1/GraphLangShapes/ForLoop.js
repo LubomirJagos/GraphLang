@@ -24,6 +24,7 @@ GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop.extend({
 
     var cCode = "";
     var endCondition = "";
+    var iterationCount = "/* forLoop iterationCount value */"
     var iterationTerminal = this.getInputPort("iterationTerminal");
     if (iterationTerminal.getConnections().getSize() > 0){
       iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go

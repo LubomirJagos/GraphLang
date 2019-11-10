@@ -474,12 +474,13 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
     if (portObj.userData == undefined) portObj.userData = {};
     portObj.userData.value = 0;
     portObj.userData.status = 0;
+    portObj.useGradient = false;
 
     //coloring port and set value based on if it's input or output
     if (portObj.NAME.toLowerCase().search("inputport") >= 0){
       /* if port is input it's colored as input and execution order is -1 because there
       must be waiting for value */
-      portObj.setBackgroundColor(new draw2d.util.Color(255,255,0));
+      //portObj.setBackgroundColor(new draw2d.util.Color(255,255,0));
       portObj.userData.executionOrder = -1;
     }
     else if (portObj.NAME.toLowerCase().search("outputport") >= 0){
@@ -487,13 +488,13 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
         /* if there are just output ports than their values must be already accessible
         (if there would be som subblocks they will be evaluated as soon this node
         will be running here we figure out that these nodes will be first executed) */
-        portObj.setBackgroundColor(new draw2d.util.Color(0,255,0));
+        //portObj.setBackgroundColor(new draw2d.util.Color(0,255,0));
         portObj.userData.executionOrder = 1;
       }else{
         /* if node has some inputs, it means that it cannot be executed until all data
         at them are accessible, so status is set to 0 and corresponding color for
         input is used */
-        portObj.setBackgroundColor(new draw2d.util.Color(255,255,255));
+        //portObj.setBackgroundColor(new draw2d.util.Color(255,255,255));
         portObj.userData.executionOrder = -1;
       }
     }
@@ -881,8 +882,8 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
 /**
  * @method translateToCppCode(canvas)
  * @param {draw2d.Canvas} canvas - place from where to take schematic which will be transcripted into C/C++ code
- * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
- *
+ * @description DEPRECATED Traverse digram and execute over each node function which gives it's C/C++ representation.
+ * It's not solving translating loops or similar multilayered things, there is another function translateToCppCode2 which is trying to handle these things.
  */
 GraphLang.Utils.translateToCppCode = function(canvas){
   var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
@@ -1217,6 +1218,7 @@ GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas,
  * @description Colorize all wires in schematic according to port datatypes.
  */
 GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
+  //set wires color by connected input ports
   canvas.getLines().each(function(lineIndex, lineObj){
     var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
     // if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
@@ -1224,6 +1226,55 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
     var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
     lineObj.setColor(lineColor);  //set wire color
   });
+
+  /*
+   *  COPY INPUT PORT DATATYPE TO OUTPUT AND CHANGE TUNNEL Color
+   *  running twice to be sure that in first run all lefttunnels are rewritten and after in second run all consequence tunnels are rewritten
+   *  *this is WRON SOLUTION ERROR when there is chain of tunnels, if there are N tunnels I need to run this N times, NEED IMPORVE!
+   */
+
+   /*
+    *   FIND LOOPS and return TUNNEL LIST
+    */
+   var allNodes = canvas.getFigures();
+   var allTunnels = new draw2d.util.ArrayList();
+   allNodes.each(function(nodeIndex, nodeObj){
+     //get loops from canvas
+     if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+       if (nodeObj.getUserData() == undefined) nodeObj.userData.wasTranslatedToCppCode = false;
+       nodeObj.getUserData().wasTranslatedToCppCode = false;
+
+       nodeObj.getChildren().each(function(childIndex, childObj){
+         if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
+           allTunnels.push(childObj);
+         }
+         else if (childObj.NAME.toLowerCase().search("righttunnel") >= 0){
+           allTunnels.push(childObj);
+         }
+       });
+     }
+   });
+
+   //default Color object and datatype variable used for transfer input datatype of tunnel to its output
+   var colorPicker = new GraphLang.Utils.Color();
+   var inputPortDatatype = "undefined";
+
+    /*
+     *  CHANGE TUNNELS COLOR
+     */
+  allTunnels.each(function(tunnelIndex, tunnelObj){
+    //tunnelObj.setColor(new GraphLang.Utils.Color("#FF0000"));
+    //wireColor = colorPicker.getByName();
+    if (tunnelObj.getInputPort(0).getConnections().getSize() > 0){
+      inputPortDatatype = tunnelObj.getInputPort(0).getConnections().get(0).getSource().userData.datatype;
+    }else{
+      inputPortDatatype = "undefined";
+    }
+    wireColor = colorPicker.getByName(inputPortDatatype);
+    tunnelObj.getOutputPort(0).userData.datatype = inputPortDatatype; //copy input datatype to output port
+    tunnelObj.setBackgroundColor(wireColor);                          //change tunnel color
+  });
+
 }
 
 /**
@@ -1423,5 +1474,32 @@ GraphLang.Utils.setTunnelColorByWire = function(canvas){
             tunnelObj.getInputPort(0).getConnections().first().getSource().userData.datatype
         ));
     });
+  });
+}
+
+/**
+ *  @method showLoopsExecutionOrder(canvas)
+ *  @param {draw2d.Canvas} canvas
+ *  @description Place label with loop execution order into its middle
+ */
+GraphLang.Utils.showLoopsExecutionOrder = function(canvas){
+  var allNodes = canvas.getFigures();
+  var allLoops = new draw2d.util.ArrayList();
+
+  allNodes.each(function(nodeIndex, nodeObj){
+    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+      allLoops.push(nodeObj);
+    }
+  });
+
+  allLoops.each(function(loopIndex, loopObj){
+    //alert(loopObj.userData.executionOrder);
+    loopObj.add(
+      new draw2d.shape.basic.Label({
+        text:new String(loopObj.userData.executionOrder),
+        stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
+      }),
+      new draw2d.layout.locator.CenterLocator(loopObj)
+    );
   });
 }

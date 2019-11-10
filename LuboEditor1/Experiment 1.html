@@ -393,6 +393,13 @@ document.addEventListener("DOMContentLoaded",function () {
       $("#setTunnelColorByWireButton").button().click($.proxy(function(){
        GraphLang.Utils.setTunnelColorByWire(appCanvas);
       }));
+
+      /**************************************
+      *  BUTTON "showLoopsExecutionOrder"
+      **************************************/
+      $("#showLoopsExecutionOrderButton").button().click($.proxy(function(){
+       GraphLang.Utils.showLoopsExecutionOrder(appCanvas);
+      }));
 });
 
 /**
