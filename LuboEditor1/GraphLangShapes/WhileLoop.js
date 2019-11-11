@@ -32,6 +32,12 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     cCode += this.getWiresInsideLoopDeclarationCppCode();
     cCode += this.getLeftTunnelsWiresAssignementCppCode()
 
+    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     *          RECURSION CALL
+     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this);
+
     return cCode;
   },
 

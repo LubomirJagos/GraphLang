@@ -46,44 +46,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     var x = 20;//this.getX();
     var y = 20;//this.getY();
 
-    // var rect1 = new draw2d.shape.composite.Raft();
-    var rect1 = new draw2d.shape.composite.Jailhouse();
-    // rect1.setWidth(this.getWidth() - 70);
-    // rect1.setHeight(this.getHeight() - 70);
-
-    rect1.setWidth(this.getWidth());
-    rect1.setHeight(this.getHeight());
-    rect1.setColor(new GraphLang.Utils.Color("#FF0000"));
-    rect1.setBackgroundColor(new GraphLang.Utils.Color("#0000FF"));
-    // this.add(rect1, new draw2d.layout.locator.XYRelPortLocator(0,0));
-    rect1.translateToCppCode = function(){
-      return "{Multilayered Node}";
-    };
-    rect1.setId("jailhouseLayer0");
-    appCanvas.add(rect1, new draw2d.layout.locator.XYAbsPortLocator(x,y));
-
-    var rect2 = new draw2d.shape.composite.Jailhouse();
-    // rect2.setWidth(this.getWidth() - 100);
-    // rect2.setHeight(this.getHeight() - 100);
-    rect2.setWidth(this.getWidth());
-    rect2.setHeight(this.getHeight());
-    rect2.setColor(new GraphLang.Utils.Color("#FF0000"));
-    rect2.setBackgroundColor(new GraphLang.Utils.Color("#FFFF00"));
-    // this.add(rect2, new draw2d.layout.locator.XYRelPortLocator(0,0));
-    rect2.setId("jailhouseLayer1");
-    appCanvas.add(rect2, new draw2d.layout.locator.XYAbsPortLocator(x,y));
-
-    var rect3 = new draw2d.shape.composite.Jailhouse();
-    // rect3.setWidth(this.getWidth() - 130);
-    // rect3.setHeight(this.getHeight() - 130);
-    rect3.setWidth(this.getWidth());
-    rect3.setHeight(this.getHeight());
-    rect3.setColor(new GraphLang.Utils.Color("#00FF00"));
-    rect3.setBackgroundColor(new GraphLang.Utils.Color("#88BB66"));
-    // this.add(rect3, new draw2d.layout.locator.XYRelPortLocator(0,0));
-    rect3.setId("jailhouseLayer2");
-    appCanvas.add(rect3, new draw2d.layout.locator.XYAbsPortLocator(x,y));
-
     //PROTECTIVE RECTANGLE
     var rect0 = new draw2d.shape.basic.Rectangle();
     rect0.setWidth(this.getWidth());
@@ -96,11 +58,13 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.rect0 = rect0;
     this._onDragStart = this.onDragStart;
 
-    // this.rect1 = rect1;
+    /*
+     *  ADD BY DEFAULT 3 LAYERS, for debugging purposes now
+     */
     this.layers = new draw2d.util.ArrayList();
-    this.layers.push(rect1);
-    this.layers.push(rect2);
-    this.layers.push(rect3);
+    this.addLayer();
+    this.addLayer();
+    this.addLayer();
     this.activeLayer = 0;
 
     /**********************************************************************************
@@ -172,13 +136,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.userData = {};
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
-
-    //LAYERS Init, into each layer and protective rectangle is added reference to this parent translation function
-    var translateToCppCode2FuncRef = this.translateToCppCode;
-    this.layers.each(function(layerIndex, layerObj){
-      layerObj.translateToCppCode = translateToCppCode2FuncRef;
-    });
-    this.rect0.translateToCppCode = translateToCppCode2FuncRef;
 
     //luboJ missing condition when jailhouse is not getting smaller because nodes inside it
     //ERROR, MISSING CONDITION TO RESTRICT RESIZE ACCORDING TO NODES INSIDE LAYERS
@@ -414,7 +371,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
    ********************************************************************************************************************/
 
   translateToCppCode: function(){
-    return "{Multilayered Node}";
+    cCode = "";
+    cCode += "{Multilayered Node BEGIN}\n";
+    cCode += "//Here will be stuff for multilayer node, if you see this, somethin went wrong during translation process.\n";
+    cCode += "{Multilayered Node END}\n";
+    return cCode;
   },
 
   /**
@@ -422,7 +383,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   * @description Add new layer at the end of all layers.
    */
   addLayer: function(){
-    var newLayer = new draw2d.shape.composite.Jailhouse();
+    //var newLayer = new draw2d.shape.composite.Jailhouse();
+    var newLayer = new GraphLang.Shapes.Basic.Jailhouse();
+
     newLayer.setWidth(this.getWidth());
     newLayer.setHeight(this.getHeight());
     newLayer.setColor(new GraphLang.Utils.Color("#eb34c6"));  //layer border color
@@ -434,7 +397,18 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       Math.round(Math.random()*255)
     ));
 
-    newLayer.setId("jailhouseLayer" + this.layers.getSize());                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
+    var layerId = "";
+    if (this.layers != null){
+      layerId = this.layers.getSize();  //size is alwas count so it's +1 in compare with object index inside array
+    }else{
+      layerId = 0;                      //first element to be create has numebr 0
+    }
+    newLayer.setId("jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
+
+    /*
+     *  GraphLang Jailhouse has it's translation function inside object! 
+     */
+
     this.layers.push(newLayer);
     appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
   },

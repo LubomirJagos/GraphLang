@@ -625,16 +625,28 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
 
   //get lsit of all loops
   canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("loop") >= 0){
+    if (figureObj.NAME.toLowerCase().search("loop") >= 0 && figureObj !== nodeObj){
       loopList.push(figureObj);
     }
   });
 
   //find all parent loop of this node
+  // There could be two cases:
+  //    1. node is part normal one layer loop - WhileLoop or ForLoop
+  //    2. node is part of multilayered loop - case structure
   var nodeParentLoop = null;
   loopList.each(function(loopIndex, loopObj){
-    if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){
-      nodeParentLoop = loopObj;
+    if (loopObj.NAME.toLowerCase().search("multilayered") == -1 ||  //decision if dealing with multilayered loop, also need to think about layers of multilayered that reason why jailhouse is here also
+        loopObj.NAME.toLowerCase().search("jailhouse") == -1){
+      if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){        //comparison for one layer loop
+        nodeParentLoop = loopObj;
+      }
+    }else{
+      loopObj.getAllLayers().each(function(layerIndex, layerObj){
+        if (layerObj != nodeObj && layerObj.getAssignedFigures().contains(nodeObj)){
+          nodeParentLoop = loopObj;
+        }
+      });
     }
   });
   return nodeParentLoop;
@@ -665,9 +677,17 @@ GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null)
 GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
   var allLayerNodes = new draw2d.util.ArrayList();
 
+  //REALLY PAY ATTENTION ABOUT SYNTAX HERE AND READ CAREFULLY
+  //below is string comparison and items are named there and between them is OR operator!
   canvas.getFigures().each(function(figureIndex, figureObj){
-    if ((figureObj.NAME.toLowerCase().search("tunnel") == -1) &&
-        GraphLang.Utils.getNodeLoopOwner(canvas, figureObj) == parentObj) allLayerNodes.push(figureObj);
+    if (figureObj.NAME.toLowerCase().search("tunnel") == -1 &&
+        (figureObj.NAME.toLowerCase().search("loop") > -1 ||            //this condition is list of allowed objects which are added as direct children objects, if something not running when added new structures here is probably error, need to add to this list
+        figureObj.NAME.toLowerCase().search("multilayered") > -1 ||
+        figureObj.NAME.toLowerCase().search("node") > -1 ||
+        figureObj.NAME.toLowerCase().search("port") > -1) &&
+        GraphLang.Utils.getNodeLoopOwner(canvas, figureObj) == parentObj){
+          allLayerNodes.push(figureObj);
+        }
   });
 
   return allLayerNodes;
@@ -1020,6 +1040,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
         /****************************************************************
          *  LOOPS TRANSLATING
+         *    WITHOT MULTILAYERED loops (case structure)
          *    must to differentiate between loops and multilayered structures
          *    here are process just loops no multilayered objects (case structures, but they have datataype GraphLang.Shapes.Basic.Loop.Multilayered)
          ****************************************************************/
@@ -1029,14 +1050,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           var loopObjIndex = allLoops.indexOf(loopObj)
 
           //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
+          // THERE IS RECURSION CALL INSIDE LOOP OBJ TO TRANSLATE IT'S CONTENTS
           if (actualStep == loopObj.getUserData().executionOrder && loopObj.getUserData().wasTranslatedToCppCode != true){
             var delimiter = "";
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
             cCode += delimiter + loopObj.translateToCppCode() + "\n";
             loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
-
-            //recursively going into loops
-            cCode += translateToCppCode2(canvas, loopObj, nestedLevel+1);
 
             //after loop is translated
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
@@ -1047,25 +1066,20 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
 
         /****************************************************************
-         *  PROPERTY, INVOKE NODE ITEMS TRANSCRIPTING INTO C/C++ CODE
+         *  TRANSCRIPT
+         *    NODE,
+         *    PROPERTY NODE,
+         *    INVOKE NODE
+         *  INTO C/C++ CODE based just on their NAME, must contain NODE, this word is not used in LOOPS!
          ****************************************************************/
 
-/* now debugging Multilayered nodes and this is probably causing prooblems due to there are not handled their datatypes and thus this is putting them to output
-  THIS NEED REWORK TO WORK PROPERLY, NEED TO DO SELECTING IN FIRST IF THAT IT'S REALLY JUST PROPERTY OR INVOKE NODE
-*/
-/*
-        if (nodeObj.getParent() != null && nodeObj.getParent().NAME.toLowerCase().search("itemsnode") >= 0){
-          if (nodeObj.getParent().getUserData().wasTranslatedToCppCode == false &&
-              nodeObj.getParent().getUserData().executionOrder == actualStep){
-            nodeObj.getParent().getUserData().wasTranslatedToCppCode = true;
-            for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
-            cCode += nodeObj.translateToCppCode() + "\n";
-          }
-          return;
-        }
-*/
-        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 &&
-            nodeObj.NAME.toLowerCase().search("loop") == -1 &&
+         /*
+          *  NOT SURE if all elements which I want to translate into code fulfill condition that word NODE contains just elements
+          *   which really are elements not loops or some other structure which are not supposed to behave as nodes
+          *   NEED CHECK!
+          */
+
+        if (nodeObj.NAME.toLowerCase().search("node") > -1 &&
             nodeObj.getUserData() != undefined &&
             nodeObj.getUserData().executionOrder != undefined &&
             nodeObj.getUserData().executionOrder == actualStep){
@@ -1074,59 +1088,26 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
         }
 
         /****************************************************************
-         *  ADDING COMMENT ABOUT WHICH LAYER FOR MULTILAYER NODES.
+         *  TRANSCRIPT MULTILAYERED loops translate
          ****************************************************************/
 
                 //THIS DOESN'T RUN
                 // if (nodeObj.getParent() != undefined && nodeObj.getParent().NAME.toLowerCase().search("jailhouse") >= 0) cCode += nodeObj.translateToCppCode() + "      {" + nodeObj.getParent().getId() + "}\n";
                 // else cCode += nodeObj.translateToCppCode() + "\n";
 
-        /*
-         *  THIS IS WRONG DEFINITELY NEED REWORK FOR MULTILAYERED NODES
-         */
 
-        //first get all layer owner of specified node, it should be just one
-        if (nodeObj.NAME.toLowerCase().search("multilayered") == -1 &&
-        nodeObj.getUserData() != undefined &&
-        nodeObj.getUserData().executionOrder != undefined &&
-        nodeObj.getUserData().executionOrder == actualStep){
-
-
-
-                      /*************************************************
-                       *  HERE WILL BE PLACED RECURSIVE TRANSCRIPTING
-                       *  SAME AS FOR LOOP
-                       *                      .
-                       *                      .
-                       *                      .
-                       *************************************************/
+        if (nodeObj.NAME.toLowerCase().search("multilayered") > -1 &&
+            nodeObj.getUserData() != undefined &&
+            nodeObj.getUserData().executionOrder != undefined &&
+            nodeObj.getUserData().executionOrder == actualStep){
 
           /*
-           *  THIS IS WRONG BUT STILL AT LEAST DOING SOMETHING
-           *  it translates whole layer when found node inside mulitlayered object
+           *  THIS IS JUST PROTOTYPE
+           *  traverse through all layers and transcript them into C CODE
            */
-          allMultilayeredNodes.each(function(multiLayerNodeIndex, multiLayerNodeObj){
-            var isNodePartOfMultilayer = false;
-            var nodeLayerOwner = new draw2d.util.ArrayList(); //node should be part of just one layer but in case I don't know what graphical error could happen so this should be bulletproof
-            multiLayerNodeObj.getAllLayers().each(function(layerIndex, layerObj){
-              if (layerObj.contains(nodeObj)){
-                isNodePartOfMultilayer = true;
-                nodeLayerOwner.push(layerObj);
-                cCode += "        /* <---- multilayer, owner id:" + layerObj.getId() + "*/\n";
-                cCode += layerObj.translateToCppCode() + "\n";
-                cCode += "/* end of layer code */\n";
-              }
-            });
-          });
-
-
-                      /*************************************************
-                       *  HERE WILL BE PLACED RECURSIVE TRANSCRIPTING
-                       *  SAME AS FOR LOOP
-                       *                      .
-                       *                      .
-                       *                      .
-                       *************************************************/
+        nodeObj.getAllLayers().each(function(layerIndex, layerObj){
+            cCode += layerObj.translateToCppCode();
+        });
 
         }
 
@@ -1142,7 +1123,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
     }
   });
 
-  if (parentObj == null) alert(cCode);
+  //if (parentObj == null) alert(cCode); //DEBUG SHOWS ALERT WITH TRANSLATED CODE for top canvas DISABLED, REQUIRED USER INPUT CLICK ON OK
   return cCode;
 }
 
@@ -1153,7 +1134,10 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
  */
 GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
   canvas.getFigures().each(function(loopIndex, loopObj){
-    if (loopObj.NAME.toLowerCase().search("loop") >= 0) loopObj.getAboardFigures(true);
+    if (loopObj.NAME.toLowerCase().search("loop") >= 0 &&
+        loopObj.NAME.toLowerCase().search("multilayered") == -1){
+          loopObj.getAboardFigures(true);
+    }
   });
 }
 
@@ -1410,14 +1394,31 @@ GraphLang.Utils.getCanvasJson = function(canvas){
  */
 GraphLang.Utils.getCppCode2 = function(canvas){
         var copyElement = document.createElement('textarea');
+        cCode = "";
+
+        //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
+        GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
+
+        //THIS ADAPT PORT DATATYPES SAME AS CONNECTED Wires
+        //this can cause some problems because it's not bullet proof function, beacuse it's running statically, need to rewrite it more adaptive but when clicked at least 3 times it's OK
+        GraphLang.Utils.setWiresColorByPorts(canvas);
+        GraphLang.Utils.setWiresColorByPorts(canvas);
+        GraphLang.Utils.setWiresColorByPorts(canvas);
+
+        //ORIGINAL WITHOUT REWRITING IDs
+        //copyElement.innerHTML = GraphLang.Utils.translateToCppCode2(canvas, null);
 
         //this is element which content is placed into clipboard
-        copyElement.innerHTML= GraphLang.Utils.translateToCppCode2(canvas);
+        cCode = GraphLang.Utils.translateToCppCode2(canvas, null);
+        cCode = this.rewriteIDtoNumbers(canvas, cCode);
+        copyElement.innerHTML = cCode;
+
         copyElement = document.body.appendChild(copyElement);
         copyElement.select();
         document.execCommand('copy');
         copyElement.remove();
 
+        alert(cCode); //DEBUG show code in alert message
 }
 
 
@@ -1563,6 +1564,7 @@ GraphLang.Utils.showLoopsExecutionOrder = function(canvas){
       new draw2d.shape.basic.Label({
         text:new String(loopObj.userData.executionOrder),
         stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
+        userData: {datatype: "executionOrder"}
       }),
       new draw2d.layout.locator.CenterLocator(loopObj)
     );
@@ -1580,5 +1582,35 @@ GraphLang.Utils.getDirectChildrenOfSelectedNode = function(canvas){
   GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, selectedFigures.get(0)).each(function(childrenIndex, childrenObj){
     childrenObj.setBackgroundColor(new GraphLang.Utils.Color("#FF0000"));
   });
+}
 
+/**
+ *  @method rewriteIDtoNumbers(canvas)
+ *  @param {draw2d.Canvas} canvas
+ *  @description Rewrite in output code all IDs to normal numbers to make output code more readible
+ */
+GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
+  var allId = new draw2d.util.ArrayList();
+  canvas.getFigures().each(function(figureIndex, figureObj){
+      allId.push(figureObj.getId());
+      if (figureObj.NAME.toLowerCase().search("loop") > -1){
+        figureObj.getChildren().each(function(childIndex, childObj){
+          if (childObj.NAME.toLowerCase().search("tunnel") > -1){
+            allId.push(childObj.getId());
+          }
+        });
+      }
+  });
+  canvas.getLines().each(function(connectionIndex, connectionObj){
+    allId.push(connectionObj.getId());
+  });
+
+  //replace IDs with their order for more human readible code
+  var counter = 0;
+  allId.each(function(IdIndex, IdObj){
+    var regExpression = new RegExp(IdObj, 'g');
+    cCode = cCode.replace(regExpression, counter++);
+  });
+
+  return cCode;
 }
