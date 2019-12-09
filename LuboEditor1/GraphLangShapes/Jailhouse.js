@@ -8,10 +8,12 @@
  *  generated.
  */
 GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
+  //NAME: "GraphLang.Shapes.Basic.Jailhouse",
   NAME: "GraphLang.Shapes.Basic.Jailhouse",
   init:function(attr, setter, getter)
   {
     this._super( $.extend({},attr), setter, getter);
+    this.userData = {};
   },
   translateToCppCode: function(){
     cCode = "";
@@ -32,6 +34,9 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
         cCode += figureObj.translateToCppCode() + "\n";
       }
     });
+
+    //directChildren = GraphLang.Utils.getDirectChildrenWithoutTunnels(this.getCanvas(), this.getCanvas().getFigure(this.getId()));
+    directChildren = this.getAssignedFigures();
 
 //    cCode += "{END Multilayered Jailhouse layer id: " + this.getId() + "}\n";
     return cCode;

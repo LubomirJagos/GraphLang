@@ -413,6 +413,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       Math.round(Math.random()*255)
     ));
 
+    if (newLayer.getUserData == null){
+      this.userData = {};
+    }
+    newLayer.userData.owner = this.getId();
+
     var layerId = "";
     if (this.layers != null){
       layerId = new String(this.layers.getSize());  //size is alwas count so it's +1 in compare with object index inside array

@@ -616,7 +616,7 @@ GraphLang.Utils.showNodes = function(canvas){
 /**
  *  @method getNodeLoopOwner(canvas, nodeObj/loopObj)
  *  @param {draw2d.Canvas} canvas - schematic from which is node or loop
- *  @param {draw2d.shape.Node} nodeObj - node or loop objec which is insepcted for its loop owner
+ *  @param {draw2d.shape.Node} nodeObj - node or loop objec which is inspected for its loop owner
  *  @name GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj/loopObj)
  *  @description Return loop which ownes node, if there's no loop return null.
  */
