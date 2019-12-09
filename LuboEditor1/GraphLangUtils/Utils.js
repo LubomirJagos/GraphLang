@@ -906,6 +906,11 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
  * @param {draw2d.Canvas} canvas - place from where to take schematic which will be transcripted into C/C++ code
  * @description DEPRECATED Traverse digram and execute over each node function which gives it's C/C++ representation.
  * It's not solving translating loops or similar multilayered things, there is another function translateToCppCode2 which is trying to handle these things.
+ *
+ *    *********************************************************************************
+ *    * DEPRECATED method, there is new better, more complete one translateToCppCode2
+ *    *********************************************************************************
+ *
  */
 GraphLang.Utils.translateToCppCode = function(canvas){
   var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
@@ -985,6 +990,10 @@ GraphLang.Utils.translateToCppCode = function(canvas){
 
   alert(cCode);
 }
+
+/*********************************************************************************************************
+ *  THIS IS MAIN METHOD TO TRANSLATE CODE INTO C/C++
+ *********************************************************************************************************/
 
 /**
  * @method translateToCppCode2(canvas)
@@ -1105,10 +1114,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
            *  THIS IS JUST PROTOTYPE
            *  traverse through all layers and transcript them into C CODE
            */
+/*
         nodeObj.getAllLayers().each(function(layerIndex, layerObj){
             cCode += layerObj.translateToCppCode();
         });
-
+*/
+        cCode += nodeObj.translateToCppCode();
         }
 
     });

@@ -371,10 +371,22 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
    ********************************************************************************************************************/
 
   translateToCppCode: function(){
+
+/*  this is original translation just to have something here
     cCode = "";
     cCode += "{Multilayered Node BEGIN}\n";
     cCode += "//Here will be stuff for multilayer node, if you see this, somethin went wrong during translation process.\n";
     cCode += "{Multilayered Node END}\n";
+*/
+
+    /*
+     *  Going thorugh all layers and ask them to translate into C/C++ code
+     */
+    cCode = "";
+    this.getAllLayers().each(function(layerIndex, layerObj){
+        cCode += layerObj.translateToCppCode();
+    });
+
     return cCode;
   },
 
@@ -406,7 +418,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     newLayer.setId("jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
 
     /*
-     *  GraphLang Jailhouse has it's translation function inside object! 
+     *  GraphLang Jailhouse has it's translation function inside object!
      */
 
     this.layers.push(newLayer);
@@ -454,7 +466,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
   renameLayer: function(){
     //this.layerChooser.editor.start(this.layerChooser);
-    layerChooserEditor = new draw2d.ui.LabelEditor()
+    layerChooserEditor = new draw2d.ui.LabelEditor();
     layerChooserEditor.start(this.layerChooser);
     this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
   }
