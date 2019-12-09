@@ -1421,7 +1421,7 @@ GraphLang.Utils.getCppCode2 = function(canvas){
 
         //this is element which content is placed into clipboard
         cCode = GraphLang.Utils.translateToCppCode2(canvas, null);
-        cCode = this.rewriteIDtoNumbers(canvas, cCode);
+        cCode = this.rewriteIDtoNumbers(canvas, cCode);                 //THIS WILL CHANGE ALL IDs IN FILE INTO NUMBERS TO MAKE CODE MORE READIBLE! DONT'FORGET ABOUT THAT WHEN DEBUGGING AND EXPECTING ID.
         copyElement.innerHTML = cCode;
 
         copyElement = document.body.appendChild(copyElement);

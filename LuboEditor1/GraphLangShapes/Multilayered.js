@@ -371,21 +371,25 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
    ********************************************************************************************************************/
 
   translateToCppCode: function(){
-
-/*  this is original translation just to have something here
-    cCode = "";
-    cCode += "{Multilayered Node BEGIN}\n";
-    cCode += "//Here will be stuff for multilayer node, if you see this, somethin went wrong during translation process.\n";
-    cCode += "{Multilayered Node END}\n";
-*/
-
     /*
      *  Going thorugh all layers and ask them to translate into C/C++ code
      */
     cCode = "";
+
+    selectorPort = this.getInputPort("layerSelector");
+    selectorPortWires = selectorPort.getConnections();
+    if (selectorPortWires.getSize() > 0){
+      cCode = "switch(" + selectorPortWires.first().getId() + "){\n";
+    }else{
+      cCode = "switch(/* selectorPort not connected*/){\n";
+    }
+
     this.getAllLayers().each(function(layerIndex, layerObj){
+        cCode += "case " + layerObj.getId() + ":\n";
         cCode += layerObj.translateToCppCode();
+        cCode += "break;\n"
     });
+    cCode += "}\n";
 
     return cCode;
   },
@@ -411,9 +415,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
     var layerId = "";
     if (this.layers != null){
-      layerId = this.layers.getSize();  //size is alwas count so it's +1 in compare with object index inside array
+      layerId = new String(this.layers.getSize());  //size is alwas count so it's +1 in compare with object index inside array
     }else{
-      layerId = 0;                      //first element to be create has numebr 0
+      layerId = "0";                      //first element to be create has numebr 0
     }
     newLayer.setId("jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
 

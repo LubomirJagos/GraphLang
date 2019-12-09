@@ -16,11 +16,24 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
   translateToCppCode: function(){
     cCode = "";
 
-    cCode += "{BEGIN Multilayered Jailhouse layer " + this.getId() + "}\n";
+    //cCode += "{BEGIN Multilayered Jailhouse layer id: " + this.getId() + "}\n";
+
     //this is not running
     //    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this)
-    cCode += "LuboJ :)";
-    cCode += "{END Multilayered Jailhouse layer " + this.getId() + "}\n";
+
+    /*
+     *  Going through all nodes and wires inside Jailhouse and translate them into C/C++ code or call appropriate translate function
+     */
+    //cCode += "LuboJ :)";  //original just dummy string
+    //
+    layerFigures = this.getAssignedFigures();
+    layerFigures.each(function(figureIndex, figureObj){
+      if (figureObj.NAME.toLowerCase().search("connection") == -1){
+        cCode += figureObj.translateToCppCode() + "\n";
+      }
+    });
+
+//    cCode += "{END Multilayered Jailhouse layer id: " + this.getId() + "}\n";
     return cCode;
   }
 });
