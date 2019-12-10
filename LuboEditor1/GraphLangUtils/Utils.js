@@ -702,7 +702,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 
   //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
   allNodes.each(function(nodeIndex, nodeObj){
-    if (nodeObj.userData != undefined || nodeObj.userData == null){
+    if (nodeObj.userData == undefined || nodeObj.userData == null){
       nodeObj.userData = {};
       nodeObj.userData.executionOrder = -1;
     }

@@ -1,3 +1,9 @@
+/**
+ *  @class GraphLang.Shapes.Basic.Loop
+ *  @description This class is parent for WhileLoop and ForLoop mostly. It contains methods to get left tunnels
+ *  declaration, inside wires declaration, right tunnels declaration.
+ */
+
 GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   NAME: "GraphLang.Shapes.Basic.Loop",
   constructor(obj){
@@ -35,6 +41,10 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
   getUserData: function(){
     return this.userData;
   },
+
+  /*
+   *  SET EXECUTION ORDER BY LEFTTUNNEL WITH HIGHEST EXECUTION ORDER
+   */
   setExecutionOrderByTunnels: function(canvas){
     //first get input tunnel with highest execution number, if there is no input tunnel it's needed to look for parent loop
     var tunnelHighestExecutionOrder = -1;
@@ -63,6 +73,10 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     this.getUserData().wasTranslatedToCppCode = false;
   },
 
+  /*
+   *  TRANSLATE TO C/C++ CODE
+   *    This is just dummy function to have here something, translate for specific loop structure (WhileLoop, ForLoop) is done in their methods.
+   */
   translateToCppCode: function(){
     this.getUserData().wasTranslatedToCppCode = true;
 
@@ -108,6 +122,23 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     return cCode;
  },
 
+ /*
+  * WIRES FROM LEFT TUNNELS IN LAYER, returns all wires from left tunnels regardless which layer
+  *   This is for Multilayer figure, to get wires list for some layer.
+  */
+  getLeftTunnelsLayerWires:function(){
+    leftTunnelsWires = new draw2d.util.ArrayList();
+    this.getChildren().each(function(childIndex, childObj){
+     if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+       if (childObj.getOutputPort(0).getConnections().getSize() > 0){
+         childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+           leftTunnelsWires.push(connectionObj);
+         });
+       }
+     }
+    });
+    return leftTunnelsWires;
+  },
  /*
   * LEFT TUNNEL LOOP WIRES INPUT ASSIGNEMENTS
   */

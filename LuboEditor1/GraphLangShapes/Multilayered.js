@@ -413,8 +413,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       Math.round(Math.random()*255)
     ));
 
-    if (newLayer.getUserData == null){
-      this.userData = {};
+    if (newLayer.getUserData() == null){
+      newLayer.userData = {};
     }
     newLayer.userData.owner = this.getId();
 
