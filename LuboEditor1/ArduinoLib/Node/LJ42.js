@@ -367,7 +367,6 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
            shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
            shape.data("name","Line");
 
-
            return this.canvas.paper.setFinish();
       },
 

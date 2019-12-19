@@ -2,8 +2,8 @@
  *  @class GraphLang.Shapes.Basic.NUmericConstant
  *  @descritpition Numeric constant. For now implemented just integers and floats.
  */
-GraphLang.Shapes.Basic.NumericConstant = draw2d.shape.basic.Label.extend({
-  NAME: "GraphLang.Shapes.Basic.NumericConstant",
+GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
+  NAME: "GraphLang.Shapes.Basic.NumericConstantNode",
   init:function(attr, setter, getter){
     this._super( $.extend({},attr), setter, getter);
     this.installEditor(new draw2d.ui.LabelInplaceEditor());

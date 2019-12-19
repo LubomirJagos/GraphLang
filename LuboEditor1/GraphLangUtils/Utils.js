@@ -1024,17 +1024,28 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   var cCode = "";
 
 
-  /*
+  /*********************************************************************************************************
    *  WIRES DECLARATION
+   *
    *  globals at level of canvas
-   */
+   *  ERROR:
+   *    - THERE IS NOT VALUE ASSIGNEMENT WHEN WIRE IS CONNECTED TO CONSTANT
+   *********************************************************************************************************/
   if (nestedLevel == 0){
     this.getDirectChildrenWires(canvas, null).each(function(lineIndex, lineObj){
       //LuboJ, for now we trust that each line is wire
       //if (lineObj.NAME.toLowerCase().search(""))
       var wireDatatype = lineObj.getSource().getUserData().datatype;
-      //if ( wireDatatype == "") cCode +=
-      cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
+
+      /*
+       *  If wire connected TO NUMERICCONSTNATNODE then assign its value to it
+       */
+      var connectedConstant = lineObj.getSource().getParent();
+      if (connectedConstant.NAME.toLowerCase().search("numericconstantnode") > -1){
+        cCode += wireDatatype + " wire_" + connectedConstant.getId() + " = const_" + connectedConstant.getId() + ";\n";
+      }else{
+        cCode += wireDatatype + " wire_" + connectedConstant.getId() + ";\n";
+      }
     });
   }
 
@@ -1418,6 +1429,11 @@ GraphLang.Utils.getCppCode2 = function(canvas){
 
         //ORIGINAL WITHOUT REWRITING IDs
         //copyElement.innerHTML = GraphLang.Utils.translateToCppCode2(canvas, null);
+
+        // INITIALIZATION
+        // added by LuboJ. this CAN CAUSE SOME ERRORS IT WASN'T HERE UNTIL RECENTLY when I saw that there is not port initialization and execution order done in this task.
+        this.initAllPortToDefault(canvas);
+        this.executionOrder(canvas);
 
         //this is element which content is placed into clipboard
         cCode = GraphLang.Utils.translateToCppCode2(canvas, null);

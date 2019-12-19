@@ -67,7 +67,7 @@
       <script src="./GraphLangShapes/FeedbackNode.js"></script>
       <script src="./GraphLangShapes/UnbundleByName.js"></script>
       <script src="./GraphLangShapes/BundleByName.js"></script>
-      <script src="./GraphLangShapes/NumericConstant.js"></script>
+      <script src="./GraphLangShapes/NumericConstantNode.js"></script>
       <script src="./GraphLangShapes/Array.js"></script>
       <script src="./GraphLangShapes/ClusterDatatype.js"></script>
       <script src="./GraphLangShapes/ExternalOutputPort.js"></script>
@@ -102,6 +102,10 @@
 
       <script src="./ArduinoLib/String/__initEnv.js"></script>
       <script src="./ArduinoLib/String/replace.js"></script>
+
+      <script src="./ArduinoLib/FileLib/__initEnv.js"></script>
+      <script src="./ArduinoLib/FileLib/OpenFolderNode.js"></script>
+      <script src="./ArduinoLib/FileLib/SearchDirectoryNode.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -447,6 +451,9 @@ function displayJSON(canvas){
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
 -->
 
+      <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-width="30" data-height="30" data-label="GraphLang SearchDirectoryNode" class="palette_node_element draw2d_droppable">ArduinoLib SearchDirectoryNode</div>
+      <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-width="30" data-height="30" data-label="GraphLang OpenFolderNode" class="palette_node_element draw2d_droppable">ArduinoLib OpenFolderNode</div>
+
       <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
       <div data-shape="GraphLang.Shapes.ExternalInputPort" data-width="300" data-height="300" data-label="GraphLang ExternalInputPort" class="palette_node_element draw2d_droppable">ExternalInputPort</div>
       <div data-shape="GraphLang.Shapes.ExternalOutputPort" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPort" class="palette_node_element draw2d_droppable">ExternalOutputPort</div>
@@ -458,9 +465,9 @@ function displayJSON(canvas){
         <img src="GraphLangSymbols/Array.png" />
         GraphLang Array
       </div>
-      <div data-shape="GraphLang.Shapes.Basic.NumericConstant" data-label="GraphLang NumericConstant" class="palette_node_element draw2d_droppable">
+      <div data-shape="GraphLang.Shapes.Basic.NumericConstantNode" data-label="GraphLang NumericConstantNode" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/NumericConstant.png" />
-        GraphLang NumericConstant
+        GraphLang NumericConstantNode
       </div>
       <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="GraphLang BundleByName" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/bundleByName.png" />
