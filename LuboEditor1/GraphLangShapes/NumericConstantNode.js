@@ -89,10 +89,33 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
     var constDatatype = this.getOutputPort(0).userData.datatype;
 
     if (constDatatype.toLowerCase().search("string") > -1){
-      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";";
+      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";\n";
     }else{
-      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";";
+      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";\n";
+    }
+
+    var constantId = this.getId();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+      cCode += "wire_" + connectionObj.getId() + " = const_" + constantId + ";\n";
+    });
+
+    return cCode;
+  },
+  /**
+   *  @name getDeclaration
+   *  @desc Returns constant declaration. NOW INTENTIONALLY SAME AS TRANLSATE TO CPP, BECAUSE it's used during translating function to have translate them before wires declaration
+   */
+  getDeclaration:function(){
+    cCode = "";
+    var constDatatype = this.getOutputPort(0).userData.datatype;
+
+    if (constDatatype.toLowerCase().search("string") > -1){
+      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";\n";
+    }else{
+      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";\n";
     }
     return cCode;
   }
+
+
 });

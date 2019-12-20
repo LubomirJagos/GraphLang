@@ -995,18 +995,19 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   var allLoops = new draw2d.util.ArrayList();
   var allMultilayeredNodes = new draw2d.util.ArrayList(); //new list for this special kind of node
   var allClusterNodes = new draw2d.util.ArrayList();
+  var allNumericConstantNodes = new draw2d.util.ArrayList();
 
   allNodes.each(function(nodeIndex, nodeObj){
     if (nodeObj.NAME.toLowerCase().search("loop") >= 0 &&
         nodeObj.NAME.toLowerCase().search("multilayered") == -1){ //put label just for nodes, for now suppose that's all shapes.basic
       if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
     }
-    if (nodeObj.NAME.toLowerCase().search("multilayered") >= 0){
+    if (nodeObj.NAME.toLowerCase().search("multilayered") > -1){
       if (allMultilayeredNodes.indexOf(nodeObj) == -1){
         allMultilayeredNodes.push(nodeObj);
       }
     }
-    if (nodeObj.NAME.toLowerCase().search("cluster") >= 0){ //list of all clusters inside diagram
+    if (nodeObj.NAME.toLowerCase().search("cluster") > -1){ //list of all clusters inside diagram
       if (allClusterNodes.indexOf(nodeObj) == -1){
         allClusterNodes.push(nodeObj);
       }
@@ -1018,11 +1019,29 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
       allNodes.remove(nodeObj);
     }
 */
+    if (nodeObj.NAME.toLowerCase().search("constant") > -1){ //list of all clusters inside diagram
+      if (allNumericConstantNodes.indexOf(nodeObj) == -1){
+        allNumericConstantNodes.push(nodeObj);
+      }
+    }
 
   });
 
   /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
   var cCode = "";
+
+  /*********************************************************************************************************
+   *  CONSTANTS Declaration
+   *********************************************************************************************************/
+   /*
+    *   NOT NEEDED BECAUSE CONSTANT HAS IN NAME WORD NODE SO THEY ARE INTERPRETED, SO FIRST IS GENERATED THEIR Declaration
+    *   AND AFTER THEIR ASSIGN FOR WIRES SO EVERYTHING IS OK ANT THIS PART IS REDUNDANT AND CAUSING DUPLICITIES IN CODE
+    */
+   /*
+   allNumericConstantNodes.each(function(constantIndex, constantObj){
+     cCode += constantObj.getDeclaration();
+   });
+   */
 
 
   /*********************************************************************************************************
@@ -1042,13 +1061,17 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
        *  If wire connected TO NUMERICCONSTNATNODE then assign its value to it
        */
       var connectedConstant = lineObj.getSource().getParent();
-      if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
+      if (connectedConstant.NAME.toLowerCase().search("array") > -1){
+        cCode += wireDatatype + " wire_" + lineObj.getId() + " = array_" + connectedConstant.getId() + ";\n";
+      }
+//NOT NEEDED BECAUSE CONSTANTS HAS IN NAME WORD NODE SO THEY ARE TRANSLATED AT PLACE AND IN THEIR TRANSLATION THERE IS ASSIGNMENET PART FOR CONNECTED WIRES
+/*
+      else if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
         cCode += wireDatatype + " wire_" + lineObj.getId() + " = const_" + connectedConstant.getId() + ";\n";
       }
+*/
       else if (connectedConstant.NAME.toLowerCase().search("cluster") > -1){
         cCode += wireDatatype + " wire_" + lineObj.getId() + " = cluster_" + connectedConstant.getId() + ";\n";
-      }else if (connectedConstant.NAME.toLowerCase().search("array") > -1){
-        cCode += wireDatatype + " wire_" + lineObj.getId() + " = array_" + connectedConstant.getId() + ";\n";
       }else{
         cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
       }
@@ -1465,6 +1488,38 @@ GraphLang.Utils.getCppCode2 = function(canvas){
         //this is element which content is placed into clipboard
         cCode = GraphLang.Utils.translateToCppCode2(canvas, null);
         cCode = this.rewriteIDtoNumbers(canvas, cCode);                 //THIS WILL CHANGE ALL IDs IN FILE INTO NUMBERS TO MAKE CODE MORE READIBLE! DONT'FORGET ABOUT THAT WHEN DEBUGGING AND EXPECTING ID.
+
+
+        /******************************************************************************
+         * LuboJ my template for Arduino stuff
+         *******************************************************************************/
+         var template_cCode = "";
+        template_cCode += "#define error int\n";
+        template_cCode += "#define int32 int\n";
+        template_cCode += "void setup() {\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += cCode;
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "\n";
+        template_cCode += "}\n";
+        template_cCode += "void loop() {\n";
+        template_cCode += "  // put your main code here, to run repeatedly:\n";
+        template_cCode += "}\n";
+        cCode = template_cCode;
+        /******************************************************************************
+         * END MY TEMPLATE
+         *******************************************************************************/
+
+
         copyElement.innerHTML = cCode;
 
         copyElement = document.body.appendChild(copyElement);

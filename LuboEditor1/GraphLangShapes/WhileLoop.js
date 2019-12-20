@@ -24,6 +24,11 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
   translateToCppCode: function(){
     var cCode = "";
     this.getUserData().wasTranslatedToCppCode = true;
+    var stopTerminal = this.getInputPort("stopTerminal");
+    var wireStop = stopTerminal.getConnections().first();
+    if (wireStop != undefined){
+      cCode += wireStop.getSource().userData.datatype + " wire_" + wireStop.getId() + ";\n";
+    }
 
     cCode += this.getTunnelsDeclarationCppCode();
 
@@ -50,7 +55,7 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
     }
 
     cCode += this.getRightTunnelsAssignementOutputCppCode();
-    cCode += "}while(!" + endCondition + ")";
+    cCode += "}while(!" + endCondition + ");";
 
     return cCode;
   }

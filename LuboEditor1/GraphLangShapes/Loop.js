@@ -67,7 +67,7 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
         this.getUserData().executionOrder = 1;
       }
     }else{
-      this.getUserData().executionOrder = tunnelHighestExecutionOrder;
+      this.getUserData().executionOrder = tunnelHighestExecutionOrder + 1;
     }
 
     this.getUserData().wasTranslatedToCppCode = false;
@@ -117,6 +117,7 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
     cCode = "";
     cCode += "//inside loop wires declaration\n";
     GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
+      var wireDatatype = wireObj.getSource().getUserData().datatype;
       cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
     });
     return cCode;
