@@ -194,6 +194,8 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
       this.children.each(function(i,e){
           var labelJSON = e.figure.getPersistentAttributes();
           labelJSON.locator=e.locator.NAME;
+          labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
+          labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
           memento.labels.push(labelJSON);
       });
 
@@ -216,28 +218,19 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
       this.resetChildren();
 
       // and add all children of the JSON document.
-      //
-      var counterTunnel = 0;
       $.each(memento.labels, $.proxy(function(i,json){
 
-          //LuboJ ADDED
+          //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
           curDatatype = json.type;
           if (curDatatype.toLowerCase().search("tunnel") > -1){
             var msg = JSON.stringify(json);
-            //json.locator = "draw2d.layout.locator.XYAbsPortLocator(5,7)"
             //alert("tunnel:" + msg);
           }
 
-          // create the figure stored in the JSON
-          var figure =  eval("new "+json.type+"()");
-          // apply all attributes
-          figure.attr(json);
-          // instantiate the locator
-          var locator =  eval("new "+json.locator+"()");
-          // add the new figure as child to this figure
-          //this.add(figure, locator);
-          counterTunnel += 5;  //just for now to see tunnels
-          this.add(figure, new draw2d.layout.locator.XYRelPortLocator(10,counterTunnel));
+          var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
+          figure.attr(json);                                                                            // apply all attributes
+          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+          this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
   },
 
