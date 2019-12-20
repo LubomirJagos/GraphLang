@@ -2,8 +2,8 @@
  *  @class GraphLang.Shapes.Basic.Array
  *  @descritpition Generic array implementation. It's TableLayout from draw2d.
  */
-GraphLang.Shapes.Basic.Array = draw2d.shape.layout.TableLayout.extend({
-  NAME: "GraphLang.Shapes.Basic.Array",
+GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
+  NAME: "GraphLang.Shapes.Basic.ArrayNode",
   init:function(attr, setter, getter){
     this._super( $.extend({},attr), setter, getter);
 
@@ -19,6 +19,10 @@ GraphLang.Shapes.Basic.Array = draw2d.shape.layout.TableLayout.extend({
     port.setName("out1");
     port.setMaxFanOut(20);
     port.userData = {};
+    port.userData.datatype = "unknown";
+
+    this.userData = {};
+    this.userData.datatype = "unknown";
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
     var label1 =  new draw2d.shape.basic.Label({text:"[0,1] with long long long long label", fontColor:"#00AF00"});
@@ -69,27 +73,33 @@ GraphLang.Shapes.Basic.Array = draw2d.shape.layout.TableLayout.extend({
                  switch(key){
                  case "int32":
                      emitter.setColor(new draw2d.util.Color("#0000FF"));
-                     port.userData.datatype = "int32";
+                     emitter.getParent().userData.datatype = "int32";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "int32";
                      break;
                  case "uint":
                      emitter.setColor(new draw2d.util.Color("#0000FF"));
-                     port.userData.datatype = "uint";
+                     emitter.getParent().userData.datatype = "uint";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "uint";
                      break;
                  case "float":
                      emitter.setColor(new draw2d.util.Color("#FFC300"));
-                     port.userData.datatype = "float";
+                     emitter.getParent().userData.datatype = "float";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "float";
                      break;
                  case "double":
                      emitter.setColor(new draw2d.util.Color("#900C3F"));
-                     port.userData.datatype = "double";
+                     emitter.getParent().userData.datatype = "double";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "double";
                      break;
                  case "bool":
                      emitter.setColor(new draw2d.util.Color("#75FF33"));
-                     port.userData.datatype = "bool";
+                     emitter.getParent().userData.datatype = "bool";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "bool";
                      break;
                  case "String":
                      emitter.setColor(new draw2d.util.Color("#FF33F0"));
-                     port.userData.datatype = "String";
+                     emitter.getParent().userData.datatype = "String";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "String";
                      break;
                  case "add item":
                      var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00"})
@@ -99,7 +109,8 @@ GraphLang.Shapes.Basic.Array = draw2d.shape.layout.TableLayout.extend({
                      break;
                  default:
                      emitter.setColor(new draw2d.util.Color("#979595"));
-                     port.userData.datatype = "unknown";
+                     emitter.getParent().userData.datatype = "unknown";
+                     emitter.getParent().getOutputPort(0).userData.datatype = "unknown";
                      break;
                  }
 
@@ -123,9 +134,27 @@ GraphLang.Shapes.Basic.Array = draw2d.shape.layout.TableLayout.extend({
 
     //LuboJ this will place port always to right position, but now it's inside add item function so it will repair port position after each add new item
     this.getOutputPort(0).setLocator(new draw2d.layout.locator.XYRelPortLocator(110, 50.0));
+  },
+
+  /**
+   *  @name translateToCppCode
+   *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
+   */
+  translateToCppCode: function(){
+      cCode = "";
+      cCode = this.userData.datatype + "[] = {";
+      this.getChildren().each(function(childIndex, childObj){
+        //protection agains labels with execution order to be interpreted as part of array
+        if (childObj.userData != undefined &&
+            childObj.userData.datatype != undefined &&
+            childObj.userData.datatype.toLowerCase().search("executionorder") > -1){
+        }else{
+          cCode += childObj.getText() + ",";
+        }
+      });
+      cCode = cCode.slice(0,-1);  //remove last ','
+      cCode += "};\n";
+      return cCode;
   }
-
-
-
 
 });

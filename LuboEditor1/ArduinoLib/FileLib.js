@@ -8,7 +8,7 @@
 //var testShape = draw2d.SetFigure.extend({
 GraphLang.FileLib = draw2d.shape.node.End.extend({
 
-   NAME: "GraphLang.ArduinoLib",
+   NAME: "GraphLang.ArduinoLib.FileLib",
 
    constructor(obj) {
      obj && Object.assign(this, obj);

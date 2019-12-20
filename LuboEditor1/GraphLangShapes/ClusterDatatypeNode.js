@@ -7,8 +7,8 @@
  *  detected tunnels on their borders and just one tunnels for common loop would be
  *  generated.
  */
-GraphLang.Shapes.Basic.ClusterDatatype = GraphLang.Shapes.Basic.Loop.extend({
-  NAME: "GraphLang.Shapes.Basic.ClusterDatatype",
+GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend({
+  NAME: "GraphLang.Shapes.Basic.ClusterDatatypeNode",
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
   //   executionOdrder: -1,
@@ -97,6 +97,6 @@ GraphLang.Shapes.Basic.ClusterDatatype = GraphLang.Shapes.Basic.Loop.extend({
    ********************************************************************************************************************/
 
   translateToCppCode: function(){
-    return "{Multilayered Node}";
+    return "{ClusterConstant: " + this.getId() + "}";
   }
 });

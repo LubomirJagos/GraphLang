@@ -1041,10 +1041,13 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
        *  If wire connected TO NUMERICCONSTNATNODE then assign its value to it
        */
       var connectedConstant = lineObj.getSource().getParent();
-      if (connectedConstant.NAME.toLowerCase().search("numericconstantnode") > -1){
-        cCode += wireDatatype + " wire_" + connectedConstant.getId() + " = const_" + connectedConstant.getId() + ";\n";
+      if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
+        cCode += wireDatatype + " wire_" + lineObj.getId() + " = const_" + connectedConstant.getId() + ";\n";
+      }
+      else if (connectedConstant.NAME.toLowerCase().search("cluster") > -1){
+        cCode += wireDatatype + " wire_" + lineObj.getId() + " = cluster_" + connectedConstant.getId() + ";\n";
       }else{
-        cCode += wireDatatype + " wire_" + connectedConstant.getId() + ";\n";
+        cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
       }
     });
   }
@@ -1053,8 +1056,14 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
    *  EXTERANL PORTS declaration
    *    this would be in fact input parameter into function which wrapp this whole diagram
    */
+   /*
+    * ...NEEDS TO BE WRITTEN... ...TBD...
+    */
 
-
+  /****************************************************************
+   *  NODES TRANSLATING
+   *  Going through diagram and translate each graphical node into its text representation.
+   ****************************************************************/
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
 
@@ -1628,9 +1637,12 @@ GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
         });
       }
   });
+
+
   canvas.getLines().each(function(connectionIndex, connectionObj){
     allId.push(connectionObj.getId());
   });
+
 
   //replace IDs with their order for more human readible code
   var counter = 0;

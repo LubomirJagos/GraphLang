@@ -68,8 +68,8 @@
       <script src="./GraphLangShapes/UnbundleByName.js"></script>
       <script src="./GraphLangShapes/BundleByName.js"></script>
       <script src="./GraphLangShapes/NumericConstantNode.js"></script>
-      <script src="./GraphLangShapes/Array.js"></script>
-      <script src="./GraphLangShapes/ClusterDatatype.js"></script>
+      <script src="./GraphLangShapes/ArrayNode.js"></script>
+      <script src="./GraphLangShapes/ClusterDatatypeNode.js"></script>
       <script src="./GraphLangShapes/ExternalOutputPort.js"></script>
       <script src="./GraphLangShapes/ExternalInputPort.js"></script>
       <script src="./GraphLangShapes/UserCodeBlock.js"></script>
@@ -103,9 +103,18 @@
       <script src="./ArduinoLib/String/__initEnv.js"></script>
       <script src="./ArduinoLib/String/replace.js"></script>
 
+      <!--
+        FILE LIB
+      -->
       <script src="./ArduinoLib/FileLib/__initEnv.js"></script>
       <script src="./ArduinoLib/FileLib/OpenFolderNode.js"></script>
       <script src="./ArduinoLib/FileLib/SearchDirectoryNode.js"></script>
+
+      <!--
+        DUMMY LIB
+      -->
+      <script src="./ArduinoLib/DummyLib/__initEnv.js"></script>
+      <script src="./ArduinoLib/DummyLib/DummyEnd1Node.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -451,19 +460,30 @@ function displayJSON(canvas){
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
 -->
 
-      <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-width="30" data-height="30" data-label="GraphLang SearchDirectoryNode" class="palette_node_element draw2d_droppable">ArduinoLib SearchDirectoryNode</div>
-      <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-width="30" data-height="30" data-label="GraphLang OpenFolderNode" class="palette_node_element draw2d_droppable">ArduinoLib OpenFolderNode</div>
+      <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-width="30" data-height="30" data-label="GraphLang DummyEnd1Node" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/DummyLib_DummyEnd1Node.png" />
+        ArduinoLib DummyEnd1Node
+      </div>
+
+      <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-width="30" data-height="30" data-label="GraphLang SearchDirectoryNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/FileLib_SearchDirectoryNode.png" />
+        ArduinoLib SearchDirectoryNode
+      </div>
+      <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-width="30" data-height="30" data-label="GraphLang OpenFolderNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/FileLib_OpenFolderNode.png" />
+        ArduinoLib OpenFolderNode
+      </div>
 
       <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
       <div data-shape="GraphLang.Shapes.ExternalInputPort" data-width="300" data-height="300" data-label="GraphLang ExternalInputPort" class="palette_node_element draw2d_droppable">ExternalInputPort</div>
       <div data-shape="GraphLang.Shapes.ExternalOutputPort" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPort" class="palette_node_element draw2d_droppable">ExternalOutputPort</div>
-      <div data-shape="GraphLang.Shapes.Basic.ClusterDatatype" data-label="GraphLang ClusterDatatype" class="palette_node_element draw2d_droppable">
-        <img src="GraphLangSymbols/Arduino_clusterDatatype.png" />
-        GraphLang ClusterDatatype
+      <div data-shape="GraphLang.Shapes.Basic.ClusterDatatypeNode" data-label="GraphLang ClusterDatatypeNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
+        GraphLang ClusterDatatypeNode
       </div>
-      <div data-shape="GraphLang.Shapes.Basic.Array" data-label="GraphLang Array" class="palette_node_element draw2d_droppable">
-        <img src="GraphLangSymbols/Array.png" />
-        GraphLang Array
+      <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="GraphLang ArrayNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/ArrayNode.png" />
+        GraphLang ArrayNode
       </div>
       <div data-shape="GraphLang.Shapes.Basic.NumericConstantNode" data-label="GraphLang NumericConstantNode" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/NumericConstant.png" />
