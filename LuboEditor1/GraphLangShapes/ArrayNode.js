@@ -6,6 +6,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   NAME: "GraphLang.Shapes.Basic.ArrayNode",
   init:function(attr, setter, getter){
     this._super( $.extend({},attr), setter, getter);
+    this.setPersistPorts(false);
 
     /*****************************************************************************
      *  OUTPUT PORT
@@ -22,7 +23,6 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     port.userData.datatype = "unknown";
 
     this.userData = {};
-    this.userData.datatype = "unknown";
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
     var label1 =  new draw2d.shape.basic.Label({text:"[0,1] with long long long long label", fontColor:"#00AF00"});
@@ -70,50 +70,29 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
               //these functions are run after user click on some context menu option
               callback: $.proxy(function(key, options)
               {
-                 switch(key){
-                 case "int32":
-                     emitter.setColor(new draw2d.util.Color("#0000FF"));
-                     emitter.getParent().userData.datatype = "int32";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "int32";
-                     break;
-                 case "uint":
-                     emitter.setColor(new draw2d.util.Color("#0000FF"));
-                     emitter.getParent().userData.datatype = "uint";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "uint";
-                     break;
-                 case "float":
-                     emitter.setColor(new draw2d.util.Color("#FFC300"));
-                     emitter.getParent().userData.datatype = "float";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "float";
-                     break;
-                 case "double":
-                     emitter.setColor(new draw2d.util.Color("#900C3F"));
-                     emitter.getParent().userData.datatype = "double";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "double";
-                     break;
-                 case "bool":
-                     emitter.setColor(new draw2d.util.Color("#75FF33"));
-                     emitter.getParent().userData.datatype = "bool";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "bool";
-                     break;
-                 case "String":
-                     emitter.setColor(new draw2d.util.Color("#FF33F0"));
-                     emitter.getParent().userData.datatype = "String";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "String";
-                     break;
-                 case "add item":
-                     var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00"})
-                     arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
-                     emitter.getParent().addRow(arrayItem);
-                     emitter.getParent().updateAllItems();
-                     break;
-                 default:
-                     emitter.setColor(new draw2d.util.Color("#979595"));
-                     emitter.getParent().userData.datatype = "unknown";
-                     emitter.getParent().getOutputPort(0).userData.datatype = "unknown";
-                     break;
-                 }
-
+                switch(key){
+                  case "int32":
+                  case "uint":
+                  case "float":
+                  case "double":
+                  case "bool":
+                  case "String":
+                      emitter.getParent().changeDatatypeAllItems(key);
+                      break;
+                  case "add item":
+                      var arrayItemDatatype = emitter.getParent().getOutputPort(0).userData.datatype;
+                      var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}})
+                      arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
+                      emitter.getParent().addRow(arrayItem);
+                      emitter.getParent().updateAllItems();                               //update array items context menu
+                      emitter.getParent().changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
+                      break;
+                  default:
+                      emitter.setColor(new draw2d.util.Color("#979595"));
+                      emitter.getParent().userData.datatype = "unknown";
+                      emitter.getParent().getOutputPort(0).userData.datatype = "unknown";
+                      break;
+                }
               },this),
               x:event.x,
               y:event.y,
@@ -142,7 +121,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
    */
   translateToCppCode: function(){
       cCode = "";
-      cCode = this.userData.datatype + "[] = {";
+      cCode = this.userData.datatype + "[] array_" + this.getId() + " = {";
       this.getChildren().each(function(childIndex, childObj){
         //protection agains labels with execution order to be interpreted as part of array
         if (childObj.userData != undefined &&
@@ -155,6 +134,21 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
       cCode = cCode.slice(0,-1);  //remove last ','
       cCode += "};";
       return cCode;
+  },
+
+  /**
+   *  @name changeDatatypeAllItems
+   *  @param datatype - name of datatype which all array items should be
+   *  @desc Change datatype of all array elements and also array output port datatype.
+   */
+  changeDatatypeAllItems: function(newDatatype){
+        var newColor = new GraphLang.Utils.Color();
+        this.getChildren().each(function(childIndex, childObj){
+          childObj.setColor(newColor.getByName(newDatatype));
+          if (childObj.userData == undefined) childObj.userData = {};
+          childObj.userData.datatype = newDatatype;
+        });
+        this.getOutputPort(0).userData.datatype = newDatatype;
   }
 
 });

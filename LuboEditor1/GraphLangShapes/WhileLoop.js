@@ -36,7 +36,7 @@ GraphLang.Shapes.Basic.Loop.WhileLoop = GraphLang.Shapes.Basic.Loop.extend({
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this);
+    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this, 1);
 
     return cCode;
   },

@@ -7,6 +7,7 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
   init:function(attr, setter, getter){
     this._super( $.extend({},attr), setter, getter);
     this.installEditor(new draw2d.ui.LabelInplaceEditor());
+    this.persistPorts = false;  //IMPORTANT, if ports are in json code it's loaded wrong
 
     /*****************************************************************************
      *  OUTPUT PORT

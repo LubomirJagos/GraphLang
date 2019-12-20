@@ -500,22 +500,13 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
     }
 
     //remove label nodes from all nodes, this is because these labels are execution order for debugging
-    if (portObj.getParent().NAME.toLowerCase().search(".constant.") == -1){ //if node is constant don't remove label, it's part of functionality!
-      portObj.getParent().getChildren().each(function(childIndex, childObj){
-        //check if label was placed as execution order, it's written in its user data as datatype
-        if (childObj.NAME.toLowerCase().search("label") >= 0 && childObj.userData != null && childObj.userData.datatype != null && childObj.userData.datatype.search("executionOrder") > -1){
-          portObj.getParent().remove(childObj);
-        }
-      });
-    }else{            //if CONSTANT NODE, THEN ALL LABELS EXCEPT AT INDEX 0. ARE REMOVED, BECAUSE CONSTANT IS WRITTEN ISIDE 0.LABEL
-      var cnt = 0;
-      portObj.getParent().getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search("label") >= 0){
-          if (cnt > 0) portObj.getParent().remove(childObj);    //don't remove 0.element
-          cnt++;
-        }
-      });
-    }
+    portObj.getParent().getChildren().each(function(childIndex, childObj){
+      //check if label was placed as execution order, it's written in its user data as datatype
+      if (childObj.NAME.toLowerCase().search("label") >= 0 && childObj.userData != null && childObj.userData.datatype != null && childObj.userData.datatype.search("executionOrder") > -1){
+        portObj.getParent().remove(childObj);
+      }
+    });
+
   });
 }
 
@@ -785,8 +776,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 
           //IF PORT IS PREPARED SET ITS EXECUTION ORDER
           if (inPortPrepared == true){
-            //here was problem that sometime loop doesnt had userdata so this should correct it
-            if (portObj.userData != undefined)  portObj.userData = {};
+            if (portObj.userData == undefined)  portObj.userData = {};
             portObj.userData.executionOrder = actualStepNum;
           }
         }
@@ -1004,6 +994,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   var allNodes = GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, parentObj);
   var allLoops = new draw2d.util.ArrayList();
   var allMultilayeredNodes = new draw2d.util.ArrayList(); //new list for this special kind of node
+  var allClusterNodes = new draw2d.util.ArrayList();
 
   allNodes.each(function(nodeIndex, nodeObj){
     if (nodeObj.NAME.toLowerCase().search("loop") >= 0 &&
@@ -1013,11 +1004,21 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
     if (nodeObj.NAME.toLowerCase().search("multilayered") >= 0){
       if (allMultilayeredNodes.indexOf(nodeObj) == -1){
         allMultilayeredNodes.push(nodeObj);
-
-        //remove multilayered from all nodes to not be translated as node
-        //allNodes.remove(nodeObj);
       }
     }
+    if (nodeObj.NAME.toLowerCase().search("cluster") >= 0){ //list of all clusters inside diagram
+      if (allClusterNodes.indexOf(nodeObj) == -1){
+        allClusterNodes.push(nodeObj);
+      }
+    }
+    //remove constant from nodes list so they wouldn't translate into code independently
+/*
+    if (nodeObj.NAME.toLowerCase().search("constant") > -1 ||
+        nodeObj.NAME.toLowerCase().search("array") > -1 ){
+      allNodes.remove(nodeObj);
+    }
+*/
+
   });
 
   /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
@@ -1032,7 +1033,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
    *    - THERE IS NOT VALUE ASSIGNEMENT WHEN WIRE IS CONNECTED TO CONSTANT
    *********************************************************************************************************/
   if (nestedLevel == 0){
-    this.getDirectChildrenWires(canvas, null).each(function(lineIndex, lineObj){
+    this.getDirectChildrenWires(canvas, parentObj).each(function(lineIndex, lineObj){
       //LuboJ, for now we trust that each line is wire
       //if (lineObj.NAME.toLowerCase().search(""))
       var wireDatatype = lineObj.getSource().getUserData().datatype;
@@ -1046,6 +1047,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
       }
       else if (connectedConstant.NAME.toLowerCase().search("cluster") > -1){
         cCode += wireDatatype + " wire_" + lineObj.getId() + " = cluster_" + connectedConstant.getId() + ";\n";
+      }else if (connectedConstant.NAME.toLowerCase().search("array") > -1){
+        cCode += wireDatatype + " wire_" + lineObj.getId() + " = array_" + connectedConstant.getId() + ";\n";
       }else{
         cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
       }
@@ -1053,7 +1056,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   }
 
   /*
-   *  EXTERANL PORTS declaration
+   *  EXTERNAL PORTS declaration
    *    this would be in fact input parameter into function which wrapp this whole diagram
    */
    /*
@@ -1113,7 +1116,22 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             nodeObj.getUserData().executionOrder != undefined &&
             nodeObj.getUserData().executionOrder == actualStep){
           for (var k = 0; k < nestedLevel*2; k++) cCode += " ";
-          cCode += nodeObj.translateToCppCode() + "\n";
+
+          /*
+           *  DOESN'T TRANSCRIPT NODE IF INSIDE ANY CLUSTER
+           *  Transcript node into code just in case it's not inside cluster, otherwise do nothing.
+           */
+          var isNodeInCluster = false;
+          allClusterNodes.each(function(clusterIndex, clusterObj){
+            if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
+          });
+          if (!isNodeInCluster){
+            cCode += nodeObj.translateToCppCode() + "\n";
+          }else{
+              //DONT TRANSLATE NODE WHEN IT'S INSIDE CLUSTER
+          }
+
+
         }
 
         /****************************************************************

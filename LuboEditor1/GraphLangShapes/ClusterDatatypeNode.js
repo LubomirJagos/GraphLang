@@ -48,48 +48,13 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend(
     this.userData = {};
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
+
+    this.setPersistPorts(false);
   },
 
   //added by LuboJ, here is showed how to add attributes which
   //then are serialized into json and could be readed to load schematci
 
-
-  /**
-   * @method
-   * Return an objects with all important attributes for XML or JSON serialization
-   *
-   * @returns {Object}
-   */
-  getPersistentAttributes: function()
-  {
-      var memento = this._super();
-
-      this.myLabel = "myLabel changed";
-      this.graphlangLayerOwner = "...here should be id of owner parent.....";
-
-      memento.myLabel = this.myLabel;
-      memento.graphlangLayerOwner = this.graphlangLayerOwner;
-
-      return memento;
-  },
-
-  /**
-   * @method
-   * Read all attributes from the serialized properties and transfer them into the shape.
-   *
-   * @param {Object} memento
-   */
-  setPersistentAttributes: function(memento)
-  {
-      this._super(memento);
-      if(typeof memento.myLabel !=="undefined"){
-          this.setText(memento.myLabel);
-      }
-      if(typeof memento.graphlangLayerOwner !=="undefined"){
-          //          ...do something with value...
-      }
-
-  },
 
 
   /********************************************************************************************************************
@@ -102,7 +67,7 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend(
     this.getAboardFigures().each(function(figureIndex, figureObj){
       cCode += figureObj.translateToCppCode() + "\n";
     });
-    cCode += "} cluster_" + this.getId() + "\n";
+    cCode += "} cluster_" + this.getId()+ "\n";
     return cCode;
   }
 });

@@ -26,7 +26,7 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "double") return "#AA2200";
     else if (colorName == "bool" || colorName == "boolean") return "#009900";
     else if (colorName == "string" || colorName == "String") return "#ff3385";
-    else if (colorName == "cluster") return "#cc00cc";
+    else if (colorName == "cluster") return "#7D1A4C";
     else if (colorName == "error") return "#cccc00";
     else if (colorName == "broken") return "#666666";
     else if (colorName == "undefined" || colorName == "unknown") return "#666666";
