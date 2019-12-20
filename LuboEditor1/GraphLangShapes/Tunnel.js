@@ -3,6 +3,9 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
     init : function(attr)
     {
         //this._super($.extend({with: 30, height: 10},attr));
+
+        //this.setPersistPorts(false);  //MUST BE COMMENTED, IF SET TO FALSE NOT RUNNING OK
+
         this._super(attr);
         this.setBackgroundColor("#fdc11d");
         this.setHeight(15);
