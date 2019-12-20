@@ -97,6 +97,12 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend(
    ********************************************************************************************************************/
 
   translateToCppCode: function(){
-    return "{ClusterConstant: " + this.getId() + "}";
+    cCode = "";
+    cCode += "struct{\n"
+    this.getAboardFigures().each(function(figureIndex, figureObj){
+      cCode += figureObj.translateToCppCode() + "\n";
+    });
+    cCode += "} cluster_" + this.getId() + "\n";
+    return cCode;
   }
 });

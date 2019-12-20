@@ -153,7 +153,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
         }
       });
       cCode = cCode.slice(0,-1);  //remove last ','
-      cCode += "};\n";
+      cCode += "};";
       return cCode;
   }
 
