@@ -51,7 +51,7 @@ GraphLang.ArduinoLib.Node.digitalRead = draw2d.SetFigure.extend({
     port.setMaxFanOut(20);
 
     port.userData = {};
-    port.userData.datatype = "int32";
+    port.userData.datatype = "int";
 
     this.persistPorts=false;
   },

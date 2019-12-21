@@ -20,7 +20,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in7");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in2
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(74.78393990610326, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -28,7 +28,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in2");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in3
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(56.266846948356864, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -36,7 +36,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in3");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in5
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(20.206662910798144, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -44,7 +44,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in5");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in6
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(12.453107981220665, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -52,7 +52,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in6");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in4
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(48.01628544600943, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -60,7 +60,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in4");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // in1
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(93.18853708920193, -3.7826508374898684));
         port.setConnectionDirection(0);
@@ -68,7 +68,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setName("in1");
         port.setMaxFanOut(20);
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         // out5
         port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(4.567436619718329, 104.47136137395069));
         port.setConnectionDirection(2);
@@ -117,7 +117,7 @@ GraphLang.ArduinoLib.Node.LJ42 = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
         this.persistPorts=false;
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
       },
 
       createShapeElement : function()

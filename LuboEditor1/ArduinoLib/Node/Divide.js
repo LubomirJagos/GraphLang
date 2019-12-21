@@ -22,7 +22,7 @@ GraphLang.ArduinoLib.Node.Divide = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // in2
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
@@ -32,7 +32,7 @@ GraphLang.ArduinoLib.Node.Divide = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // out1
         port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.21706472401709, 48.919565994667));
@@ -42,7 +42,7 @@ GraphLang.ArduinoLib.Node.Divide = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         this.persistPorts=false;
       },

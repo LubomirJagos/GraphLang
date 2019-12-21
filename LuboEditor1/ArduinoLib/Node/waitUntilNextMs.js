@@ -21,7 +21,7 @@ GraphLang.ArduinoLib.Node.waitUntilNextMs = draw2d.SetFigure.extend({
      port.setMaxFanOut(20);
 
      port.userData = {};
-     port.userData.datatype = "int32";
+     port.userData.datatype = "int";
 
      // in2
      port = this.addPort(new GraphLang.InputPort(), new draw2d.layout.locator.XYRelPortLocator(2.962962962962963, 69.01408450704224));

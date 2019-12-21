@@ -23,7 +23,7 @@ GraphLang.ArduinoLib.Node.digitalWrite = draw2d.SetFigure.extend({
      port.setMaxFanOut(20);
 
      port.userData = {};
-     port.userData.datatype = "int32";
+     port.userData.datatype = "int";
 
      // Port
      // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(8.232997982592467, 69.66292134831461));

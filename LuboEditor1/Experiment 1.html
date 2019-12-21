@@ -116,6 +116,13 @@
       -->
       <script src="./ArduinoLib/DummyLib/__initEnv.js"></script>
       <script src="./ArduinoLib/DummyLib/DummyEnd1Node.js"></script>
+
+      <!--
+        EXPERIMENTAL42 LIB
+      -->
+      <script src="./ArduinoLib/Experimental42Lib/__initEnv.js"></script>
+      <script src="./ArduinoLib/Experimental42Lib/TimeTaskNode.js"></script>
+      <script src="./ArduinoLib/Experimental42Lib/Dragon1Node.js"></script>
     <!-- End of GraphLang shapes-->
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -140,7 +147,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 10.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
-    <script src="./GraphLangSchematics/Default Schematic 23.js"></script>
+    <!-- <script src="./GraphLangSchematics/Default Schematic 23.js"></script> -->
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -468,6 +475,16 @@ function displayJSON(canvas){
       <div data-shape="draw2d.shape.node.Hub" data-width="10" data-height="100" data-label="Hub label" class="palette_node_element draw2d_droppable">Hub</div>
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
 -->
+
+      <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-width="70" data-height="40" data-label="GraphLang Dragon1Node" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
+        Experiment42Lib Dragon1Node
+      </div>
+
+      <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.TimeTaskNode" data-width="70" data-height="40" data-label="GraphLang timedTaskNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
+        Experiment42Lib TimeTaskNode
+      </div>
 
       <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-width="30" data-height="30" data-label="GraphLang DummyEnd1Node" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/DummyLib_DummyEnd1Node.png" />

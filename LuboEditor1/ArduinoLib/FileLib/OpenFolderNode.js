@@ -16,7 +16,7 @@ GraphLang.ArduinoLib.FileLib.OpenFolderNode = draw2d.SetFigure.extend({
     port.setName("out1");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "int32";
+    port.userData.datatype = "int";
 
     // Port
     port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(-10, 10));
@@ -25,7 +25,7 @@ GraphLang.ArduinoLib.FileLib.OpenFolderNode = draw2d.SetFigure.extend({
     port.setName("in1");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "int32";
+    port.userData.datatype = "int";
 
     // Port
     port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(-10, 90));

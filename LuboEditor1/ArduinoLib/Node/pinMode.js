@@ -42,7 +42,7 @@ GraphLang.ArduinoLib.Node.pinMode = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // in1
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.5168198327560168, 42.97805632114052));
@@ -52,7 +52,7 @@ GraphLang.ArduinoLib.Node.pinMode = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         this.persistPorts=false;
       },

@@ -42,7 +42,7 @@ GraphLang.Utils.runInterpreter = function(canvas){
 }
 
 /**
- *  @method GraphLang.Utils.run(canvas)
+ *  @method run(canvas)
  *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description Testing feunction for every my node to see if it's invoked. I want to use this to see if nodes are running in right order when graph interpreter is running.
  */
@@ -81,7 +81,7 @@ GraphLang.Utils.run = function(canvas){
 }
 
 /**
- *  @method GraphLang.Utils.detectJoints(canvas)
+ *  @method detectJoints(canvas)
  *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description This function puts some mark at wires crossing. For now there will be point inserted.
  */
@@ -125,7 +125,7 @@ GraphLang.Utils.detectJoints = function(canvas){
 }
 
 /**
- *  @method GraphLang.Utils.goThroughGraph(canvas)
+ *  @method goThroughGraph(canvas)
  *  @description Going through nodes and hit them and run them if possible. This is now just for testing how to traverse graph through wires which connect nodes.
  */
 GraphLang.Utils.goThroughGraph = function(canvas){
@@ -577,7 +577,6 @@ GraphLang.Utils.showPortExecutionOrder = function(canvas){
 }
 /**
  *  @method bringToFront(canvas)
- *  @name GraphLang.Utils.bringToFront(canvas)
  *  @param {draw2d.Canvas} canvas - from where is taken actual selection
  *  @description Bring to front actual selected figure in canvas.
  */
@@ -641,10 +640,9 @@ GraphLang.Utils.showNodes = function(canvas){
 };
 
 /**
- *  @method getNodeLoopOwner(canvas, nodeObj/loopObj)
+ *  @method getNodeLoopOwner(canvas, nodeObj)
  *  @param {draw2d.Canvas} canvas - schematic from which is node or loop
  *  @param {draw2d.shape.Node} nodeObj - node or loop objec which is inspected for its loop owner
- *  @name GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj/loopObj)
  *  @description Return loop which ownes node, if there's no loop return null.
  */
 GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
@@ -1178,14 +1176,26 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
           /*
            *  DOESN'T TRANSCRIPT NODE IF INSIDE ANY CLUSTER
+           *  DOESN'T TRANSCRIPT NODE IF INSIDE MULTILAYER (case)
            *  Transcript node into code just in case it's not inside cluster, otherwise do nothing.
            */
           var isNodeInCluster = false;
           allClusterNodes.each(function(clusterIndex, clusterObj){
             if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
           });
+          var isNodeInMultilayer = false;
+          allMultilayeredNodes.each(function(multilayerIndex, multilayerObj){
+            multilayerObj.layers.each()
+          });
           if (!isNodeInCluster){
-            cCode += nodeObj.translateToCppCode() + "\n";
+            cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
+/*
+            if (GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj) == null){
+              cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
+            }else{
+              //DONT TRANSLATE IF NODE PART OF SOME MULTILAYERED NODE
+            }
+*/
           }else{
               //DONT TRANSLATE NODE WHEN IT'S INSIDE CLUSTER
           }

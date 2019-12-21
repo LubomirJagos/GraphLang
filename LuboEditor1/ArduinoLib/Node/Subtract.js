@@ -23,7 +23,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         port.setBackgroundColor(portColor.getByName(port.userData.datatype));
 
         // in2
@@ -33,7 +33,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         port.setBackgroundColor(portColor.getByName(port.userData.datatype));
 
         // out1
@@ -44,7 +44,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         this.persistPorts=false;
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
         port.setBackgroundColor(portColor.getByName(port.userData.datatype));
       },
 

@@ -22,7 +22,7 @@ GraphLang.ArduinoLib.Node.ternarOperator = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // in3
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.5451897843568302, 83.98828547903041));
@@ -32,7 +32,7 @@ GraphLang.ArduinoLib.Node.ternarOperator = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // out1
 
@@ -43,7 +43,7 @@ GraphLang.ArduinoLib.Node.ternarOperator = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // in2
         port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.5451897843568302, 51.027438324091854));

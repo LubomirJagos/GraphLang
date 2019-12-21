@@ -21,7 +21,7 @@ GraphLang.ArduinoLib.Node.analogWrite = draw2d.SetFigure.extend({
      port.setMaxFanOut(20);
 
      port.userData = {};
-     port.userData.datatype = "int32";
+     port.userData.datatype = "int";
 
      // errorIn
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 84.11892206014826));
@@ -31,7 +31,7 @@ GraphLang.ArduinoLib.Node.analogWrite = draw2d.SetFigure.extend({
      port.setMaxFanOut(20);
 
      port.userData = {};
-     port.userData.datatype = "int32";
+     port.userData.datatype = "int";
 
      // errorOut
      port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(103.19588473542026, 84.11892206014826));

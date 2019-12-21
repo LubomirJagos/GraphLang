@@ -30,7 +30,7 @@ GraphLang.ArduinoLib.Node.Serial.begin = draw2d.SetFigure.extend({
         port.setMaxFanOut(20);
 
         port.userData = {};
-        port.userData.datatype = "int32";
+        port.userData.datatype = "int";
 
         // errorIn
         port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(1.4054173256036195, 83.03394254500562));

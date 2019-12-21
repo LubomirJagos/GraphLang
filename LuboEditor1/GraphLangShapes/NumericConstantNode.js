@@ -39,11 +39,11 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
             callback: $.proxy(function(key, options)
             {
                switch(key){
-               case "int32":
+               case "int":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
                    emitter.setFontColor(new draw2d.util.Color("#FFFFFF"));
                    emitter.setBackgroundColor(new draw2d.util.Color("#0000FF"));
-                   emitter.getOutputPort(0).userData.datatype = "int32";
+                   emitter.getOutputPort(0).userData.datatype = "int";
                    break;
                case "uint":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
@@ -81,7 +81,7 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
             y:event.y,
             items:
             {
-                "int32": {name: "int32"},
+                "int": {name: "int"},
                 "uint":    {name: "uint"},
                 "float":    {name: "float"},
                 "double": {name: "double"},
