@@ -1183,10 +1183,6 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           allClusterNodes.each(function(clusterIndex, clusterObj){
             if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
           });
-          var isNodeInMultilayer = false;
-          allMultilayeredNodes.each(function(multilayerIndex, multilayerObj){
-            multilayerObj.layers.each()
-          });
           if (!isNodeInCluster){
             cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
 /*
