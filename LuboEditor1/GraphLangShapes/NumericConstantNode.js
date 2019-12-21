@@ -41,26 +41,33 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
                switch(key){
                case "int32":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
+                   emitter.setFontColor(new draw2d.util.Color("#FFFFFF"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#0000FF"));
                    emitter.getOutputPort(0).userData.datatype = "int32";
                    break;
                case "uint":
                    emitter.setColor(new draw2d.util.Color("#0000FF"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#FFFFFF"));
                    emitter.getOutputPort(0).userData.datatype = "uint";
                    break;
                case "float":
                    emitter.setColor(new draw2d.util.Color("#FFC300"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#FFC300"));
                    emitter.getOutputPort(0).userData.datatype = "float";
                    break;
                case "double":
                    emitter.setColor(new draw2d.util.Color("#900C3F"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#FFFFFF"));
                    emitter.getOutputPort(0).userData.datatype = "double";
                    break;
                case "bool":
                    emitter.setColor(new draw2d.util.Color("#75FF33"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#75FF33"));
                    emitter.getOutputPort(0).userData.datatype = "bool";
                    break;
                case "String":
                    emitter.setColor(new draw2d.util.Color("#FF33F0"));
+                   emitter.setBackgroundColor(new draw2d.util.Color("#FF33F0"));
                    emitter.getOutputPort(0).userData.datatype = "String";
                    break;
                default:

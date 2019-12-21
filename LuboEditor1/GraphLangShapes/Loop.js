@@ -31,10 +31,9 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
       if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
         output.push(childObj.getInputPort(0));
       }
-      // else if (childObj.NAME.toLowerCase().search("righttunnel") >= 0){
-      //   output.push(childObj.getOutputPort(0));
-      //   childObj.getOutputPort(0).setColor(new draw2d.util.Color("#0000FF")).setStroke(5); //<-- set stroke thicker for outside loop port, just for debugging
-      // }
+      else if (childObj.NAME.toLowerCase().search("righttunnel") >= 0){       //ADD ALSO INPUT PORT FROM RIGHTTUNNELS
+         output.push(childObj.getInputPort(0));
+      }
     });
     return output;
   },
@@ -197,6 +196,7 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
           labelJSON.locator=e.locator.NAME;
           labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
           labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
+
           memento.labels.push(labelJSON);
       });
 
@@ -231,10 +231,23 @@ GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
           var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
           figure.attr(json);                                                                            // apply all attributes
           var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
   },
 
+  getTunnelPort: function(portName, tunnelId){
+    this.getInputPorts().each(functions);
+    //if no results look for children tunnels port
+    if (portObj == null){
+        this.getChildren().each(function(childIndex, childObj){
+          if (childObj.getParent().getId().toLowerCase().search(tunnelId.toLowerCase())){               //compare tunnelId and all loops input ports tunnels parents IDs
+            portObj = childObj;
+          }
+        });
+    }
 
+    return portObj;
+  }
 
 });

@@ -228,6 +228,13 @@ example.Toolbar = Class.extend({
  			this.showLoopsExecutionOrderButton  = $("<button id=\"showLoopsExecutionOrderButton\">showLoopsExecutionOrder</button>");
  			this.html.append(this.showLoopsExecutionOrderButton);
 
+			/**
+ 		  *	correctWiresAfterLoad Button
+ 			*/
+ 			this.correctWiresAfterLoadButton  = $("<button id=\"correctWiresAfterLoadButton\">correctWiresAfterLoadButton</button>");
+ 			this.html.append(this.correctWiresAfterLoadButton);
+
+
 	},
 
 	/**

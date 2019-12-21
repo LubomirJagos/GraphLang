@@ -414,6 +414,14 @@ document.addEventListener("DOMContentLoaded",function () {
       $("#showLoopsExecutionOrderButton").button().click($.proxy(function(){
        GraphLang.Utils.showLoopsExecutionOrder(appCanvas);
       }));
+
+      /**************************************
+      *  BUTTON "correctWiresAfterLoad"
+      **************************************/
+      $("#correctWiresAfterLoadButton").button().click($.proxy(function(){
+       GraphLang.Utils.correctWiresAfterLoad(appCanvas);
+      }));
+
 });
 
 /**

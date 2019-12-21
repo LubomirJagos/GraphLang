@@ -1429,23 +1429,22 @@ GraphLang.Utils.getCanvasJson = function(canvas){
       var clearedJson = [];
       var wrongJson = [];
       for (var k = 0; k < json.length; k++){
-        if (
-          json[k].type.toLowerCase().search("tunnel") == -1 &&
-          // (json[k].type.toLowerCase().search("graphlang") >= 0 ||
-          //  json[k].type.toLowerCase().search("connection") >= 0)
-          1
-        )
-        {
-          clearedJson.push(json[k]);
-        }else if (json[k].type.toLowerCase().search("multilayered") >= 0){
+        if (json[k].type != undefined && json[k].type.toLowerCase().search("multilayered") > -1){
           var multilayerChooser = canvas.getFigure(json[k].id).getChildren().get(0);
 
           var chooserObj =  new draw2d.shape.basic.Label(multilayerChooser);
           clearedJson.push(chooserObj);
           // alert(multilayerChooser.text);
+        }else if (json[k].type != undefined && json[k].type.toLowerCase().search("connection") > -1){
+          //alert("connection");
+          clearedJson.push(json[k]);
+        }else if (json[k].type != undefined && json[k].type.toLowerCase().search("tunnel") == -1){
+          clearedJson.push(json[k]);
+        }else{
+          wrongJson.push(json[k]);
         }
-        else wrongJson.push(json[k]);
       }
+
       jsonStr = JSON.stringify(clearedJson, null, 2);
       // jsonStr = JSON.stringify(wrongJson, null, 2);
 
@@ -1725,4 +1724,50 @@ GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
   });
 
   return cCode;
+}
+
+/**
+ *  @method correctWiresAfterLoad(canvas)
+ *  @param {draw2d.Canvas} canvas
+ *  @description Correct wires targets, because some connection have attribute tunnel to which they are attached so need to set this target also here.
+ */
+GraphLang.Utils.correctWiresAfterLoad = function(canvas){
+
+  /*
+   *  Wires has from serialization in userData info about tunnel if they are connected to some so if wire target is assigned bad, this will correct it.
+   */
+  var targetTunnel;
+  canvas.getLines().each(function(lineIndex, lineObj){
+    if (lineObj.userData.targetTunnel != undefined){
+      canvas.getFigures().each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search("loop") > -1){
+          figureObj.getChildren().each(function(childIndex, childObj){
+            if (childObj.NAME.toLowerCase().search("tunnel") > -1 &&
+                childObj.getId().search(lineObj.userData.targetTunnel) > -1){
+                lineObj.setTarget(childObj.getPort(lineObj.userData.targetPortName));
+            }
+          });
+        }
+      });
+    }
+  });
+
+  /*
+   *  Same correction as before but this is for wire source.
+   */
+  canvas.getLines().each(function(lineIndex, lineObj){
+    if (lineObj.userData.sourceTunnel != undefined){
+      canvas.getFigures().each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search("loop") > -1){
+          figureObj.getChildren().each(function(childIndex, childObj){
+            if (childObj.NAME.toLowerCase().search("tunnel") > -1 &&
+                childObj.getId().search(lineObj.userData.sourceTunnel) > -1){
+                lineObj.setSource(childObj.getPort(lineObj.userData.sourcePortName));
+            }
+          });
+        }
+      });
+    }
+  });
+  alert("Wire correction after load DONE.");
 }
