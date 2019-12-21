@@ -527,6 +527,22 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
     }
 
 
+    /**********************************************************************************************************************
+     *          FEEDBACK NODE PORT INITIALIYATION
+     *           Set port userData.execusionOrder to 1 for input and output so feedback is run at beginning, if there area
+     *           no data it will put at output default value, Feedback has to run this way and it's correct.
+     *
+     */
+
+    //  FEEDBACK, SET PORTS OUTPUT INPUT EXECUTION Order
+    //FOR MULTILAYER NODES remove executionOrder Label
+    nodeObj = portObj.getParent();
+    if (nodeObj.NAME.toLowerCase().search("feedback") > -1){
+      nodeObj.getInputPort(0).userData.executionOrder = 1;
+      nodeObj.getOutputPort(0).userData.executionOrder = 1;
+    }
+
+
   });
 }
 
