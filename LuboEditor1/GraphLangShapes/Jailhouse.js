@@ -53,6 +53,13 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
       }
     });
 
+
+    /*
+     *  ...................ToDo.......................
+     *    NEED TO FINISH TRANSLATION PROCESS TILL NOW WIRES AND ASSIGNMENT FROM TUNNELS ARE DONE, HERE BELOW SHOULD BE RIGHT TRANSLATE
+     *    PROCESS FOR FIGURES AND LOOPS AND OTHERS ITEMS BASED ON executionOrder OF NODES
+     */
+
     //3rd translate figures inside layer
     layerFigures.each(function(figureIndex, figureObj){
       if (figureObj.NAME.toLowerCase().search("connection") == -1){

@@ -507,6 +507,26 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
       }
     });
 
+    //FOR MULTILAYER NODES remove executionOrder Label
+    multilayerObj = portObj.getParent();
+    if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
+      multilayerObj.layers.each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("jailhouse") > -1){
+          childObj.getChildren().each(function(layerChildIndex, layerChildObj){
+            if (layerChildObj.userData.datatype.toLowerCase().search("executionorder") > -1){
+              childObj.remove(layerChildObj);
+            }
+          });
+        }
+      });
+      multilayerObj.rect0.getChildren().each(function(layerChildIndex, layerChildObj){
+        if (layerChildObj.userData.datatype.toLowerCase().search("executionorder") > -1){
+           multilayerObj.rect0.remove(layerChildObj);
+        }
+      });
+    }
+
+
   });
 }
 
