@@ -1796,7 +1796,6 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
   /*
    *  Wires has from serialization in userData info about tunnel if they are connected to some so if wire target is assigned bad, this will correct it.
    */
-  var targetTunnel;
   canvas.getLines().each(function(lineIndex, lineObj){
     if (lineObj.userData.targetTunnel != undefined){
       canvas.getFigures().each(function(figureIndex, figureObj){
@@ -1853,10 +1852,62 @@ GraphLang.Utils.selectedLoopShowAboardFigures = function(canvas){
  *  @description Should correct layers for multilayered structures after load from json.
  */
 GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
+
+  var allMultilayered = new draw2d.util.ArrayList();
+  var allJailhouse = new draw2d.util.ArrayList();
+
+  //1st Get all multilayered structures
   canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("jailhouse") > -1){
-      alert(figureObj.NAME);
+    if (figureObj.NAME.toLowerCase().search("multilayered") > -1){
+      figureObj.layers.each(function(layerIndex, layerObj){
+        canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(layerObj));
+      });
+      figureObj.layers = new draw2d.util.ArrayList();
+      figureObj.removeSelectorPort();
+      figureObj.renewLayerSelector();
+      allMultilayered.push(figureObj);
     }
   });
-  alert("correctMultilayeredAfterLoad");
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("jailhouse") > -1){
+      var multilayeredObj = canvas.getFigure(figureObj.userData.owner);   //get layer owner
+      multilayeredObj.layers.push(figureObj);
+      multilayeredObj.renewLayerChooser();
+    }
+  });
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("rectangle") > -1 &&
+        figureObj.userData != undefined &&
+        figureObj.userData.multilayeredOwner != undefined){
+
+
+/*        WRONG NOT RUNNING
+          if (figureObj.getId().toLowerCase().search("protection") > -1){
+            canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
+
+          }
+*/
+
+/*        WRONG NOT RUNNING
+      if (canvas.getFigure(figureObj.userData.multilayeredOwner) != undefined){
+        canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
+      }
+*/
+          allMultilayered.each(function(multilayeredIndex, multilayeredObj){
+            if (multilayeredObj.getId().search(figureObj.userData.multilayeredOwner) > -1){
+
+                //multilayeredObj.rect0 = figureObj;
+                canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
+            }
+          });
+    }
+  });
+
+
+
+
+
+
 }

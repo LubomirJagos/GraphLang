@@ -31,19 +31,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     /**********************************************************************************
      *  LAYER SELECTOR
      **********************************************************************************/
-
-    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.7, 10));
-    port.setConnectionDirection(3);
-    port.setBackgroundColor("#00FF00");
-    port.setName("layerSelector");
-    port.setMaxFanOut(20);
+    this.renewLayerSelector();
 
     /**********************************************************************************
      *  LAYERS
      **********************************************************************************/
-
-    var x = 20;//this.getX();
-    var y = 20;//this.getY();
 
     //PROTECTIVE RECTANGLE
     var rect0 = new draw2d.shape.basic.Rectangle();
@@ -52,37 +44,66 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect0.setColor(new GraphLang.Utils.Color("#000000"));
     rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
     rect0.setId("multilayered_"+ this.getId() + "_jalihouseLayerProtection0");
-    this.on("move", function(emitter, event){
-      //alert("aa");
-      emitter.moveActiveLayer();
-    });
-
+    rect0.userData = {};
+    rect0.userData.multilayeredOwner = this.getId();
     //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
     //this.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));
-    appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(x,y));
-    this.setParent(null);
-
+    appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));    //NOT SURE IF COORDS HAS SOME INFLUENCE, IT WAS RUNNING EVEN WITH POSITION 20,20
     rect0.toBack();
     this.rect0 = rect0;
-    this._onDragStart = this.onDragStart;
 
+    this.setParent(null);
+
+    this.activeLayer = 0;
     /*
      *  ADD BY DEFAULT 3 LAYERS, for debugging purposes now
      */
     this.layers = new draw2d.util.ArrayList();
+/*
     this.addLayer();
     this.addLayer();
+*/
     this.addLayer();
-    this.activeLayer = 0;
 
     /**********************************************************************************
      *  LAYER SELECTOR
      **********************************************************************************/
 
     // this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
+    this.renewLayerChooser();
+
+    //USER DATA/
+    this.userData = {};
+    this.userData.executionOrder = 1;
+    this.userData.wasTranslatedToCppCode = false;
+
+    /***************************
+     *  DRAG options
+     */
+
+  },
+
+  removeSelectorPort: function(){
+      this.remove(this.getPort("layerSelector"));
+  },
+
+  renewLayerSelector: function(){
+    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.7, 10));
+    port.setConnectionDirection(3);
+    port.setBackgroundColor("#00FF00");
+    port.setName("layerSelector");
+    port.setMaxFanOut(20);
+  },
+
+  renewLayerChooser: function(){
+
+    if (this.layerChooser != undefined){
+      this.remove(this.layerChooser);
+      this.remove(this.getChildren().get(0));
+    }
+
     this.layerChooser = new draw2d.shape.basic.Label();
     this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
-
     //CLICK ON LAYER NAME AT TOP OF MULTILAYER STRUCTURE WHERE ARE THEIR NAMES
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
@@ -90,60 +111,12 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     });
 
     //RIGHT CLICK ON LAYERS NAME SELECTOR
-    this.layerChooser.on("contextmenu", function(emitter, event){
-        $.contextMenu({
-            selector: 'body',
-            events:
-            {
-                hide:function(){ $.contextMenu( 'destroy' ); }
-            },
-
-            //these functions are run after user click on some context menu option
-            callback: $.proxy(function(key, options)
-            {
-               switch(key){
-               case "rename":                       // <--- Continue here, implement renaming layers, now it's static shit doing nothing
-                   emitter.getParent().renameLayer();
-                   break;
-               case "new":
-                  /* this was part of code in example but it's not running so it's disabled, I need to change layer name no selector, it's updated based on active layer ID
-                   setTimeout(function(){
-                       _table.addEntity("_new_").onDoubleClick();
-                   },10);
-                  */
-                   //alert("Layers count: " + emitter.getParent().layers.getSize());
-                   emitter.getParent().addLayer();
-
-                   break;
-               case "delete":
-                   // with undo/redo support
-                   /*
-                   var cmd = new draw2d.command.CommandDelete(emitter);
-                   emitter.getCanvas().getCommandStack().execute(cmd);
-                   */
-                   emitter.getParent().removeLayer(this.activeLayer);
-               default:
-                   break;
-               }
-
-            },this),
-            x:event.x,
-            y:event.y,
-            items:
-            {
-                "rename": {name: "Rename"},
-                "new":    {name: "New Entity"},
-                "sep1":   "---------",
-                "delete": {name: "Delete"}
-            }
-        });
-    });
+    this.layerChooser.on("contextmenu", this.layerChooserContextmenu);
     this.add(this.layerChooser, new draw2d.layout.locator.TopLocator(this));
 
-    //USER DATA/
-    this.userData = {};
-    this.userData.executionOrder = 1;
-    this.userData.wasTranslatedToCppCode = false;
+    this.on("move", function(emitter, event){
+      emitter.moveActiveLayer();
+    });
 
     //luboJ missing condition when jailhouse is not getting smaller because nodes inside it
     //ERROR, MISSING CONDITION TO RESTRICT RESIZE ACCORDING TO NODES INSIDE LAYERS
@@ -166,11 +139,57 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       emitter.moveActiveLayer();
     });
 
-    /***************************
-     *  DRAG options
-     */
-    this.setDraggable(true);
+    this._onDragStart = this.onDragStart;
 
+  },
+
+  layerChooserContextmenu: function(emitter, event){
+      $.contextMenu({
+          selector: 'body',
+          events:
+          {
+              hide:function(){ $.contextMenu( 'destroy' ); }
+          },
+
+          //these functions are run after user click on some context menu option
+          callback: $.proxy(function(key, options)
+          {
+             switch(key){
+             case "rename":                       // <--- Continue here, implement renaming layers, now it's static shit doing nothing
+                 emitter.getParent().renameLayer();
+                 break;
+             case "new":
+                /* this was part of code in example but it's not running so it's disabled, I need to change layer name no selector, it's updated based on active layer ID
+                 setTimeout(function(){
+                     _table.addEntity("_new_").onDoubleClick();
+                 },10);
+                */
+                 //alert("Layers count: " + emitter.getParent().layers.getSize());
+                 emitter.getParent().addLayer();
+
+                 break;
+             case "delete":
+                 // with undo/redo support
+                 /*
+                 var cmd = new draw2d.command.CommandDelete(emitter);
+                 emitter.getCanvas().getCommandStack().execute(cmd);
+                 */
+                 emitter.getParent().removeLayer(this.activeLayer);
+             default:
+                 break;
+             }
+
+          },this),
+          x:event.x,
+          y:event.y,
+          items:
+          {
+              "rename": {name: "Rename"},
+              "new":    {name: "New Entity"},
+              "sep1":   "---------",
+              "delete": {name: "Delete"}
+          }
+      });
   },
 
   //this function is also called in gui/View.js after placing multilayer node to canvas to right placed layers
@@ -195,7 +214,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.rect0.setHeight(height-4);
     this.rect0.setSelectable(false);
     this.rect0.setDraggable(false);
-    this.rect0.toBack();
   },
 
   onDragStart: function(x,y,shiftKey, ctrlKey){
@@ -270,6 +288,10 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
   onDragEnd: function(x,y,shiftKey, ctrlKey){
     this.moveActiveLayer();
+
+    this.rect0.toBack();                                      //hide protection
+    var activeLayer = this.layers.get(this.activeLayer);      //set active layer to front
+    activeLayer.toFront();
   },
 
   /**
@@ -395,10 +417,20 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
           var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
           figure.attr(json);                                                                            // apply all attributes
-          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+          var locator =  eval("new "+json.locator+"()");     // instantiate the locator
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
+
+      $.each(memento.ports, $.proxy(function(i,json){
+          var figure =  eval("new "+json.type+"()");
+          figure.setId(json.id);                                                    // create the figure stored in the JSON
+          figure.attr(json);                                                                            // apply all attributes
+          var locator =  eval("new "+json.locator+"(-0.7, 10)");     // instantiate the locator
+
+          this.add(figure, locator);                                                                    // add the new figure as child to this figure
+      },this));
+
   },
 
 

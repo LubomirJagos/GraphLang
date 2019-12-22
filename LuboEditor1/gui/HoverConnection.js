@@ -1,4 +1,4 @@
-var HoverConnection = draw2d.Connection.extend({
+HoverConnection = draw2d.Connection.extend({
 
     init: function ( sourcePort, targetPort) {
         var self = this;
@@ -69,8 +69,13 @@ var HoverConnection = draw2d.Connection.extend({
                 node:parentNode.getId(),
                 port: this.getSource().getName()
               };
+
       if (this.getSource().getParent().NAME.toLowerCase().search("tunnel") > -1){     //ADDED by LuboJ to know exact port ID
         memento.userData.sourceTunnel = this.getSource().getParent().getId();
+        memento.userData.sourcePortName = this.getSource().getName();
+      }
+      else if (this.getSource().getParent().NAME.toLowerCase().search("multilayered") > -1){     //ADDED by LuboJ to know exact port ID
+        memento.userData.sourceMultilayered = this.getSource().getParent().getId();
         memento.userData.sourcePortName = this.getSource().getName();
       }
 
@@ -84,9 +89,14 @@ var HoverConnection = draw2d.Connection.extend({
                  node:parentNode.getId(),
                  port:this.getTarget().getName(),
                };
+
       if (this.getTarget().getParent().NAME.toLowerCase().search("tunnel") > -1){   //ADDED by LuboJ to know exact port ID
         memento.userData.targetTunnel = this.getTarget().getParent().getId();
         memento.userData.targetPortName = this.getTarget().getName();
+      }
+      else if (this.getTarget().getParent().NAME.toLowerCase().search("multilayered") > -1){     //ADDED by LuboJ to know exact port ID
+        memento.userData.sourceMultilayered = this.getSource().getParent().getId();
+        memento.userData.sourcePortName = this.getSource().getName();
       }
 
       if(this.sourceDecorator!==null){
@@ -136,6 +146,13 @@ var HoverConnection = draw2d.Connection.extend({
            alert("memento tunnel found");
        }
 */
+
+        if(memento.type.toLowerCase().arch("connection") > -1){
+            //this.setTarget(this.getCanvas().getFigure(memento.target.tunnel).getInputPort(0));
+            //this.getCanvas().getFigures().each();
+            alert("memento multi found");
+        }
+
   }
 
 
