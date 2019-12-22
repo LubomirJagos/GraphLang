@@ -28,6 +28,14 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.setName("in1");
      port.setMaxFanOut(20);
      port.userData = {datatype: "undefined",  executionOrder: 0};
+
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(50, 95));
+     port.setConnectionDirection(2);
+     port.setBackgroundColor("#F3D92E");
+     port.setName("in2");
+     port.setMaxFanOut(20);
+     port.userData = {datatype: "undefined",  executionOrder: 0};
+
      this.persistPorts=false;
    },
 
@@ -219,6 +227,22 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
     },
 
     translateToCppCode: function(){
-      return "/* FeedbackNode */";
+      var in1 = this.getInputPort("in1");
+      if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
+      var in2 = this.getInputPort("in2");
+      if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
+
+      var out1 = this.getOutputPort("out1");
+      if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId();
+      else out1 = "/*out1 default value*/";
+
+      /*
+       *  in1 = wire with delayed input value
+       *  in2 = wire with default value
+       *  in1 = outputwire
+       */
+      cCode = "/* FEEDBACK NODE */";
+
+      return cCode;
     }
 });
