@@ -14,6 +14,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   //   executionOdrder: -1,
   //   wasTranslatedToCppCode: false
   // },
+  dPadding: 20,
   init:function(attr, setter, getter){
     // this._super(attr, setter, getter);
     this._super( $.extend({},attr), setter, getter);
@@ -47,15 +48,20 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
     //PROTECTIVE RECTANGLE
     var rect0 = new draw2d.shape.basic.Rectangle();
-    rect0.setWidth(this.getWidth());
-    rect0.setHeight(this.getHeight());
+    rect0.setWidth(this.getWidth()-4);
+    rect0.setHeight(this.getHeight()-4);
     rect0.setColor(new GraphLang.Utils.Color("#000000"));
     rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
     rect0.setId("jalihouseLayerProtection0");
+    this.on("move", function(emitter, event){
+      //alert("aa");
+      emitter.moveActiveLayer();
+    });
 
     //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
     //this.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));
     appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(x,y));
+    this.setParent(null);
 
     rect0.toBack();
     this.rect0 = rect0;
@@ -144,17 +150,17 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     //ERROR, MISSING CONDITION TO RESTRICT RESIZE ACCORDING TO NODES INSIDE LAYERS
     this.on("resize", function(emitter){
       emitter.layers.each(function(layerIndex, layerObj){
-        layerObj.setWidth(emitter.getWidth());
-        layerObj.setHeight(emitter.getHeight());
+        layerObj.setWidth(emitter.getWidth()-4);
+        layerObj.setHeight(emitter.getHeight()-4);
 
         //not ideal, but it's someho helpfulwhen this is here, then can structure resized from all corners and it's running ok
-        layerObj.setX(emitter.getX());
-        layerObj.setY(emitter.getY());
+        layerObj.setX(emitter.getX()+2);
+        layerObj.setY(emitter.getY()+2);
       });
-      emitter.rect0.setWidth(emitter.getWidth());
-      emitter.rect0.setHeight(emitter.getHeight());
-      emitter.rect0.setX(emitter.getX());
-      emitter.rect0.setY(emitter.getY());
+      emitter.rect0.setWidth(emitter.getWidth()-4);
+      emitter.rect0.setHeight(emitter.getHeight()-4);
+      emitter.rect0.setX(emitter.getX()+2);
+      emitter.rect0.setY(emitter.getY()+2);
     });
 
     this.on("show", function(emitter){
@@ -176,18 +182,18 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     var height = this.getHeight();
     this.layers.each(function(layerIndex, layerObj){
 // layers and protective rectangle are on 0,0 coords relative to parent, so this IS NOT USED INTENTIONALLY
-      layerObj.setX(x);
-      layerObj.setY(y);
-      layerObj.setWidth(width);
-      layerObj.setHeight(height);
+      layerObj.setX(x+2);
+      layerObj.setY(y+2);
+      layerObj.setWidth(width-4);
+      layerObj.setHeight(height-4);
       layerObj.setSelectable(false);
       layerObj.setDraggable(false);
     });
 // layers and protective rectangle are on 0,0 coords relative to parent, so this IS NOT USED INTENTIONALLY
-    this.rect0.setX(x);
-    this.rect0.setY(y);
-    this.rect0.setWidth(width);
-    this.rect0.setHeight(height);
+    this.rect0.setX(x+2);
+    this.rect0.setY(y+2);
+    this.rect0.setWidth(width-4);
+    this.rect0.setHeight(height-4);
     this.rect0.setSelectable(false);
     this.rect0.setDraggable(false);
     this.rect0.toBack();
@@ -412,8 +418,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     //var newLayer = new draw2d.shape.composite.Jailhouse();
     var newLayer = new GraphLang.Shapes.Basic.Jailhouse();
 
-    newLayer.setWidth(this.getWidth());
-    newLayer.setHeight(this.getHeight());
+    newLayer.setWidth(this.getWidth()-4);
+    newLayer.setHeight(this.getHeight()-4);
     newLayer.setColor(new GraphLang.Utils.Color("#eb34c6"));  //layer border color
 
     newLayer.setBackgroundColor(new GraphLang.Utils.Color("#eb34c6"));
@@ -445,6 +451,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
     //this.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
     appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
+
+    //newLayer._onDragStart = this.onDragStart; //WRONG
+
   },
 
   /**
