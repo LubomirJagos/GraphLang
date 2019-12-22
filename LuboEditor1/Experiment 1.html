@@ -148,7 +148,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 23.js"></script> -->
-    <!-- <script src="./GraphLangSchematics/Default Schematic 25.js"></script> -->
+    <script src="./GraphLangSchematics/Default Schematic 25.js"></script>
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -435,6 +435,13 @@ document.addEventListener("DOMContentLoaded",function () {
       **************************************/
       $("#selectedLoopShowAboardFiguresButton").button().click($.proxy(function(){
        GraphLang.Utils.selectedLoopShowAboardFigures(appCanvas);
+      }));
+
+      /**************************************
+      *  BUTTON "correctMultilayeredAfterLoad"
+      **************************************/
+      $("#correctMultilayeredAfterLoadButton").button().click($.proxy(function(){
+       GraphLang.Utils.correctMultilayeredAfterLoad(appCanvas);
       }));
 });
 

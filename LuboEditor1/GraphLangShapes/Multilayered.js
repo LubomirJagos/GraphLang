@@ -14,7 +14,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
   //   executionOdrder: -1,
   //   wasTranslatedToCppCode: false
   // },
-  dPadding: 20,
   init:function(attr, setter, getter){
     // this._super(attr, setter, getter);
     this._super( $.extend({},attr), setter, getter);
@@ -52,7 +51,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect0.setHeight(this.getHeight()-4);
     rect0.setColor(new GraphLang.Utils.Color("#000000"));
     rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
-    rect0.setId("jalihouseLayerProtection0");
+    rect0.setId("multilayered_"+ this.getId() + "_jalihouseLayerProtection0");
     this.on("move", function(emitter, event){
       //alert("aa");
       emitter.moveActiveLayer();
@@ -82,7 +81,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
     // this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
     this.layerChooser = new draw2d.shape.basic.Label();
-    this.layerChooser.setText(this.layers.get(0).getId());  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+    this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
 
     //CLICK ON LAYER NAME AT TOP OF MULTILAYER STRUCTURE WHERE ARE THEIR NAMES
     this.layerChooser.on("click", function(emitter, event){
@@ -266,7 +265,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
     this.bringsAllTunnelsToFront();
 
-    this.layerChooser.setText(this.layers.get(this.activeLayer).getId());
+    this.layerChooser.setText(this.layers.get(this.activeLayer).userData.layerText);
   },
 
   onDragEnd: function(x,y,shiftKey, ctrlKey){
@@ -345,40 +344,61 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
 
   /**
-   * @method getPersistentAttributes()
-   * @description Return an objects with all important attributes for XML or JSON serialization
+   * @method
+   * Return an objects with all important attributes for XML or JSON serialization
    *
    * @returns {Object}
    */
-  getPersistentAttributes: function()
+  getPersistentAttributes : function()
   {
       var memento = this._super();
 
-      this.myLabel = "myLabel changed";
-      this.graphlangLayerOwner = "...here should be id of owner parent.....";
+      // add all decorations to the memento
+      //
+      memento.labels = [];
+      this.children.each(function(i,e){
+          var labelJSON = e.figure.getPersistentAttributes();
+          labelJSON.locator=e.locator.NAME;
+          labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
+          labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
 
-      memento.myLabel = this.myLabel;
-      memento.graphlangLayerOwner = this.graphlangLayerOwner;
+          memento.labels.push(labelJSON);
+      });
 
       return memento;
   },
 
   /**
-   * @method setPersistentAttributes(memento)
-   * @description Read all attributes from the serialized properties and transfer them into the shape.
+   * @method
+   * Read all attributes from the serialized properties and transfer them into the shape.
    *
    * @param {Object} memento
+   * @returns
    */
-  setPersistentAttributes: function(memento)
+  setPersistentAttributes : function(memento)
   {
       this._super(memento);
-      if(typeof memento.myLabel !=="undefined"){
-          this.setText(memento.myLabel);
-      }
-      if(typeof memento.graphlangLayerOwner !=="undefined"){
-          //          ...do something with value...
-      }
 
+      // remove all decorations created in the constructor of this element
+      //
+      this.resetChildren();
+
+      // and add all children of the JSON document.
+      $.each(memento.labels, $.proxy(function(i,json){
+
+          //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
+          curDatatype = json.type;
+          if (curDatatype.toLowerCase().search("tunnel") > -1){
+            var msg = JSON.stringify(json);
+            //alert("tunnel:" + msg);
+          }
+
+          var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
+          figure.attr(json);                                                                            // apply all attributes
+          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+
+          this.add(figure, locator);                                                                    // add the new figure as child to this figure
+      },this));
   },
 
 
@@ -433,6 +453,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       newLayer.userData = {};
     }
     newLayer.userData.owner = this.getId();
+    newLayer.userData.layerText = '---';
 
     var layerId = "";
     if (this.layers != null){
@@ -440,7 +461,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     }else{
       layerId = "0";                      //first element to be create has numebr 0
     }
-    newLayer.setId("jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
+    newLayer.setId("multilayered_" + this.getId() + "_jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
 
     /*
      *  GraphLang Jailhouse has it's translation function inside object!
@@ -499,7 +520,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     //this.layerChooser.editor.start(this.layerChooser);
     layerChooserEditor = new draw2d.ui.LabelEditor();
     layerChooserEditor.start(this.layerChooser);
-    this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
+
+    //this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
+    this.layers.get(this.activeLayer).userData.layerText = this.layerChooser.getText();
   }
 
 });

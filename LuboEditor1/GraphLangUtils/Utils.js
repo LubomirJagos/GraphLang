@@ -1487,10 +1487,12 @@ GraphLang.Utils.getCanvasJson = function(canvas){
       var wrongJson = [];
       for (var k = 0; k < json.length; k++){
         if (json[k].type != undefined && json[k].type.toLowerCase().search("multilayered") > -1){
-          var multilayerChooser = canvas.getFigure(json[k].id).getChildren().get(0);
+          var multilayeredJson = canvas.getFigure(json[k].id);
+          var multilayerChooser = multilayeredJson.getChildren().get(0);
 
           var chooserObj =  new draw2d.shape.basic.Label(multilayerChooser);
-          clearedJson.push(chooserObj);
+          //clearedJson.push(chooserObj);
+          clearedJson.push(json[k]);
           // alert(multilayerChooser.text);
         }else if (json[k].type != undefined && json[k].type.toLowerCase().search("connection") > -1){
           //alert("connection");
@@ -1842,10 +1844,19 @@ GraphLang.Utils.selectedLoopShowAboardFigures = function(canvas){
   element.getAboardFigures(true).each(function(figureIndex, figureObj){
     msg += figureObj.NAME + "\n";
   });
-/*
-  canvas.getFigures().each(function(childIndex, childObj){
-    msg += childObj.NAME + "\n";
-  });
-*/
   alert(msg);
+}
+
+/**
+ *  @method correctMultilayeredAfterLoad
+ *  @param {draw2d.Canvas} canvas
+ *  @description Should correct layers for multilayered structures after load from json.
+ */
+GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.toLowerCase().search("jailhouse") > -1){
+      alert(figureObj.NAME);
+    }
+  });
+  alert("correctMultilayeredAfterLoad");
 }

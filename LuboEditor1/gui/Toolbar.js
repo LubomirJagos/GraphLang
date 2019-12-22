@@ -240,6 +240,12 @@ example.Toolbar = Class.extend({
  			this.selectedLoopShowAboardFiguresButton  = $("<button id=\"selectedLoopShowAboardFiguresButton\">selectedLoopShowAboardFiguresButton</button>");
  			this.html.append(this.selectedLoopShowAboardFiguresButton);
 
+			/**
+ 		  *	correctMultilayeredAfterLoad Button
+ 			*/
+ 			this.correctMultilayeredAfterLoadButton  = $("<button id=\"correctMultilayeredAfterLoadButton\">correctMultilayeredAfterLoadButton</button>");
+ 			this.html.append(this.correctMultilayeredAfterLoadButton);
+
 	},
 
 	/**
