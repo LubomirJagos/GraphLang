@@ -1829,3 +1829,23 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
   });
   alert("Wire correction after load DONE.");
 }
+
+/**
+ *  @method selectedLoopShowAboardFigures
+ *  @param {draw2d.Canvas} canvas
+ *  @description Show message with list of selected loop children. Used for debugging why multilayered nodes are not moving when are part of some loop.
+ */
+GraphLang.Utils.selectedLoopShowAboardFigures = function(canvas){
+  //alert("selectedLoopShowAboardFigures");
+  var element = canvas.getSelection().getAll().first();
+  var msg = "";
+  element.getAboardFigures(true).each(function(figureIndex, figureObj){
+    msg += figureObj.NAME + "\n";
+  });
+/*
+  canvas.getFigures().each(function(childIndex, childObj){
+    msg += childObj.NAME + "\n";
+  });
+*/
+  alert(msg);
+}

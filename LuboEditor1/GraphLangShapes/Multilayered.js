@@ -52,7 +52,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     rect0.setColor(new GraphLang.Utils.Color("#000000"));
     rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
     rect0.setId("jalihouseLayerProtection0");
+
+    //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
+    //this.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));
     appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(x,y));
+
     rect0.toBack();
     this.rect0 = rect0;
     this._onDragStart = this.onDragStart;
@@ -171,6 +175,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     var width = this.getWidth();
     var height = this.getHeight();
     this.layers.each(function(layerIndex, layerObj){
+// layers and protective rectangle are on 0,0 coords relative to parent, so this IS NOT USED INTENTIONALLY
       layerObj.setX(x);
       layerObj.setY(y);
       layerObj.setWidth(width);
@@ -178,6 +183,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       layerObj.setSelectable(false);
       layerObj.setDraggable(false);
     });
+// layers and protective rectangle are on 0,0 coords relative to parent, so this IS NOT USED INTENTIONALLY
     this.rect0.setX(x);
     this.rect0.setY(y);
     this.rect0.setWidth(width);
@@ -435,6 +441,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
      */
 
     this.layers.push(newLayer);
+
+    //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
+    //this.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
     appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
   },
 

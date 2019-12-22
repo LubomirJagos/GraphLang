@@ -429,6 +429,12 @@ document.addEventListener("DOMContentLoaded",function () {
        GraphLang.Utils.correctWiresAfterLoad(appCanvas);
       }));
 
+      /**************************************
+      *  BUTTON "correctWiresAfterLoad"
+      **************************************/
+      $("#selectedLoopShowAboardFiguresButton").button().click($.proxy(function(){
+       GraphLang.Utils.selectedLoopShowAboardFigures(appCanvas);
+      }));
 });
 
 /**
