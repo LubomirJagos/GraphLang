@@ -16,7 +16,7 @@ GraphLang.Utils = Class.extend({
 });
 
 /**
- *  @method GraphLang.Utils.runInterpreter
+ *  @method runInterpreter
  *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description Go through all nodes by execution order and run onRun() function on each of them. It should return string which represent chunk of code for each node. <br/><br/>THIS IS NOW WORKING ON LAYER null WHAT MEANS ON TOP NODES JUST TO SEE IF IT'S TRANSCRIPTING SOMETHING, LOOKS OK, THIS WILL BE RECURSIVE FUNCTION!
  */
@@ -42,7 +42,7 @@ GraphLang.Utils.runInterpreter = function(canvas){
 }
 
 /**
- *  @method run(canvas)
+ *  @method run
  *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description Testing feunction for every my node to see if it's invoked. I want to use this to see if nodes are running in right order when graph interpreter is running.
  */
@@ -81,7 +81,7 @@ GraphLang.Utils.run = function(canvas){
 }
 
 /**
- *  @method detectJoints(canvas)
+ *  @method detectJoints
  *  @param {draw2d.Canvas} canvas - from where is taken schematic
  *  @description This function puts some mark at wires crossing. For now there will be point inserted.
  */
@@ -125,7 +125,8 @@ GraphLang.Utils.detectJoints = function(canvas){
 }
 
 /**
- *  @method goThroughGraph(canvas)
+ *  @method goThroughGraph
+ *  @param {draw2d.Canvas} canvas - schematic in which is loop located
  *  @description Going through nodes and hit them and run them if possible. This is now just for testing how to traverse graph through wires which connect nodes.
  */
 GraphLang.Utils.goThroughGraph = function(canvas){
@@ -160,10 +161,11 @@ GraphLang.Utils.goThroughGraph = function(canvas){
 }
 
 /**
- *  @method createConnection(sourcePort, targetPort)
+ *  @method createConnection
  *  @param {draw2d.InputPort} sourcePort - beginning of wire
  *  @param {draw2d.OutputPort} targetPort - end of wire
  *  @description CREATES wire connection btw source and target
+ *  @returns {draw2d.Connection} Created connection
  */
 var createConnection=function(sourcePort, targetPort){
 
@@ -192,7 +194,8 @@ var createConnection=function(sourcePort, targetPort){
 };
 
 /**
- *  @method detectTunnels(canvas)
+ *  @method detectTunnels
+ *  @param {draw2d.Canvas} canvas - schematic in which is loop located
  *  @description Returns coordinates and put point where wires intersect with loop border (for loop, while loop, case structure, ...)
  */
 GraphLang.Utils.detectTunnels = function(canvas){
@@ -430,7 +433,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
 };
 
 /**
- *  @method initAllPortToDefault(canvas)
+ *  @method initAllPortToDefault
  *  @param {draw2d.Canvas} canvas - schematic where ports will be set to default
  *  @description Set default value for all ports. FOR NOW SET VALUE OF EACH PORT TO 0.
  */
@@ -547,7 +550,7 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
 }
 
 /**
- *  @method showPortExecutionOrder(canvas)
+ *  @method showPortExecutionOrder
  *  @param {draw2d.Canvas} canvas - schematic where will be displayed execution order for nodes and tunnels
  *  @description Put label with port execution order next to each port which is children of canvas. Means it was added to canvas no to object like loop.
  */
@@ -576,7 +579,7 @@ GraphLang.Utils.showPortExecutionOrder = function(canvas){
   });
 }
 /**
- *  @method bringToFront(canvas)
+ *  @method bringToFront
  *  @param {draw2d.Canvas} canvas - from where is taken actual selection
  *  @description Bring to front actual selected figure in canvas.
  */
@@ -590,7 +593,8 @@ GraphLang.Utils.bringToFront = function(canvas){
 }
 
 /**
- *  @method bringToBack(canvas)
+ *  @method bringToBack
+ *  @param {draw2d.Canvas} canvas
  *  @description Moves selected objects to back.
  */
 GraphLang.Utils.bringToBack = function(canvas){
@@ -603,7 +607,7 @@ GraphLang.Utils.bringToBack = function(canvas){
 }
 
 /**
- *  @method showNodes(canvas)
+ *  @method showNodes
  *  @param {draw2d.Canvas} canvas - schematic where will be place labels next to ports
  *  @description Put label "-1" into middle of all nodes. This is method for debugging to see how IDE see nodes, what all is node.
  */
@@ -640,10 +644,11 @@ GraphLang.Utils.showNodes = function(canvas){
 };
 
 /**
- *  @method getNodeLoopOwner(canvas, nodeObj)
+ *  @method getNodeLoopOwner
  *  @param {draw2d.Canvas} canvas - schematic from which is node or loop
- *  @param {draw2d.shape.Node} nodeObj - node or loop objec which is inspected for its loop owner
+ *  @param {draw2d.shape.Node} nodeObj=null - node or loop objec which is inspected for its loop owner
  *  @description Return loop which ownes node, if there's no loop return null.
+ *  @returns {GraphLang.Shapes.Basic.Loop|null} Found node owner, if none then return null.
  */
 GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
   var loopList = new draw2d.util.ArrayList();
@@ -678,10 +683,11 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
 };
 
 /**
- *  @method getLoopDirectChildrenNodes(canvas, parentLoop = null)
+ *  @method getLoopDirectChildrenNodes
  *  @param {draw2d.Canvas} canvas - schematic in which is loop located
- *  @param {GraphLang.Shapes.Basic.Loop} parentLoop - loop which children are required
+ *  @param {GraphLang.Shapes.Basic.Loop} parentLoop - loop which children are required, default value null
  *  @description Returns nodes which are direct descendant of loop, so there are no nodes nested inside other inner loops. If parent loop is not provided or undefined it return all nodes which are direct children of canvas.
+ *  @returns {GraphLang.Shapes.Basic} List of children GraphLang nodes for loop or owned by canvas.
  */
 GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null){
   var allLayerNodes = new draw2d.util.ArrayList();
@@ -696,8 +702,11 @@ GraphLang.Utils.getLoopDirectChildrenNodes = function(canvas, parentLoop = null)
 }
 
 /**
- *  @method getDirectChildrenWithoutTunnels(canvas, parentObj = null)
+ *  @method getDirectChildrenWithoutTunnels
+ *  @param {draw2d.Canvas} canvas - schematic in which is loop located
+ *  @param {GraphLang.Shapes.Basic.Loop} parentLoop - loop which children are required, default value null
  *  @description Returns direct children of provided object. These returns objects which are not nested inside loop. Also return loops objects. If parent object is not provided it returns direct canvas children.
+ *  @returns {GraphLang.Shapes.Basic} List of children GraphLang nodes without tunnels.
  */
 GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
   var allLayerNodes = new draw2d.util.ArrayList();
@@ -719,7 +728,8 @@ GraphLang.Utils.getDirectChildrenWithoutTunnels = function(canvas, parentObj){
 }
 
 /**
- *  @method executionOrder(canvas)
+ *  @method executionOrder
+ *  @param {draw2d.Canvas} canvas
  *  @description Returns execution order in which nodes run.
  */
 GraphLang.Utils.executionOrder = function executionOrder(canvas){
@@ -873,7 +883,8 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 }
 
 /**
- *  @method runNodeInOrder(canvas)
+ *  @method runNodeInOrder
+ *  @param {draw2d.Canvas} canvas
  *  @description Returns execution order in which nodes run.
  */
 GraphLang.Utils.runNodesInOrder = function(canvas){
@@ -904,7 +915,7 @@ GraphLang.Utils.runNodesInOrder = function(canvas){
 }
 
 /**
- *  @method highlightNodesByExecutionOrder(canvas)
+ *  @method highlightNodesByExecutionOrder
  *  @param {draw2d.Canvas} canvas - schematic in which will be highlited nodes step by step by clicking on button
  *  @description Returns execution order in which nodes run.
  */
@@ -926,7 +937,7 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
 }
 
 /**
- * @method translateToCppCode(canvas)
+ * @method translateToCppCode
  * @param {draw2d.Canvas} canvas - place from where to take schematic which will be transcripted into C/C++ code
  * @description DEPRECATED Traverse digram and execute over each node function which gives it's C/C++ representation.
  * It's not solving translating loops or similar multilayered things, there is another function translateToCppCode2 which is trying to handle these things.
@@ -1020,9 +1031,10 @@ GraphLang.Utils.translateToCppCode = function(canvas){
  *********************************************************************************************************/
 
 /**
- * @method translateToCppCode2(canvas)
+ * @method translateToCppCode2
  * @param {draw2d.Canvas} canvas - schematic which will be transcritped into C/C++ code
  * @description Traverse digram and execute over each node function which gives it's C/C++ representation.
+ * @returns {String} Diagram translated into C/C++ code.
  */
 GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, parentObj = null, nestedLevel = 0){
   var allNodes = GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, parentObj);
@@ -1242,7 +1254,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 }
 
 /**
- *  @method loopsRecalculateAbroadFigures(canvas)
+ *  @method loopsRecalculateAbroadFigures
  *  @param {draw2d.Canvas} canvas - schematic which will be recalculated
  *  @description Reevaluate children nodes of every loop on canvas. This function was implemented because sometimes it looks like there are problems with this when new loops are added.
  */
@@ -1256,7 +1268,7 @@ GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
 }
 
 /**
- *  @method initLoopsZOrder(canvas)
+ *  @method initLoopsZOrder
  *  @param {draw2d.Canvas} canvas - schematic where correcting z-order should happen
  *  @description EXPERIMENTAL! STILL WRONG. <br/><br/>Go through all loops in schematic and setup right their z-order. This function is implemented because z-order is probably not right after loading schematic, so this function set it. If it's loaded correctly it should have no imapct on schematic.
  */
@@ -1313,7 +1325,7 @@ GraphLang.Utils.initLoopsZOrder = function(canvas){
 }
 
 /**
- *  @method showSelectedObjExecutionOrder(canvas)
+ *  @method showSelectedObjExecutionOrder
  *  @param {draw2d.Canvas} canvas - fromt here is taken selected object
  *  @description Display execution order of current highlighted object.
  */
@@ -1323,10 +1335,12 @@ GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
 }
 
 /**
- * @method getDirectChildrenWires()
+ * @method getDirectChildrenWires
  * @param {draw2d.Canvas} canvas - schematic
  * @param {draw2d.Figure} parentObj - returned wires are direct descendant of this object
  * @description Returns wires which are direct descendant of provided object.
+ * @returns {draw2d.util.ArrayList<draw2d.Connection>} Array list of direct children wires
+ * of loops or canvas (most top ones, not nested inside some loop).
  */
 GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObjId = null){
   var directChildrenWires = new draw2d.util.ArrayList();
@@ -1375,7 +1389,7 @@ GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas,
 }
 
 /**
- * @method setWiresColorByPorts()
+ * @method setWiresColorByPorts
  * @param {draw2d.Canvas} canvas - schematic where wire will be colorized
  * @description Colorize all wires in schematic according to port datatypes.
  */
@@ -1441,9 +1455,10 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
 }
 
 /**
- * @method getSelectedLoopTunnelCount(canvas)
+ * @method getSelectedLoopTunnelCount
  * @param {draw2d.Canvas} canvas - schematic
  * @description For selected loop show number of tunnels.
+ * @returns {Number} Tunnels count of currently selected loop.
  */
 GraphLang.Utils.getSelectedLoopTunnelCount = function setWiresColorByPorts(canvas){
   var node = canvas.getPrimarySelection();
@@ -1461,7 +1476,7 @@ GraphLang.Utils.getSelectedLoopTunnelCount = function setWiresColorByPorts(canva
 }
 
 /**
- * @method getCanvasJson(canvas)
+ * @method getCanvasJson
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
  * @description For selected loop show number of tunnels.
  */
@@ -1501,7 +1516,7 @@ GraphLang.Utils.getCanvasJson = function(canvas){
 }
 
 /**
- * @method getCppCode2(canvas)
+ * @method getCppCode2
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
  * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
  */
@@ -1573,7 +1588,7 @@ GraphLang.Utils.getCppCode2 = function(canvas){
 
 
 /**
- * @method getCanvasAsPNG(canvas)
+ * @method getCanvasAsPNG
  * @param {draw2d.Canvas} canvas - schematic which will be exported as PNG base64 encoded.
  * @description Copy diagram as PNG image.
  */
@@ -1646,7 +1661,7 @@ GraphLang.Utils.getCanvasAsPNG = function(canvas){
 }
 
 /**
- * @method setPortsColorByDatatype(canvas)
+ * @method setPortsColorByDatatype
  * @param {draw2d.Canvas} canvas - schematic where ports will be colorized
  * @description Colorize all ports in schematic according to theirs datatypes.
  */
@@ -1664,7 +1679,7 @@ GraphLang.Utils.setPortsColorByDatatype = function setWiresColorByPorts(canvas){
 }
 
 /**
- *  @method setTunnelColorByWire(canvas)
+ *  @method setTunnelColorByWire
  *  @param {draw2d.Canvas} canvas - source canvas from where take tunnels, all included one which belongs to loop structures
  *  @description Change color of each tunnel by connected wire datatype.
  */
@@ -1694,7 +1709,7 @@ GraphLang.Utils.setTunnelColorByWire = function(canvas){
 }
 
 /**
- *  @method showLoopsExecutionOrder(canvas)
+ *  @method showLoopsExecutionOrder
  *  @param {draw2d.Canvas} canvas
  *  @description Place label with loop execution order into its middle
  */
@@ -1722,7 +1737,7 @@ GraphLang.Utils.showLoopsExecutionOrder = function(canvas){
 }
 
 /**
- *  @method getDirectChildrenOfSelectedNode(canvas)
+ *  @method getDirectChildrenOfSelectedNode
  *  @param {draw2d.Canvas} canvas
  *  @description Change background of nodes to be red for direct children of selected node. This function is here mostly for debug
  *  to see red nodes which should be children of loop if loop is selected, just to see how it's visible in javascript inside editor..
@@ -1735,9 +1750,10 @@ GraphLang.Utils.getDirectChildrenOfSelectedNode = function(canvas){
 }
 
 /**
- *  @method rewriteIDtoNumbers(canvas)
+ *  @method rewriteIDtoNumbers
  *  @param {draw2d.Canvas} canvas
  *  @description Rewrite in output code all IDs to normal numbers to make output code more readible
+ *  @returns {String} Translated code with rewiritten ID to something more readible - normal numbers, so code is shorter and nicer looking.
  */
 GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
   var allId = new draw2d.util.ArrayList();
@@ -1769,7 +1785,7 @@ GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
 }
 
 /**
- *  @method correctWiresAfterLoad(canvas)
+ *  @method correctWiresAfterLoad
  *  @param {draw2d.Canvas} canvas
  *  @description Correct wires targets, because some connection have attribute tunnel to which they are attached so need to set this target also here.
  */
