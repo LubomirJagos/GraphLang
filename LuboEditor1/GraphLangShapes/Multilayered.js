@@ -23,7 +23,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     // port.setBackgroundColor("#abcdef");
     // port.setName("iterationTerminal");
     // port.setMaxFanOut(20);
-
     //COMMON LOOP BOUNDARY SETTINGS
     this.setWidth(420);
     this.setHeight(220);
@@ -157,6 +156,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.on("show", function(emitter){
       emitter.moveActiveLayer();
     });
+
+    /***************************
+     *  DRAG options
+     */
+    this.setDraggable(true);
 
   },
 
