@@ -1259,21 +1259,12 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
  *  @description Reevaluate children nodes of every loop on canvas. This function was implemented because sometimes it looks like there are problems with this when new loops are added.
  */
 GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
-  var myObj;
-  canvas.getFigures().each(function(loopIndex, loopObj){
-    if (loopObj.NAME.toLowerCase().search("multilayered") > -1){
-          myObj = loopObj;
-    }
-  });
-
   canvas.getFigures().each(function(loopIndex, loopObj){
     if (loopObj.NAME.toLowerCase().search("loop") >= 0 &&
         loopObj.NAME.toLowerCase().search("multilayered") == -1){
           loopObj.getAboardFigures(true);
-          loopObj.aboardFigures.add(myObj);
     }
   });
-
 }
 
 /**
