@@ -224,6 +224,16 @@ GraphLang.Utils.detectTunnels = function(canvas){
     let intersectionEdge = []; //0 = top, 1 = right, 2 = down, 3 = left
     canvas.getLines().each(function(lineIndex, lineObj){
 
+      /*****************************************************************************
+       *  CONDITIONS NOT TO DETECT TUNNEL AND GO AWAY FROM THIS FUNCTION
+       *
+       *  SOMEHOW RUNNING BUT STILL NEED REWORK!!!!! HERE ARE SOME ERRORS PROBABLY
+       *      need to rethin rules when used tunnel, ie. use just one when
+       *      wire ie. cross loop at some corner at two points
+       *****************************************************************************/
+
+       //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
+
       //THIS HERE PREVENTS PUTTING TUNNELS TO WIRES WHICH ARE PART OF THIS LOOP AND GOING OUT AND IN AGAIN
       //TO OVERCOME PUTTING TUNNELS ON WIRES WHERE TUNNELS ALREADY ARE
       var sourcePort = lineObj.sourcePort.getParent()
@@ -234,11 +244,13 @@ GraphLang.Utils.detectTunnels = function(canvas){
       if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
         if (targetPort.getParent() == loopObj) return;
       }
+
       //NO ADDING TUNNEL WHEN SOURCE AND WIRE TARGET ARE PART OF THE SAME LOOP
+/*
       if (GraphLang.Utils.getNodeLoopOwner(canvas, sourcePort) == GraphLang.Utils.getNodeLoopOwner(canvas, targetPort)){
         return;
       }
-
+*/
 
       let lineSegments = lineObj.getSegments();
       lineSegments.each(function(segmentIndex, segmentObj){
@@ -1559,6 +1571,7 @@ GraphLang.Utils.getCppCode2 = function(canvas){
          var template_cCode = "";
         template_cCode += "#define error int\n";
         template_cCode += "#define int32 int\n";
+        template_cCode += "#define uint unsigned int\n";
         template_cCode += "void setup() {\n";
         template_cCode += "\n";
         template_cCode += "\n";
