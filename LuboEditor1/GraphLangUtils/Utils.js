@@ -234,6 +234,11 @@ GraphLang.Utils.detectTunnels = function(canvas){
       if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
         if (targetPort.getParent() == loopObj) return;
       }
+      //NO ADDING TUNNEL WHEN SOURCE AND WIRE TARGET ARE PART OF THE SAME LOOP
+      if (GraphLang.Utils.getNodeLoopOwner(canvas, sourcePort) == GraphLang.Utils.getNodeLoopOwner(canvas, targetPort)){
+        return;
+      }
+
 
       let lineSegments = lineObj.getSegments();
       lineSegments.each(function(segmentIndex, segmentObj){

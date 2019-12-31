@@ -148,7 +148,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 23.js"></script> -->
-     <script src="./GraphLangSchematics/Default Schematic 25.js"></script>
+    <!-- <script src="./GraphLangSchematics/Default Schematic 25.js"></script> -->
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -632,10 +632,13 @@ function displayJSON(canvas){
      Msg: <div id="logitem2"></div>
    </div>
 
-   <div style="position: absolute; left: 220px; bottom: 20px; width: 400px; height: 220px; background: none;">
+   <!--
+    Canvas for screenshots set to not display but it's still here just chane its style attr.
+    -->
+   <div style="display: none; position: absolute; left: 220px; bottom: 20px; width: 400px; height: 220px; background: none;">
      <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
 
-     <div id="imgDiv" style="overflow: hidden; height: 200px; width: 200px; background: yellow;">
+     <div id="imgDiv" style="display: none; overflow: hidden; height: 200px; width: 200px; background: yellow;">
        <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
      </div>
    </div>
