@@ -1,19 +1,30 @@
+
+translateToCppCodeDeclarationArray =  new draw2d.util.ArrayList();
+
 /**
  *  @class GraphLang.Utils
  *  @description Base class for GraphLang utils
  */
 GraphLang.Utils = Class.extend({
   NAME: "GraphLang.Utils",
+
   init:function(attr, setter, getter){
     this._super(attr, setter, getter);
+
   }
-  /*
-   *  This wasn;t running when was written like this. There is something strange about that. But when assign lower as rvalue it's OK, so for now let's do it that way.
-  run: function(textValue){
-    alert(textValue);
-  }
-  */
 });
+
+/**
+ *  @method getCppCodeDeclaration
+ *  @description Returns ArrayList containing actual declarations for clusters and so collected during traversing diagram.
+ */
+GraphLang.Utils.getCppCodeDeclaration = function(){
+  var cCode = "";
+  translateToCppCodeDeclarationArray.each(function(itemIndex, itemObj){
+    cCode += itemObj + "\n";
+  });
+  return cCode;
+}
 
 /**
  *  @method runInterpreter
@@ -1214,6 +1225,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           });
           if (!isNodeInCluster){
             cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
+            if (nodeObj.translateToCppCodeDeclaration != undefined) translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
 /*
             if (GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj) == null){
               cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
@@ -1572,6 +1584,7 @@ GraphLang.Utils.getCppCode2 = function(canvas){
         template_cCode += "#define error int\n";
         template_cCode += "#define int32 int\n";
         template_cCode += "#define uint unsigned int\n";
+        template_cCode += this.getCppCodeDeclaration() + "\n";
         template_cCode += "void setup() {\n";
         template_cCode += "\n";
         template_cCode += "\n";

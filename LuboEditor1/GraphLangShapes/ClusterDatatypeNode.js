@@ -61,13 +61,19 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend(
    *  Functions below are implemented by me (LuboJ)
    ********************************************************************************************************************/
 
-  translateToCppCode: function(){
-    cCode = "";
+  translateToCppCodeDeclaration: function(){
+    var cCode = "";
     cCode += "struct{\n"
     this.getAboardFigures().each(function(figureIndex, figureObj){
       cCode += figureObj.translateToCppCode() + "\n";
     });
     cCode += "} cluster_" + this.getId()+ "\n";
+    return cCode;
+  },
+
+  translateToCppCode: function(){
+    cCode = "";
+    cCode += "/* Cluster assignment */\n";
     return cCode;
   }
 });

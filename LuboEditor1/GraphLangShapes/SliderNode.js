@@ -36,8 +36,12 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
 
   },
 
+  translateToCppCodeDeclaration: function(){
+    return "/* Slider declaration */";
+  },
+
   translateToCppCode:function(){
-    cCode = "";
+    var cCode = "";
 
     var constDatatype = this.getOutputPort(0).userData.datatype;
 
