@@ -15,6 +15,7 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "char") return "#4286f4";
     else if (colorName == "long") return "#4286f4";
     else if (colorName == "word") return "#4286f4";
+    else if (colorName == "int") return "#4286f4";
     else if (colorName == "int8") return "#4286f4";
     else if (colorName == "uint8" || colorName == "uint") return "#4286f4";
     else if (colorName == "int16") return "#4286f4";

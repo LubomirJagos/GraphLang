@@ -72,6 +72,7 @@
       <script src="./GraphLangShapes/ExternalOutputPort.js"></script>
       <script src="./GraphLangShapes/ExternalInputPort.js"></script>
       <script src="./GraphLangShapes/UserCodeBlock.js"></script>
+      <script src="./GraphLangShapes/SliderNode.js"></script>
     <!-- End of GraphLang shapes-->
 
     <!-- These are mine arduino shapes added. LuboJ. -->
@@ -148,7 +149,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 23.js"></script> -->
-    <script src="./GraphLangSchematics/Default Schematic 26.js"></script>
+    <script src="./GraphLangSchematics/Default Schematic 27.js"></script>
  <script type="text/javascript">
 
 document.addEventListener("DOMContentLoaded",function () {
@@ -228,221 +229,6 @@ document.addEventListener("DOMContentLoaded",function () {
        *****************************************************************************/
       var reader = new draw2d.io.json.Reader();
       reader.unmarshal(appCanvas, jsonDocument);
-
-      /****************************************
-       * BUTTONS
-       ****************************************/
-      // Function to button Run is assigned in Toolbar.js
-      //GraphLang.Utils.run(function(){alert("Anonymous functions given to run()");});
-      //This here is just click() handler, because here appCanvas has visibility
-      //I put it in front of HTML file so now should be visible everywhere.
-      $("#runButton").button().click($.proxy(function(){
-        GraphLang.Utils.run(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "Detect Joints"
-       **************************************/
-      $("#detectJointsButton").button().click($.proxy(function(){
-        GraphLang.Utils.detectJoints(appCanvas);
-      	}));
-
-      /**************************************
-       *  BUTTON "Run Interpreter"
-       **************************************/
-      $("#runInterpreterButton").button().click($.proxy(function(){
-        GraphLang.Utils.runInterpreter(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "Go Through Graph"
-       **************************************/
-      $("#goThroughGraphButton").button().click($.proxy(function(){
-       GraphLang.Utils.goThroughGraph(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "Show Nodes"
-      **************************************/
-      $("#showNodesButton").button().click($.proxy(function(){
-        GraphLang.Utils.showNodes(appCanvas);
-      }));
-
-
-      /**************************************
-       *  BUTTON "Detect Tunnels"
-       **************************************/
-      $("#detectTunnelsButton").button().click($.proxy(function(){
-        GraphLang.Utils.detectTunnels(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "Init ports"
-       **************************************/
-       $("#initPortsToDefaultButton").button().click($.proxy(function(){
-         GraphLang.Utils.initAllPortToDefault(appCanvas);
-       }));
-
-      /**************************************
-       *  BUTTON "Execution order"
-       **************************************/
-       $("#executionOrderButton").button().click($.proxy(function(){
-         GraphLang.Utils.executionOrder(appCanvas);
-       }));
-
-      /**************************************
-      *  BUTTON "Bring to Front"
-      **************************************/
-      $("#bringToFrontButton").button().click($.proxy(function(){
-        GraphLang.Utils.bringToFront(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "Bring to Back"
-       **************************************/
-       $("#bringToBackButton").button().click($.proxy(function(){
-         GraphLang.Utils.bringToBack(appCanvas);
-       }));
-
-      /**************************************
-       *  BUTTON "runNodeInOrder"
-       **************************************/
-      $("#runNodesInOrderButton").button().click($.proxy(function(){
-        GraphLang.Utils.runNodesInOrder(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "showPortExecutionOrder"
-       **************************************/
-      $("#showPortExecutionOrderButton").button().click($.proxy(function(){
-        GraphLang.Utils.showPortExecutionOrder(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "highlightNodesByExecutionOrderButton"
-       **************************************/
-      $("#highlightNodesByExecutionOrderButton").button().click($.proxy(function(){
-        GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
-      }));
-
-      /**************************************
-       *  BUTTON "translateToCppCodeButton"
-       **************************************/
-      $("#translateToCppCodeButton").button().click($.proxy(function(){
-        GraphLang.Utils.translateToCppCode(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "translateToCppCode2Button"
-      **************************************/
-      $("#translateToCppCode2Button").button().click($.proxy(function(){
-        GraphLang.Utils.translateToCppCode2(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "loopsRecalculateAbroadFigures"
-      **************************************/
-      $("#loopsRecalculateAbroadFiguresButton").button().click($.proxy(function(){
-       GraphLang.Utils.loopsRecalculateAbroadFigures(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "initLoopsZOrderButton"
-      **************************************/
-      $("#initLoopsZOrderButton").button().click($.proxy(function(){
-       GraphLang.Utils.initLoopsZOrder(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "showSelectedObjExecutionOrderButton"
-      **************************************/
-      $("#showSelectedObjExecutionOrderButton").button().click($.proxy(function(){
-       GraphLang.Utils.showSelectedObjExecutionOrder(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "showSelectedObjExecutionOrderButton"
-      **************************************/
-      $("#setWiresColorByPortsButton").button().click($.proxy(function(){
-       GraphLang.Utils.setWiresColorByPorts(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "getDirectChildrenWiresButton"
-      **************************************/
-      $("#getDirectChildrenOfSelectedNodeButton").button().click($.proxy(function(){
-       GraphLang.Utils.getDirectChildrenOfSelectedNode(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "getDirectChildrenWiresButton"
-      **************************************/
-      $("#getSelectedLoopTunnelCountButton").button().click($.proxy(function(){
-       GraphLang.Utils.getSelectedLoopTunnelCount(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "getCanvasJsonButtonButton"
-      **************************************/
-      $("#getCanvasJsonButton").button().click($.proxy(function(){
-       GraphLang.Utils.getCanvasJson(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "getCanvasJsonButtonButton"
-      **************************************/
-      $("#getCppCode2Button").button().click($.proxy(function(){
-       GraphLang.Utils.getCppCode2(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "getExportCanvasAsPNGButton"
-      **************************************/
-      $("#exportCanvasAsPNGButton").button().click($.proxy(function(){
-       GraphLang.Utils.getCanvasAsPNG(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "setPortsColorByDatatypeButton"
-      **************************************/
-      $("#setPortsColorByDatatypeButton").button().click($.proxy(function(){
-       GraphLang.Utils.setPortsColorByDatatype(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "setPortsColorByDatatypeButton"
-      **************************************/
-      $("#setTunnelColorByWireButton").button().click($.proxy(function(){
-       GraphLang.Utils.setTunnelColorByWire(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "showLoopsExecutionOrder"
-      **************************************/
-      $("#showLoopsExecutionOrderButton").button().click($.proxy(function(){
-       GraphLang.Utils.showLoopsExecutionOrder(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "correctWiresAfterLoad"
-      **************************************/
-      $("#correctWiresAfterLoadButton").button().click($.proxy(function(){
-       GraphLang.Utils.correctWiresAfterLoad(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "correctWiresAfterLoad"
-      **************************************/
-      $("#selectedLoopShowAboardFiguresButton").button().click($.proxy(function(){
-       GraphLang.Utils.selectedLoopShowAboardFigures(appCanvas);
-      }));
-
-      /**************************************
-      *  BUTTON "correctMultilayeredAfterLoad"
-      **************************************/
-      $("#correctMultilayeredAfterLoadButton").button().click($.proxy(function(){
-       GraphLang.Utils.correctMultilayeredAfterLoad(appCanvas);
-      }));
 });
 
 /**
@@ -489,6 +275,11 @@ function displayJSON(canvas){
       <div data-shape="draw2d.shape.node.Hub" data-width="10" data-height="100" data-label="Hub label" class="palette_node_element draw2d_droppable">Hub</div>
       <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
 -->
+
+      <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="GraphLang SliderNode" class="palette_node_element draw2d_droppable">
+        <img src="GraphLangSymbols/slider.png" />
+        GraphLang SliderNode
+      </div>
 
       <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-width="70" data-height="40" data-label="GraphLang Dragon1Node" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
