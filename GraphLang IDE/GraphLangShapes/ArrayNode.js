@@ -9,6 +9,12 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     this.setPersistPorts(false);
 
     /*****************************************************************************
+     *  DEFAULT PARAMS
+     *****************************************************************************/
+    var defaultDatatype = "int";
+    var defaultValue = "0";
+
+    /*****************************************************************************
      *  OUTPUT PORT
      *****************************************************************************/
 
@@ -20,8 +26,10 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     port.setName("out1");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "unknown";
+    port.userData.datatype = defaultDatatype;
 
+    //default values for array, each cell is separate Label for now, userData of array is based on datatype of port,
+    //so here are userData just created as empty object.
     this.userData = {};
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
@@ -44,7 +52,12 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
      * DEFAULT value
      ***************************************************************************************/
 
-    var label1 =  new draw2d.shape.basic.Label({text:"0", fontColor:"#00AF00"});
+    var label1 =  new draw2d.shape.basic.Label();    //default datatype is int so value is 0
+    label1.setText(defaultValue);
+    var newColor = new GraphLang.Utils.Color();
+    label1.setColor(newColor.getByName(defaultDatatype));
+    label1.setFontColor(newColor.getByNameFontColor(defaultDatatype));
+    label1.setBackgroundColor(newColor.getByNameBackgroundColor(defaultDatatype));
     this.addRow(label1);
 
     /*****************************************************************************
@@ -71,7 +84,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
               callback: $.proxy(function(key, options)
               {
                 switch(key){
-                  case "int32":
+                  case "int":
                   case "uint":
                   case "float":
                   case "double":
@@ -81,7 +94,11 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       break;
                   case "add item":
                       var arrayItemDatatype = emitter.getParent().getOutputPort(0).userData.datatype;
+
+                      //HERE SHOULD BE CREATING SOME NumericConstant or something MORE SPECIFIC
+                      //NOW HERE IS JUST CREATED LABEL AND PUSHED INTO ARRAY VERTICAL LAYOUT NEED TO IMPROVE (to be based on datatype of items)!!!
                       var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}})
+
                       arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
                       emitter.getParent().addRow(arrayItem);
                       emitter.getParent().updateAllItems();                               //update array items context menu
@@ -98,7 +115,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
               y:event.y,
               items:
               {
-                  "int32": {name: "int32"},
+                  "int": {name: "int"},
                   "uint":    {name: "uint"},
                   "float":    {name: "float"},
                   "double": {name: "double"},
@@ -121,7 +138,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
    */
   translateToCppCode: function(){
       cCode = "";
-      cCode = this.userData.datatype + "[] array_" + this.getId() + " = {";
+      cCode = this.getOutputPort(0).userData.datatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
       this.getChildren().each(function(childIndex, childObj){
         //protection agains labels with execution order to be interpreted as part of array
         if (childObj.userData != undefined &&
@@ -144,7 +161,11 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   changeDatatypeAllItems: function(newDatatype){
         var newColor = new GraphLang.Utils.Color();
         this.getChildren().each(function(childIndex, childObj){
+
           childObj.setColor(newColor.getByName(newDatatype));
+          childObj.setFontColor(newColor.getByNameFontColor(newDatatype));
+          childObj.setBackgroundColor(newColor.getByNameBackgroundColor(newDatatype));
+
           if (childObj.userData == undefined) childObj.userData = {};
           childObj.userData.datatype = newDatatype;
         });
