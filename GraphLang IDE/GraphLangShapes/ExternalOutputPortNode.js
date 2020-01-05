@@ -3,15 +3,15 @@
  *  @description Thisi s property node for GraphLang.
  */
 //GraphLang.Shapes.ItemsNode.InvokeNode.ExternalOutputPort = GraphLang.Shapes.ItemsNode.InvokeNode.extend({
-GraphLang.Shapes.ExternalOutputPort = draw2d.shape.layout.VerticalLayout.extend({
-	NAME: "GraphLang.Shapes.ExternalOutputPort",
+GraphLang.Shapes.ExternalOutputPortNode = draw2d.shape.layout.VerticalLayout.extend({
+	NAME: "GraphLang.Shapes.ExternalOutputPortNode",
 
     init : function(attr)
     {
     		this._super($.extend({bgColor:"#99ebff", color:"#d7d7d7", stroke:1, radius:3},attr));
 
         this.classLabel = new GraphLang.Shapes.Basic.Label({
-          text:"ExternalOutputPort",
+          text:"ExternalOutputPortNode",
           stroke:1,
           fontColor:"#5856d6",
           radius: this.getRadius(),
@@ -38,11 +38,10 @@ GraphLang.Shapes.ExternalOutputPort = draw2d.shape.layout.VerticalLayout.extend(
 
     },
 		/**
-     * @method
-     * Add an entity to the db shape
-     *
-     * @param {String} txt the label to show
-     * @param {Number} [optionalIndex] index where to insert the entity
+     *	@method addEntity
+     *	@description Add an entity to the db shape
+     *	@param {String} txt the label to show
+     *	@param {Number} [optionalIndex] index where to insert the entity
      */
     addEntity: function(txt, optionalIndex)
     {
@@ -70,6 +69,10 @@ GraphLang.Shapes.ExternalOutputPort = draw2d.shape.layout.VerticalLayout.extend(
 
          input.setName("input_"+label.id);
          //output.setName("output_"+label.id);	//same as before sending values out, sensing them on input
+
+				 input.userData = {};
+				 input.userData.executionOrder = -1;
+				 input.userData.datatype = "undefined";
 
          var _table=this;
          label.on("contextmenu", function(emitter, event){
@@ -121,6 +124,25 @@ GraphLang.Shapes.ExternalOutputPort = draw2d.shape.layout.VerticalLayout.extend(
 	     }
 
 	     return label;
-    }
+    },
+
+		/**
+		 *	@method getInputPorts
+		 * 	@description Get list of all input ports of this object. Input ports are part of labels so they are not direct children of VerticalLayout which is the top most object.
+		 * 	@returns {ArrayList} List of all input ports for this external port. (maybe there would be more than just labels inside vertical layout)
+		 */
+		getInputPorts: function(){
+			var inputPortList = new draw2d.util.ArrayList();
+			this.getChildren().each(function(childIndex, childObj){
+				childObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+					inputPortList.push(inputPortObj);
+				});
+			});
+			return inputPortList;
+		},
+
+		translateToCppCode: function(){
+			return "/* EXTERNAL OUTPUT PORT */\n";
+		}
 
 });

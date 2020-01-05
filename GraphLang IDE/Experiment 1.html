@@ -69,8 +69,8 @@
       <script src="./GraphLangShapes/NumericConstantNode.js"></script>
       <script src="./GraphLangShapes/ArrayNode.js"></script>
       <script src="./GraphLangShapes/ClusterDatatypeNode.js"></script>
-      <script src="./GraphLangShapes/ExternalOutputPort.js"></script>
-      <script src="./GraphLangShapes/ExternalInputPort.js"></script>
+      <script src="./GraphLangShapes/ExternalOutputPortNode.js"></script>
+      <script src="./GraphLangShapes/ExternalInputPortNode.js"></script>
       <script src="./GraphLangShapes/UserCodeBlock.js"></script>
       <script src="./GraphLangShapes/SliderNode.js"></script>
     <!-- End of GraphLang shapes-->
@@ -149,6 +149,7 @@
     <!-- <script src="./GraphLangSchematics/Default Schematic 11.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 12.js"></script> -->
     <!-- <script src="./GraphLangSchematics/Default Schematic 23.js"></script> -->
+    <script src="./GraphLangSchematics/Default Schematic 26.js"></script>
     <script src="./GraphLangSchematics/Default Schematic 27.js"></script>
  <script type="text/javascript">
 
@@ -229,7 +230,20 @@ document.addEventListener("DOMContentLoaded",function () {
        *****************************************************************************/
       var reader = new draw2d.io.json.Reader();
       reader.unmarshal(appCanvas, jsonDocument);
+
+
+
+      appCanvas2 = app.view2;
+      reader.unmarshal(appCanvas2, jsonDocument2);
+
+
+
+
 });
+
+
+
+
 
 /**
  *  This is called on event and serializing canvas into JSON format here to have some results.
@@ -264,7 +278,19 @@ function displayJSON(canvas){
 
    <div id="content">
    		<div id="toolbar"></div>
-   		<div id="canvas" style="width: 1000px; height: 1000px;"></div>
+   		<div id="canvas" style="width: 1000px; height: 600px;"></div>
+      <div id="canvas2" style="width: 1000px; height: 600px;"></div> <!-- Size of bottom window is defined in Application.js -->
+
+      <!--
+       Canvas for screenshots set to not display but it's still here just chane its style attr.
+       -->
+      <div style="display: inline; position: absolute; right: 20px; bottom: 20px; width: 400px; height: 220px; background: none;">
+        <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
+
+        <div id="imgDiv" style="display: inline; overflow: hidden; height: 200px; width: 200px; background: yellow;">
+          <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
+        </div>
+      </div>
    </div>
 
    <div id="navigation" class="">
@@ -306,8 +332,8 @@ function displayJSON(canvas){
       </div>
 
       <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
-      <div data-shape="GraphLang.Shapes.ExternalInputPort" data-width="300" data-height="300" data-label="GraphLang ExternalInputPort" class="palette_node_element draw2d_droppable">ExternalInputPort</div>
-      <div data-shape="GraphLang.Shapes.ExternalOutputPort" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPort" class="palette_node_element draw2d_droppable">ExternalOutputPort</div>
+      <div data-shape="GraphLang.Shapes.ExternalInputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalInputPortNode" class="palette_node_element draw2d_droppable">ExternalInputPortNode</div>
+      <div data-shape="GraphLang.Shapes.ExternalOutputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPortNode" class="palette_node_element draw2d_droppable">ExternalOutputPortNode</div>
       <div data-shape="GraphLang.Shapes.Basic.ClusterDatatypeNode" data-label="GraphLang ClusterDatatypeNode" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
         GraphLang ClusterDatatypeNode
@@ -421,17 +447,6 @@ function displayJSON(canvas){
    <div style="display: none; position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
      Dropped obj: <div id="logitem1"></div>
      Msg: <div id="logitem2"></div>
-   </div>
-
-   <!--
-    Canvas for screenshots set to not display but it's still here just chane its style attr.
-    -->
-   <div style="display: none; position: absolute; left: 220px; bottom: 20px; width: 400px; height: 220px; background: none;">
-     <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
-
-     <div id="imgDiv" style="display: none; overflow: hidden; height: 200px; width: 200px; background: yellow;">
-       <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
-     </div>
    </div>
 
    <!-- window with JSON representation of schematic -->

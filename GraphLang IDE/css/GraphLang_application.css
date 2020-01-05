@@ -13,3 +13,12 @@
   float: left; /*LuboJ*/
   margin: 10px 10px 10px 10px;
 }
+
+#canvas2 {
+ padding:0px;
+ margin:0px;
+/* background-color:#F6F6F6; */
+ background-color: #AAAAAA;
+ float: left;
+ height: 800px;
+}

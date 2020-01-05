@@ -1,4 +1,8 @@
+/*******************************************************************************
+ *  Utils.js by LuboJ
+ */
 
+//auxiliary ArrayList store declaration of some variables or something during translation process
 translateToCppCodeDeclarationArray =  new draw2d.util.ArrayList();
 
 /**
@@ -538,7 +542,31 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
       }
     });
 
-    //FOR MULTILAYER NODES remove executionOrder Label
+    /****************************************************************
+     *  EXTERNAL INPUT Port
+     *  EXTERNAL OUTPUT Port
+     *    - label is child object of VerticalLayout, so execution order label is not directly visible to canvas, but need to be access thorugh parent object
+     *    - remove label with executionOrder
+     ****************************************************************/
+    var externalPortParent = portObj.getParent().getParent();
+    if (
+      (externalPortParent != undefined &&
+       externalPortParent != null) &&
+      (externalPortParent.NAME.toLowerCase().search("externaloutputport") != -1 ||
+       externalPortParent.NAME.toLowerCase().search("externalinputport") != -1)
+    )
+    {
+      externalPortParent.getChildren().each(function(childIndex, childObj){
+        //check if label was placed as execution order, it's written in its user data as datatype
+        if (childObj.NAME.toLowerCase().search("label") >= 0 && childObj.userData != null && childObj.userData.datatype != null && childObj.userData.datatype.search("executionOrder") > -1){
+          externalPortParent.remove(childObj);
+        }
+      });
+    }
+
+    /****************************************************************
+     *  FOR MULTILAYER NODES remove executionOrder Label
+     ****************************************************************/
     multilayerObj = portObj.getParent();
     if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
       multilayerObj.layers.each(function(childIndex, childObj){
@@ -559,7 +587,7 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
 
 
     /**********************************************************************************************************************
-     *          FEEDBACK NODE PORT INITIALIYATION
+     *          FEEDBACK NODE PORT INITIALIZATION
      *           Set port userData.execusionOrder to 1 for input and output so feedback is run at beginning, if there area
      *           no data it will put at output default value, Feedback has to run this way and it's correct.
      *
@@ -1554,6 +1582,7 @@ GraphLang.Utils.getCanvasJson = function(canvas){
 GraphLang.Utils.getCppCode2 = function(canvas){
         var copyElement = document.createElement('textarea');
         cCode = "";
+        translateToCppCodeDeclarationArray.clear();
 
         //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
         GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);

@@ -3,15 +3,15 @@
  *  @description Thisi s property node for GraphLang.
  */
 //GraphLang.Shapes.ItemsNode.InvokeNode.ExternalOutputPort = GraphLang.Shapes.ItemsNode.InvokeNode.extend({
-GraphLang.Shapes.ExternalInputPort = draw2d.shape.layout.VerticalLayout.extend({
-	NAME: "GraphLang.Shapes.ExternalInputPort",
+GraphLang.Shapes.ExternalInputPortNode = draw2d.shape.layout.VerticalLayout.extend({
+	NAME: "GraphLang.Shapes.ExternalInputPortNode",
 
     init : function(attr)
     {
     		this._super($.extend({bgColor:"#99ebff", color:"#d7d7d7", stroke:1, radius:3},attr));
 
         this.classLabel = new GraphLang.Shapes.Basic.Label({
-          text:"ExternalOutputPort",
+          text:"ExternalInputPortNode",
           stroke:1,
           fontColor:"#5856d6",
           radius: this.getRadius(),
@@ -71,6 +71,13 @@ GraphLang.Shapes.ExternalInputPort = draw2d.shape.layout.VerticalLayout.extend({
          //input.setName("input_"+label.id);
          output.setName("output_"+label.id);	//same as before sending values out, sensing them on input
 
+				 label.userData = {};
+				 label.userData.executionOrder = -1;
+				 label.userData.datatype = "undefined";
+				 output.userData = {};
+				 output.userData.executionOrder = -1;
+				 output.userData.datatype = "undefined";
+
          var _table=this;
          label.on("contextmenu", function(emitter, event){
              $.contextMenu({
@@ -121,6 +128,14 @@ GraphLang.Shapes.ExternalInputPort = draw2d.shape.layout.VerticalLayout.extend({
 	     }
 
 	     return label;
-    }
+    },
+
+		translateToCppCodeDeclaration: function(){
+			return "/* EXTERNAL INPUT PORT DECLARATION*/";
+		},
+
+		translateToCppCode: function(){
+			return "/* EXTERNAL INPUT PORT */\n";
+		}
 
 });

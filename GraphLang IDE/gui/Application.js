@@ -20,6 +20,11 @@ example.Application = Class.extend(
     init : function()
     {
 	      this.view    = new example.View("canvas");
+        /*****************************************************************************
+         *  CREATE SECONDCANVAS AND READ SOME AUXILIARY SCHEMATIC FILE
+         *****************************************************************************/
+        this.view2 = new example.View("canvas2");
+
         this.toolbar = new example.Toolbar("toolbar",  this.view );
 
 
@@ -48,14 +53,23 @@ example.Application = Class.extend(
                   spacing_closed:0,
                   size:200,                  // <--- TOOLBAR HEIGHT
 	              paneSelector: "#toolbar"
-	            },
-	            center: {
-	              resizable:false,
-	              closable:false,
-                  spacing_open:0,
-                  spacing_closed:0,
-	              paneSelector: "#canvas"
-	            }
+	          },
+            center: {
+              resizable:false,
+              closable:false,
+              size:200,                  // <--- TOOLBAR HEIGHT
+                spacing_open:0,
+                spacing_closed:0,
+              paneSelector: "#canvas"
+            },
+            south: {                        //<--- LuboJ added auxiliary canvas to be able open and read additional nodes
+              resizable:false,
+              closable:false,
+              size: 350,
+                spacing_open:0,
+                spacing_closed:0,
+              paneSelector: "#canvas2"
+            }
 	       });
 	}
 });
