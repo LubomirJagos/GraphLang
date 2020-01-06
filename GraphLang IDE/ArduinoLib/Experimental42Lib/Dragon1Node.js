@@ -22,6 +22,40 @@ GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node = draw2d.SetFigure.extend({
 
      port.userData = {};
      port.userData.datatype = "int";
+     port.on('contextmenu',function(emitter,event){
+       $.contextMenu({
+           selector: 'body',
+           events:
+           {
+               hide:function(){ $.contextMenu( 'destroy' ); }
+           },
+
+           //these functions are run after user click on some context menu option
+           callback: $.proxy(function(key, options)
+           {
+             switch(key){
+               case "Create Constant":
+                   alert("Clicked on Create Constant on Dragon1Node.");
+                   break;
+               case "Do Something...":
+                   alert("Clicked Do Something... in Dragon1Node so this is doing something.");
+                   break;
+               default:
+                   alert("Clicked on some action but THIS IS DEFAULT, this is where it all goes when key not match name defined in context menu.");
+                   break;
+             }
+           },this),
+           x:event.x,
+           y:event.y,
+           items:
+           {
+               "Create Constant": {name: "Create Constant"},
+               "Do Something...":    {name: "Do Something..."},
+               "separator": "--------------",
+               "Add Something...": {name: "Add Something..."}
+           }
+       });
+     });
 
      // in2
      port = this.addPort(new GraphLang.InputPort(), new draw2d.layout.locator.XYRelPortLocator(2.962962962962963, 69.01408450704224));
