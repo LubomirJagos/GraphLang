@@ -1964,10 +1964,13 @@ GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
           });
     }
   });
+}
 
-
-
-
-
-
+/**
+ *  @method loadSchematic
+ *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic which will be translated into template C++ code as function
+ *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
+ */
+GraphLang.Utils.loadSchematic = function(schematicCanvas){
+  alert("loadSchematic()");
 }

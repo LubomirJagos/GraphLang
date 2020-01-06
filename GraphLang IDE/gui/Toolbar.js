@@ -312,7 +312,7 @@ example.Toolbar = Class.extend({
 		/**
 		*	correctWiresAfterLoad Button
 		*/
-		this.correctWiresAfterLoadButton  = $("<button id=\"correctWiresAfterLoadButton\">correctWiresAfterLoadButton</button>");
+		this.correctWiresAfterLoadButton  = $("<button id=\"correctWiresAfterLoadButton\">correctWiresAfterLoad</button>");
 		this.correctWiresAfterLoadButton.button().click($.proxy(function(){
 			GraphLang.Utils.correctWiresAfterLoad(appCanvas);
 		}));
@@ -321,7 +321,7 @@ example.Toolbar = Class.extend({
 		/**
 		*	selectedLoopShowAboardFigures Button
 		*/
-		this.selectedLoopShowAboardFiguresButton  = $("<button id=\"selectedLoopShowAboardFiguresButton\">selectedLoopShowAboardFiguresButton</button>");
+		this.selectedLoopShowAboardFiguresButton  = $("<button id=\"selectedLoopShowAboardFiguresButton\">selectedLoopShowAboardFigures</button>");
 		this.selectedLoopShowAboardFiguresButton.button().click($.proxy(function(){
 			GraphLang.Utils.selectedLoopShowAboardFigures(appCanvas);
 		}));
@@ -330,7 +330,7 @@ example.Toolbar = Class.extend({
 		/**
 		*	correctMultilayeredAfterLoad Button
 		*/
-		this.correctMultilayeredAfterLoadButton  = $("<button id=\"correctMultilayeredAfterLoadButton\">correctMultilayeredAfterLoadButton</button>");
+		this.correctMultilayeredAfterLoadButton  = $("<button id=\"correctMultilayeredAfterLoadButton\">correctMultilayeredAfterLoad</button>");
 		this.correctMultilayeredAfterLoadButton.button().click($.proxy(function(){
 			GraphLang.Utils.correctMultilayeredAfterLoad(appCanvas);
 		}));
@@ -339,11 +339,20 @@ example.Toolbar = Class.extend({
 		/**
 		*	getCppCode2_2nd_canvas Button
 		*/
-		this.getCppCode2_2nd_canvasButton  = $("<button id=\"getCppCode2_2nd_canvasButton\">getCppCode2_2nd_canvasButton</button>");
+		this.getCppCode2_2nd_canvasButton  = $("<button id=\"getCppCode2_2nd_canvasButton\">getCppCode2_2nd_canvas</button>");
 		this.getCppCode2_2nd_canvasButton.button().click($.proxy(function(){
 			GraphLang.Utils.getCppCode2(appCanvas2);
 		}));
 		this.html.append(this.getCppCode2_2nd_canvasButton);
+
+		/**
+		*	getCppCode2_2nd_canvas Button
+		*/
+		this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
+		this.loadSchematicButton.button().click($.proxy(function(){
+			GraphLang.Utils.loadSchematic(appCanvas2);
+		}));
+		this.html.append(this.loadSchematicButton);
 	},
 
 	/**
