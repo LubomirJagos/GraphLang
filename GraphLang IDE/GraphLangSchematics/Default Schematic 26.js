@@ -1,4 +1,4 @@
-var jsonDocument = [
+var jsonDocument2 = [
   {
     "type": "GraphLang.Shapes.Basic.Loop.WhileLoop",
     "id": "86e1758e-267d-6aca-4c82-18c205be91ff",

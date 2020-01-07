@@ -1967,10 +1967,41 @@ GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
 }
 
 /**
+ *  @method readSingleFile
+ *  @param {HTMLInputFileTag} e Javascript object for input file tag placed somewhere in toolbar or else.
+ *  @description Registered on some file input, at it change it will read chosen file and display its content.
+ */
+GraphLang.Utils.readSingleFile = function(e){
+  var file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var contents = e.target.result;
+    GraphLang.Utils.displayContents(contents);
+  };
+  reader.readAsText(file);
+}
+
+/**
+ *  @method displayContents
+ *  @param {String} content String content to display
+ *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
+ */
+GraphLang.Utils.displayContents = function(contents){
+/*
+  var element = document.getElementById('file-content');
+  element.textContent = contents;
+*/
+  alert(contents);
+}
+
+/**
  *  @method loadSchematic
  *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic which will be translated into template C++ code as function
  *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
  */
 GraphLang.Utils.loadSchematic = function(schematicCanvas){
-  alert("loadSchematic()");
+
 }

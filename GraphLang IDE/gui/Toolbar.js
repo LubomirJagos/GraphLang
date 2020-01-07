@@ -348,11 +348,14 @@ example.Toolbar = Class.extend({
 		/**
 		*	getCppCode2_2nd_canvas Button
 		*/
-		this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
+		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
+		//
+		this.loadSchematicButton  = $('<input type="file" id="file-input" />');
 		this.loadSchematicButton.button().click($.proxy(function(){
 			GraphLang.Utils.loadSchematic(appCanvas2);
 		}));
 		this.html.append(this.loadSchematicButton);
+		document.getElementById('file-input').addEventListener('change', GraphLang.Utils.readSingleFile, false);
 	},
 
 	/**
