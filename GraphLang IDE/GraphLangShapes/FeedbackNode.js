@@ -227,22 +227,46 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
     },
 
     translateToCppCode: function(){
-      var in1 = this.getInputPort("in1");
-      if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
-      var in2 = this.getInputPort("in2");
-      if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
+      //get all necessary port to have more readable code
+      var out0 = this.getOutputPort(0);                               //for right numbering have to take look at init part and think how numbers are :)
+      var in0 = this.getInputPort(0);
+      var inDefault = this.getInputPort(1);
+      var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+      in0.userData.datatype = feedbackDatatype;
+      out0.userData.datatype = feedbackDatatype;
 
-      var out1 = this.getOutputPort("out1");
-      if (out1.getConnections().getSize() > 0) out1 = "wire_" + out1.getConnections().get(0).getId();
-      else out1 = "/*out1 default value*/";
+      cCode = "";
 
-      /*
-       *  in1 = wire with delayed input value
-       *  in2 = wire with default value
-       *  in1 = outputwire
-       */
-      cCode = "/* FEEDBACK NODE */";
+      //assign default value to feeback node value, this is little fiddling with C/C++ preprocessor
+      cCode += "#ifndef feedbackNodeFlag_" + this.getId() + "\n";
+      cCode += "\t#define feedbackNodeFlag_" + this.getId() + "\n";
+      cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + inDefault.getConnections().get(0).getId() + ";\n";
+      cCode += "#endif\n";
+
+      //assign output value to output wire
+      feedbackObj = this;
+      out0.getConnections().each(function(wireIndex, wireObj){
+        cCode += "wire_" + out0.getConnections().get(0).getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
+      });
+
+      //assign input value for feedback node value, this makes buffer effect
+      cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + in0.getConnections().get(0).getId() + ";\n";
+
+      return cCode;
+    },
+
+    /**
+     *  @name getDeclaration
+     *  @desc Just feedback declaration to define its datatype.
+     *  @returns {String} C code string, each line is finished with newline symbol \n
+     */
+    translateToCppCodeDeclaration:function(){
+      cCode = "";
+      var inDefault = this.getInputPort(1);
+      var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+      cCode += feedbackDatatype + " feedBackNode_" + this.getId() + ";\n";
 
       return cCode;
     }
+
 });

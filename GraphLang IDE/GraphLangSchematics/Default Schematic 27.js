@@ -1,4 +1,4 @@
-var jsonDocument = [
+userDefinedSchematics["Default Schematic 27.js"] = [
   {
     "type": "GraphLang.Shapes.Basic.SliderNode",
     "id": "8c6c2c78-09ee-2096-e1be-ecaee80a8608",

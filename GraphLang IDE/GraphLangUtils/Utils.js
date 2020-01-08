@@ -1245,6 +1245,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           /*
            *  DOESN'T TRANSCRIPT NODE IF INSIDE ANY CLUSTER
            *  DOESN'T TRANSCRIPT NODE IF INSIDE MULTILAYER (case)
+           *  DOESN'T TRANSCRIPT NODE IF NOT ... ON TOP LAYER
            *  Transcript node into code just in case it's not inside cluster, otherwise do nothing.
            */
           var isNodeInCluster = false;
@@ -1252,8 +1253,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
           });
           if (!isNodeInCluster){
-            cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
-            if (nodeObj.translateToCppCodeDeclaration != undefined) translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
+              cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
+              if (nodeObj.translateToCppCodeDeclaration != undefined) translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
 /*
             if (GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj) == null){
               cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
@@ -1612,6 +1613,7 @@ GraphLang.Utils.getCppCode2 = function(canvas){
          var template_cCode = "";
         template_cCode += "#define error int\n";
         template_cCode += "#define int32 int\n";
+        template_cCode += "#define undefined int\n";
         template_cCode += "#define uint unsigned int\n";
         template_cCode += this.getCppCodeDeclaration() + "\n";
         template_cCode += "void setup() {\n";
@@ -1978,10 +1980,10 @@ GraphLang.Utils.readSingleFile = function(e){
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    var contents = e.target.result;
-    GraphLang.Utils.displayContents(contents);
+    var contents = e.target.result;             //result is read
+    GraphLang.Utils.displayContents(contents);  //display as alert
   };
-  reader.readAsText(file);
+  reader.readAsText(file);  //this will put resalt into internal variable named result
 }
 
 /**
@@ -1994,7 +1996,18 @@ GraphLang.Utils.displayContents = function(contents){
   var element = document.getElementById('file-content');
   element.textContent = contents;
 */
-  alert(contents);
+  var element = document.getElementById('file-input');
+  var fileName = element.value.split("\\").pop();
+  var schematicName = fileName.split(".")[0];  //no extension
+
+//  alert(contents);
+
+  //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
+  eval(contents);
+  appCanvas.clear();
+  var reader = new draw2d.io.json.Reader();
+  reader.unmarshal(appCanvas, userDefinedSchematics[fileName]);
+  alert(schematicName);
 }
 
 /**
