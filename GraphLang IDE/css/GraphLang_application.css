@@ -14,11 +14,17 @@
   margin: 10px 10px 10px 10px;
 }
 
+/*
+ *  This is here because this should take efect on IDE look but now it seems it's not possible to change height, don't know why
+ */
+#canvas{
+}
+
 #canvas2 {
  padding:0px;
  margin:0px;
 /* background-color:#F6F6F6; */
  background-color: #AAAAAA;
  float: left;
- height: 800px;
+ height: 200px; /* LuboJ, not sure if this has really effect, more effect about #canvas2 is in javascript setting in Application.js */
 }

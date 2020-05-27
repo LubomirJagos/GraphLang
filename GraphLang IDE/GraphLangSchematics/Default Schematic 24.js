@@ -1,4 +1,4 @@
-userDefinedSchematics["Default Schematic 24.js"] = [
+var jsonDocument = [
   {
     "type": "draw2d.shape.basic.Rectangle",
     "id": "jalihouseLayerProtection0",

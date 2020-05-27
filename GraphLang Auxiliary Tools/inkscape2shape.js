@@ -1,5 +1,10 @@
-//LuboJ
-//copied from internet: https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string
+/*
+  @author LuboJ
+  - copied from internet: https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string
+
+  @description This will take path from inkscape and shows it as vertices coordinates in inkscape2shape.html
+  This script was created to copy path drawn in inkscape and convert it into format suitable for GraphLang symbol.
+*/
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;

@@ -2000,21 +2000,22 @@ GraphLang.Utils.displayContents = function(contents){
   var fileName = element.value.split("\\").pop();
   var schematicName = fileName.split(".")[0];  //no extension
 
-//  alert(contents);
+  alert(contents);
 
   //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
-  eval(contents);
+  eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
   appCanvas.clear();
   var reader = new draw2d.io.json.Reader();
-  reader.unmarshal(appCanvas, userDefinedSchematics[fileName]);
+  reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+  this.initAllPortToDefault();  //this must be here, without this canvas behave non/standard, it's not possible to remove wires etc.
   alert(schematicName);
 }
 
 /**
  *  @method loadSchematic
- *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic which will be translated into template C++ code as function
- *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
+ *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
+ *  @description This function run directly after click on button "choose file"
  */
 GraphLang.Utils.loadSchematic = function(schematicCanvas){
-
+  //DO NOTHING this is triggered after click on "Coose File"
 }

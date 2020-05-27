@@ -1,4 +1,4 @@
-userDefinedSchematics["Default Schematic 29.js"] = [
+var jsonDocument = [
     {
       "type": "GraphLang.Shapes.Basic.Loop.WhileLoop",
       "id": "80402980-48e2-9576-8e07-aa5881030e9f",

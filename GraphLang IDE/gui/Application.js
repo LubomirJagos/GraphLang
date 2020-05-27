@@ -65,7 +65,7 @@ example.Application = Class.extend(
             south: {                        //<--- LuboJ added auxiliary canvas to be able open and read additional nodes
               resizable:false,
               closable:false,
-              size: 350,
+              size: 100,
                 spacing_open:0,
                 spacing_closed:0,
               paneSelector: "#canvas2"
