@@ -346,7 +346,7 @@ example.Toolbar = Class.extend({
 		this.html.append(this.getCppCode2_2nd_canvasButton);
 
 		/**
-		*	getCppCode2_2nd_canvas Button
+		*	loadSchematic Button
 		*/
 		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
 		//
@@ -365,6 +365,15 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.saveSchematic(appCanvas, 'GraphLang_Schematic', 'text/javascript');
 		}));
 		this.html.append(this.saveSchematicButton);
+
+		/**
+		*	showUserData Button
+		*/
+		this.showUserDataButton  = $("<button id=\"showUserDataButton\">showUserData</button>");
+		this.showUserDataButton.button().click($.proxy(function(){
+			GraphLang.Utils.showUserData(appCanvas);
+		}));
+		this.html.append(this.showUserDataButton);
 	},
 
 	/**

@@ -1536,10 +1536,12 @@ GraphLang.Utils.getSelectedLoopTunnelCount = function setWiresColorByPorts(canva
 /**
  * @method getCanvasJson
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @returns {String} jsonStr
  * @description For selected loop show number of tunnels.
  */
 GraphLang.Utils.getCanvasJson = function(canvas){
   var writer = new draw2d.io.json.Writer();
+  var jsonStr = '';
   writer.marshal(canvas,function(json){
       var clearedJson = [];
       var wrongJson = [];
@@ -1568,11 +1570,14 @@ GraphLang.Utils.getCanvasJson = function(canvas){
       var copyElement = document.createElement('textarea');
 
       copyElement.innerHTML= "var jsonDocument = " + jsonStr + ";";
+      jsonStr = copyElement.innerHTML;
       copyElement = document.body.appendChild(copyElement);
       copyElement.select();
       document.execCommand('copy');
       copyElement.remove();
   });
+
+  return jsonStr;
 }
 
 /**
@@ -2032,7 +2037,7 @@ GraphLang.Utils.loadSchematic = function(schematicCanvas){
  *  @description Download current schematic as txt file with provided name.
  */
 GraphLang.Utils.saveSchematic = function(canvas, filename, type) {
-    data = GraphLang.Utils.getCppCode2(canvas, false);
+    data = GraphLang.Utils.getCanvasJson(canvas);
 
     var file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -2049,4 +2054,18 @@ GraphLang.Utils.saveSchematic = function(canvas, filename, type) {
             window.URL.revokeObjectURL(url);
         }, 0);
     }
+}
+
+/**
+ *  @method showUserData
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Show userData of current selected object.
+ */
+GraphLang.Utils.showUserData = function(canvas) {
+  canvas.getSelection().each(function(selectionIndex, selectionObj){
+    var htmlStr = $('logitem2').html();
+    htmlStr += JSON.stringify(selectionObj.getUserData()) + '\n';
+    $('logitem2').html(htmlStr);
+    alert(selectionObj.getUserData());
+  });
 }
