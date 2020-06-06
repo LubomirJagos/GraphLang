@@ -1578,9 +1578,11 @@ GraphLang.Utils.getCanvasJson = function(canvas){
 /**
  * @method getCppCode2
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @param {bool} showCodee - if true there is code showed in alert message after click on button
+ * @returns {String} C/C++ code as string
  * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
  */
-GraphLang.Utils.getCppCode2 = function(canvas){
+GraphLang.Utils.getCppCode2 = function(canvas, showCode = true){
         var copyElement = document.createElement('textarea');
         cCode = "";
         translateToCppCodeDeclarationArray.clear();
@@ -1647,7 +1649,9 @@ GraphLang.Utils.getCppCode2 = function(canvas){
         document.execCommand('copy');
         copyElement.remove();
 
-        alert(cCode); //DEBUG show code in alert message
+        if (showCode) alert(cCode); //DEBUG show code in alert message
+
+        return cCode; //return C/C++ code as string
 }
 
 
@@ -2018,4 +2022,31 @@ GraphLang.Utils.displayContents = function(contents){
  */
 GraphLang.Utils.loadSchematic = function(schematicCanvas){
   //DO NOTHING this is triggered after click on "Coose File"
+}
+
+/**
+ *  @method saveSchematic
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @param {String} filename
+ *  @param {String} type
+ *  @description Download current schematic as txt file with provided name.
+ */
+GraphLang.Utils.saveSchematic = function(canvas, filename, type) {
+    data = GraphLang.Utils.getCppCode2(canvas, false);
+
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
 }

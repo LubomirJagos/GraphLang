@@ -356,6 +356,15 @@ example.Toolbar = Class.extend({
 		}));
 		this.html.append(this.loadSchematicButton);
 		document.getElementById('file-input').addEventListener('change', GraphLang.Utils.readSingleFile, false);
+
+		/**
+		*	saveSchematic Button
+		*/
+		this.saveSchematicButton  = $("<button id=\"saveSchematicButton\">saveSchematic</button>");
+		this.saveSchematicButton.button().click($.proxy(function(){
+			GraphLang.Utils.saveSchematic(appCanvas, 'GraphLang_Schematic', 'text/javascript');
+		}));
+		this.html.append(this.saveSchematicButton);
 	},
 
 	/**
