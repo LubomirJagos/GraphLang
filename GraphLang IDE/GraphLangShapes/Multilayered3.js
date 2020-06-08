@@ -7,8 +7,8 @@
  *  detected tunnels on their borders and just one tunnels for common loop would be
  *  generated.
  */
-GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop.Multilayered",
+GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend({
+  NAME: "GraphLang.Shapes.Basic.Loop.Multilayered3",
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
   //   executionOdrder: -1,
@@ -29,28 +29,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.setStroke(2);
 
     /**********************************************************************************
-     *  LAYER SELECTOR
-     **********************************************************************************/
-    this.renewLayerSelector();
-
-    /**********************************************************************************
      *  LAYERS
      **********************************************************************************/
-
-    //PROTECTIVE RECTANGLE
-    var rect0 = new draw2d.shape.basic.Rectangle();
-    rect0.setWidth(this.getWidth()-4);
-    rect0.setHeight(this.getHeight()-4);
-    rect0.setColor(new GraphLang.Utils.Color("#000000"));
-    rect0.setBackgroundColor(new GraphLang.Utils.Color("#FFFFFF"));
-    rect0.setId("multilayered_"+ this.getId() + "_jailhouseLayerProtection0");
-    rect0.userData = {};
-    rect0.userData.multilayeredOwner = this.getId();
-    //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
-    //this.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));
-    appCanvas.add(rect0, new draw2d.layout.locator.XYAbsPortLocator(0,0));    //NOT SURE IF COORDS HAS SOME INFLUENCE, IT WAS RUNNING EVEN WITH POSITION 20,20
-    rect0.toBack();
-    this.rect0 = rect0;
 
     this.setParent(null);
 
@@ -63,14 +43,16 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     this.addLayer();
     this.addLayer();
 */
-    this.addLayer();
+    //this.addLayer();
 
     /**********************************************************************************
      *  LAYER SELECTOR
      **********************************************************************************/
 
-    // this.layerChooser = new draw2d.shape.basic.Label({text: "..choose layer.."});
+    //this.layerChooser = new GraphLang.Shapes.Basic.LayerChooser();
+    //this.add(this.layerChooser, new draw2d.layout.locator.TopLocator(this));
     this.renewLayerChooser();
+    //this.renewLayerSelector();  //NOT WORKING WHEN LOADING FROM FILE
 
     //USER DATA/
     this.userData = {};
@@ -103,7 +85,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     }
 
     this.layerChooser = new draw2d.shape.basic.Label();
-    this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+    //there is no layer 0 in constructor so this is not used now //this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+    this.layerChooser.setText('none');  //after place structure into diagram, it's layer selector is set to has name as layer 0.
     //CLICK ON LAYER NAME AT TOP OF MULTILAYER STRUCTURE WHERE ARE THEIR NAMES
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
@@ -129,17 +112,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
         layerObj.setX(emitter.getX()+2);
         layerObj.setY(emitter.getY()+2);
       });
-      emitter.rect0.setWidth(emitter.getWidth()-4);
-      emitter.rect0.setHeight(emitter.getHeight()-4);
-      emitter.rect0.setX(emitter.getX()+2);
-      emitter.rect0.setY(emitter.getY()+2);
     });
 
     this.on("show", function(emitter){
       emitter.moveActiveLayer();
     });
-
-    this._onDragStart = this.onDragStart;
 
   },
 
@@ -207,64 +184,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       layerObj.setSelectable(false);
       layerObj.setDraggable(false);
     });
-// layers and protective rectangle are on 0,0 coords relative to parent, so this IS NOT USED INTENTIONALLY
-    this.rect0.setX(x+2);
-    this.rect0.setY(y+2);
-    this.rect0.setWidth(width-4);
-    this.rect0.setHeight(height-4);
-    this.rect0.setSelectable(false);
-    this.rect0.setDraggable(false);
-  },
-
-  onDragStart: function(x,y,shiftKey, ctrlKey){
-    this.rect0.toFront(); //LuboJ, this is what I added here I must copy whole code, because don't know how to call original overloaded function
-
-    this.isInDragDrop =false;
-
-    // Check whenever the figures has a drag-handle. Allow drag&drop
-    // operation only if the x/y is inside this area.
-    //
-    // @since 5.6.0
-    var bbox = this.getHandleBBox();
-    if(bbox!==null && bbox.translate(this.getAbsolutePosition().scale(-1)).hitTest(x,y)===false){
-        // design failure: we must catch the figure below the mouse to forward
-        // the panning event to this figure. Special handling to provide sliders
-        // and other UI elements which requires the panning event. Hack.
-        this.panningDelegate = this.getBestChild(this.getX()+x,this.getY()+y);
-        if(this.panningDelegate!==null){
-            // transform x/y relative to the panning figure and request the dragStart event
-            this.panningDelegate.onDragStart(x-this.panningDelegate.x, y-this.panningDelegate.y, shiftKey, ctrlKey);
-        }
-        return false;
-    }
-
-    this.command = this.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.MOVE));
-
-    if(this.command!==null){
-       this.ox = this.getX();
-       this.oy = this.getY();
-       this.isInDragDrop =true;
-
-       // notify all installed policies
-       //
-       var _this = this;
-       var canStartDrag = true;
-
-       this.editPolicy.each(function(i,e){
-           if(e instanceof draw2d.policy.figure.DragDropEditPolicy){
-               canStartDrag = canStartDrag && e.onDragStart(_this.canvas, _this, x,y,shiftKey,ctrlKey);
-           }
-       });
-
-        if(canStartDrag) {
-            // fire an event
-            // @since 5.3.3
-            this.fireEvent("dragstart", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
-        }
-        return canStartDrag;
-    }
-
-    return false;
   },
 
   /**
@@ -277,22 +196,25 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     var layerObjects = this.layers.get(this.activeLayer).getChildren();
     var activeLayer = this.layers.get(this.activeLayer);
     activeLayer.toFront();
+/*
     activeLayer.getChildren().each(function(childIndex, childObj){
       childObj.toFront();
     });
-
+*/
     this.bringsAllTunnelsToFront();
 
     this.layerChooser.setText(this.layers.get(this.activeLayer).userData.layerText);
   },
 
+/* THIS CAUSED WRONG BEHAVE, AFTER PLACE MULTILAYER STRUCTURE ON CANVAS WASN'T POSSIBLE TO PLACE OTHER NODE THEY WERE DISAPPEARING
+   ALSO MAYBE BECAUSE AT BEGINNING THERE IS NO LAYER SO THIS HAS NO OBJECT WHICH IS ACTING ON
   onDragEnd: function(x,y,shiftKey, ctrlKey){
     this.moveActiveLayer();
 
-    this.rect0.toBack();                                      //hide protection
     var activeLayer = this.layers.get(this.activeLayer);      //set active layer to front
     activeLayer.toFront();
   },
+*/
 
   /**
    * @name bringsAllTunnelsToFront
@@ -412,12 +334,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
           curDatatype = json.type;
           if (curDatatype.toLowerCase().search("tunnel") > -1){
             var msg = JSON.stringify(json);
-            //alert("tunnel:" + msg);
           }
 
           var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
           figure.attr(json);                                                                            // apply all attributes
-          var locator =  eval("new "+json.locator+"()");     // instantiate the locator
+          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
@@ -426,7 +347,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
           var figure =  eval("new "+json.type+"()");
           figure.setId(json.id);                                                    // create the figure stored in the JSON
           figure.attr(json);                                                                            // apply all attributes
-          var locator =  eval("new "+json.locator+"(-0.7, 10)");     // instantiate the locator
+          //var locator =  eval("new "+json.locator+"(-0.7, 10)");     // instantiate the locator
+          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
@@ -470,8 +392,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
     //var newLayer = new draw2d.shape.composite.Jailhouse();
     var newLayer = new GraphLang.Shapes.Basic.Jailhouse();
 
-    newLayer.setWidth(this.getWidth()-4);
-    newLayer.setHeight(this.getHeight()-4);
+    newLayer.setWidth(this.getWidth()-10);
+    newLayer.setHeight(this.getHeight()-10);
     newLayer.setColor(new GraphLang.Utils.Color("#eb34c6"));  //layer border color
 
     newLayer.setBackgroundColor(new GraphLang.Utils.Color("#eb34c6"));
@@ -494,7 +416,6 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
       layerId = "0";                      //first element to be create has numebr 0
     }
     newLayer.setId("multilayered_" + this.getId() + "_jailhouseLayer" + layerId);                   //generate uniqe layer id based on its order, FOR NOW IT'S NOT CORRECT WAY, ERROR NEEDS TO BE REPAIRED, ie when user add 3 layers and remove 2, then add, there could be problem
-    //newLayer.setComposite(this);
 
     /*
      *  GraphLang Jailhouse has it's translation function inside object!
@@ -504,7 +425,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered = GraphLang.Shapes.Basic.Loop.extend({
 
     //ELEMENTS MUST BE ADDED TO CANVAS TO BE ABLE CATCH NODES WHEN PLACED INTO THEM
     //this.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
-    appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX(), this.getAbsoluteY()));
+    appCanvas.add(newLayer, new draw2d.layout.locator.XYAbsPortLocator(this.getAbsoluteX()+5, this.getAbsoluteY()+5));
+    this.assignFigure(newLayer);
 
     //newLayer._onDragStart = this.onDragStart; //WRONG
 

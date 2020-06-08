@@ -724,9 +724,15 @@ GraphLang.Utils.getNodeLoopOwner = function(canvas, nodeObj){
   loopList.each(function(loopIndex, loopObj){
     if (loopObj.NAME.toLowerCase().search("multilayered") == -1 ||  //decision if dealing with multilayered loop, also need to think about layers of multilayered that reason why jailhouse is here also
         loopObj.NAME.toLowerCase().search("jailhouse") == -1){
-      if (loopObj != nodeObj && loopObj.getAboardFigures().contains(nodeObj)){        //comparison for one layer loop
+
+      if (loopObj != nodeObj && typeof loopObj.getAboardFigures !== "undefined" && loopObj.getAboardFigures().contains(nodeObj)){        //comparison for one layer loop
         nodeParentLoop = loopObj;
+      }else{
+        if (loopObj != nodeObj && typeof loopObj.getAssignedFigures !== "undefined" && loopObj.getAssignedFigures().contains(nodeObj)){        //comparison for one layer loop
+          nodeParentLoop = loopObj;
+        }
       }
+
     }else{
       loopObj.getAllLayers().each(function(layerIndex, layerObj){
         if (layerObj != nodeObj && layerObj.getAssignedFigures().contains(nodeObj)){
@@ -1319,7 +1325,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
   canvas.getFigures().each(function(loopIndex, loopObj){
     if (loopObj.NAME.toLowerCase().search("loop") >= 0 &&
-        loopObj.NAME.toLowerCase().search("multilayered") == -1){
+        loopObj.NAME.toLowerCase().search("multilayered") == -1 &&
+        loopObj.NAME.toLowerCase().search("whilelayer") == -1){
           loopObj.getAboardFigures(true);
     }
   });
@@ -1419,14 +1426,27 @@ GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas,
 
   //go through all loops and write into their abroad lines that it's their parent
   allLoops.each(function(loopIndex, loopObj){
-    loopObj.getAboardFigures().each(function(aboardFigureIndex, aboardFigureObj){
-      aboardFigureObj.getPorts().each(function(portIndex, portObj){
-        portObj.getConnections().each(function(connectionIndex, connectionObj){
-          if (connectionObj.userData == null) connectionObj.userData = {};
-          connectionObj.userData.wireOwnerId = loopObj.getId();
+
+    //loop is implemented as raft or jailhouse, so there are two different functions for getting aboard objects
+    if (typeof loopObj.getAboardFigures !== "undefined"){
+      loopObj.getAboardFigures().each(function(aboardFigureIndex, aboardFigureObj){
+        aboardFigureObj.getPorts().each(function(portIndex, portObj){
+          portObj.getConnections().each(function(connectionIndex, connectionObj){
+            if (connectionObj.userData == null) connectionObj.userData = {};
+            connectionObj.userData.wireOwnerId = loopObj.getId();
+          });
         });
       });
-    });
+    }else{
+      loopObj.getAssignedFigures().each(function(aboardFigureIndex, aboardFigureObj){
+        aboardFigureObj.getPorts().each(function(portIndex, portObj){
+          portObj.getConnections().each(function(connectionIndex, connectionObj){
+            if (connectionObj.userData == null) connectionObj.userData = {};
+            connectionObj.userData.wireOwnerId = loopObj.getId();
+          });
+        });
+      });
+    }
   });
 
   //go thorugh all wires and push that which has right parent
@@ -1992,7 +2012,7 @@ GraphLang.Utils.readSingleFile = function(e){
     var contents = e.target.result;             //result is read
     GraphLang.Utils.displayContents(contents);  //display as alert
   };
-  reader.readAsText(file);  //this will put resalt into internal variable named result
+  reader.readAsText(file);  //this will put result into internal variable named result
 }
 
 /**
@@ -2015,8 +2035,25 @@ GraphLang.Utils.displayContents = function(contents){
   eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
   appCanvas.clear();
   var reader = new draw2d.io.json.Reader();
+
+  //need to do put connection into separate list and create them after all fgures are created to have phzsically on canvas ports to have place for them
+  //var connectionList = new draw2d.utils.ArrayList
+
   reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
-  this.initAllPortToDefault();  //this must be here, without this canvas behave non/standard, it's not possible to remove wires etc.
+  //just for now, uncomment in future //this.initAllPortToDefault();  //this must be here, without this canvas behave non/standard, it's not possible to remove wires etc.
+
+  //here are composite object repaired, they are assigned back to their ownership
+  var allFigures = appCanvas.getFigures();
+  allFigures.each(function(figureIndex, figureObj){
+    //if (figureObj.getComposite)
+    if (figureObj.NAME.toLowerCase().search('multilayered') != -1){
+      figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+        figureObj.layers.push(assignedFigureObj);
+      });
+      figureObj.renewLayerChooser();
+    }
+  });
+
   alert(schematicName);
 }
 

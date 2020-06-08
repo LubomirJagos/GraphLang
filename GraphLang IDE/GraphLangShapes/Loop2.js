@@ -4,8 +4,8 @@
  *  declaration, inside wires declaration, right tunnels declaration.
  */
 
-GraphLang.Shapes.Basic.Loop = draw2d.shape.composite.Raft.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop",
+GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
+  NAME: "GraphLang.Shapes.Basic.Loop2",
   constructor(obj){
     obj && Object.assign(this, obj);
   },
