@@ -37,6 +37,13 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     });
     return output;
   },
+  getPort: function(id){
+    var port;
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.getPort(id) != null) port = childObj.getPort(id);
+    });
+    return port;
+  },
   getUserData: function(){
     return this.userData;
   },

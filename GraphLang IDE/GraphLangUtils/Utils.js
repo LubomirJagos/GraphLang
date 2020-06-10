@@ -451,7 +451,9 @@ GraphLang.Utils.detectTunnels = function(canvas){
 
            var oldSource = intersectedLines[k+i].getSource();
            intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
-           var additionalConnection = createConnection();
+
+           //var additionalConnection = createConnection();
+           var additionalConnection = new HoverConnection();
            additionalConnection.setSource(oldSource);
            additionalConnection.setTarget(tunnelObj.getInputPort(0));
            appCanvas.add(additionalConnection);
@@ -2029,8 +2031,6 @@ GraphLang.Utils.displayContents = function(contents){
   var fileName = element.value.split("\\").pop();
   var schematicName = fileName.split(".")[0];  //no extension
 
-  alert(contents);
-
   //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
   eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
   appCanvas.clear();
@@ -2053,8 +2053,6 @@ GraphLang.Utils.displayContents = function(contents){
       figureObj.renewLayerChooser();
     }
   });
-
-  alert(schematicName);
 }
 
 /**

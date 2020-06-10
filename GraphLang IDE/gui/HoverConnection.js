@@ -1,5 +1,5 @@
 HoverConnection = draw2d.Connection.extend({
-
+    NAME: "HoverConnection",
     init: function ( sourcePort, targetPort) {
         var self = this;
         this._super({
@@ -147,18 +147,7 @@ HoverConnection = draw2d.Connection.extend({
        }
 */
 
-        if(memento.type.toLowerCase().arch("connection") > -1){
-            //this.setTarget(this.getCanvas().getFigure(memento.target.tunnel).getInputPort(0));
-            //this.getCanvas().getFigures().each();
-            alert("memento multi found");
-        }
-
   }
-
-
-
-
-
 
 
 });

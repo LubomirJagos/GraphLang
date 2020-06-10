@@ -374,6 +374,7 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.showUserData(appCanvas);
 		}));
 		this.html.append(this.showUserDataButton);
+
 	},
 
 	/**
