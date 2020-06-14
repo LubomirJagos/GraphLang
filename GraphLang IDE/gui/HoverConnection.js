@@ -23,9 +23,10 @@ HoverConnection = draw2d.Connection.extend({
             self.attr({
                 outlineColor: "#303030",
                 outlineStroke: 0,
-                // color: "#000000"   //LuboJ. wire color must remain same after edit
+                //color: "#000000"   //LuboJ. wire color must remain same after edit
             });
         });
+
     },
 
     /**

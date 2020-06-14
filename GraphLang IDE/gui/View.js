@@ -76,7 +76,11 @@ example.View = draw2d.Canvas.extend({
 				// but here called, because these nodes are composed from more layers and they don''t know
 				// at init time position where on canvas  should be placed so they were before placed at 0,0
 				// what is worng
-				if (type.toLowerCase().search("multilayered") >= 0) figure.moveActiveLayer();
+				if (type.toLowerCase().search("multilayered") >= 0){
+					//figure.moveActiveLayer();	//NOT USED ANYMORE, MULTILAYER IS JAILHOUSE NOW
+					figure.addLayer();
+					figure.switchActiveLayer();
+				}
 
 				$("#logitem1").html("Obj type: " + type);
 

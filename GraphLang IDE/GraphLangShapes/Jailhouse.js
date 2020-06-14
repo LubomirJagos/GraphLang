@@ -42,7 +42,7 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();
     leftTunnelsWires.each(function(connectionIndex, connectionObj){
       if (layerFigures.contains(connectionObj.getTarget().getParent())){
-        cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getId() + ";\n";
+        cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";  //to get tunnel ID first I got port from wire source and its parent is tunnel
       }
     });
 
@@ -62,7 +62,9 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
 
     //3rd translate figures inside layer
     layerFigures.each(function(figureIndex, figureObj){
-      if (figureObj.NAME.toLowerCase().search("loop") > -1){
+      if (figureObj.NAME.toLowerCase().search("loop") > -1 &&
+          figureObj.NAME.toLowerCase().search("multilayered") == -1){
+        //cCode += figureObj.getTunnelsDeclarationCppCode();  //NOT NEEDED!
         cCode += figureObj.translateToCppCode() + "\n";
         cCode += figureObj.translateToCppCodePost() + "\n";                   //because translating loop adding end of loop code
       }else if (figureObj.NAME.toLowerCase().search("connection") == -1){

@@ -4,6 +4,7 @@
 
 //auxiliary ArrayList store declaration of some variables or something during translation process
 translateToCppCodeDeclarationArray =  new draw2d.util.ArrayList();
+lastCreatedConnection = null;
 
 /**
  *  @class GraphLang.Utils
@@ -184,7 +185,8 @@ GraphLang.Utils.goThroughGraph = function(canvas){
  */
 var createConnection=function(sourcePort, targetPort){
 
-    var conn= new draw2d.Connection({
+    //var conn= new draw2d.Connection({
+    var conn= new HoverConnection({
         router:new draw2d.layout.connection.InteractiveManhattanConnectionRouter(),
         outlineStroke:1,
         outlineColor:"#303030",
@@ -205,7 +207,6 @@ var createConnection=function(sourcePort, targetPort){
     });
 
     return conn;
-
 };
 
 /**
@@ -213,20 +214,42 @@ var createConnection=function(sourcePort, targetPort){
  *  @param {draw2d.Canvas} canvas - schematic in which is loop located
  *  @description Returns coordinates and put point where wires intersect with loop border (for loop, while loop, case structure, ...)
  */
-GraphLang.Utils.detectTunnels = function(canvas){
+GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
   let loopList = new draw2d.util.ArrayList();
+  let connectionList = new draw2d.util.ArrayList();
   // let loopBoundingRect;
   // let loopObj;
+/*
   canvas.getFigures().each(function(figureIndex, figureObj){
-    //alert(figureObj.NAME);
-
     //remember loop object reference to not lose access to it
-    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") >= 0){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1){
       // loopObj = figureObj;
       // loopBoundingRect = figureObj.getBoundingBox();
-      loopList.push(figureObj);
+        loopList.push(figureObj);
     }
   });
+*/
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+        figureObj.getComposite() == null){
+
+      let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
+      if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
+    }
+  });
+
+  //getting all visible connections
+/*  NOT RUNNING PROPERLy
+  loopList.each(function(loopIndex, loopObj){
+    connectionList.addAll(loopObj.getVisibleConnections());
+  });
+  loopList.each(function(loopIndex, loopObj){
+    connectionList.addAll(loopObj.getVisibleConnections());
+  });
+*/
+//  connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
+  if (lastConnection == null) return;
+  connectionList.push(lastConnection);
 
   loopList.each(function(loopIndex, loopObj){
     let loopBoundingRect = loopObj.getBoundingBox();
@@ -237,7 +260,7 @@ GraphLang.Utils.detectTunnels = function(canvas){
     let intersectedLines = [];
     let intersectionInOutDirection = []; //0 = going into structure, 1 = going out of structure
     let intersectionEdge = []; //0 = top, 1 = right, 2 = down, 3 = left
-    canvas.getLines().each(function(lineIndex, lineObj){
+    connectionList.each(function(lineIndex, lineObj){
 
       /*****************************************************************************
        *  CONDITIONS NOT TO DETECT TUNNEL AND GO AWAY FROM THIS FUNCTION
@@ -251,14 +274,19 @@ GraphLang.Utils.detectTunnels = function(canvas){
 
       //THIS HERE PREVENTS PUTTING TUNNELS TO WIRES WHICH ARE PART OF THIS LOOP AND GOING OUT AND IN AGAIN
       //TO OVERCOME PUTTING TUNNELS ON WIRES WHERE TUNNELS ALREADY ARE
-      var sourcePort = lineObj.sourcePort.getParent()
-      var targetPort = lineObj.targetPort.getParent()
+      var sourcePort = lineObj.sourcePort.getParent();
+      var targetPort = lineObj.targetPort.getParent();
       if (sourcePort.NAME.toLowerCase().search("tunnel") >= 0){
         if (sourcePort.getParent() == loopObj) return;
       }
       if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
         if (targetPort.getParent() == loopObj) return;
       }
+/*
+      if (sourcePort.getParent() != loopObj.getComposite() && targetPort.getParent() != loopObj.getComposite()){
+        return;
+      }
+*/
 
       //NO ADDING TUNNEL WHEN SOURCE AND WIRE TARGET ARE PART OF THE SAME LOOP
 /*
@@ -580,11 +608,15 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
           });
         }
       });
+
+/*    NOT USED ANYMORE, THERE IS NO PROTECTION RECTANGLE FOR MULTILAYER NODES
       multilayerObj.rect0.getChildren().each(function(layerChildIndex, layerChildObj){
         if (layerChildObj.userData.datatype.toLowerCase().search("executionorder") > -1){
            multilayerObj.rect0.remove(layerChildObj);
         }
       });
+*/
+
     }
 
 
@@ -1261,7 +1293,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
           });
           if (!isNodeInCluster){
-              cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
+              if (nodeObj.getComposite() == null) cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code, rewrite just in case it's not part of some Loop, there is own transcript
               if (nodeObj.translateToCppCodeDeclaration != undefined) translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
 /*
             if (GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj) == null){
@@ -1300,7 +1332,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
             cCode += layerObj.translateToCppCode();
         });
 */
-        cCode += nodeObj.translateToCppCode();
+          if (nodeObj.getComposite() == null) cCode += nodeObj.translateToCppCode();
         }
 
     });
@@ -2102,5 +2134,58 @@ GraphLang.Utils.showUserData = function(canvas) {
     htmlStr += JSON.stringify(selectionObj.getUserData()) + '\n';
     $('logitem2').html(htmlStr);
     alert(selectionObj.getUserData());
+  });
+}
+
+/**
+ *  @method highlightVisibleLoopsAndMultilayered
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Change border or somehow highlight top visible loops, this is mostly for debugging during development function.
+ */
+GraphLang.Utils.highlightVisibleLoopsAndMultilayered = function(canvas) {
+    let loopList = new draw2d.util.ArrayList();
+    canvas.getFigures().each(function(figureIndex, figureObj){
+      if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+          figureObj.getComposite() == null){
+
+        let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
+        if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
+      }
+    });
+
+      str = "";
+      loopList.each(function(loopIndex, loopObj){
+        loopObj.setDashArray("-");
+        str += (loopObj.NAME + "\n");
+      });
+      alert(str);
+}
+
+/**
+ *  @method highlightVisibleConnections
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Highlight all currently visible connections.
+ */
+GraphLang.Utils.highlightVisibleConnections = function(canvas) {
+  let loopList = new draw2d.util.ArrayList();
+  let connectionList = new draw2d.util.ArrayList();
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+        figureObj.getComposite() == null){
+
+      let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
+      if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
+    }
+  });
+
+  //getting all visible connections
+  loopList.each(function(loopIndex, loopObj){
+    connectionList.addAll(loopObj.getVisibleConnections());
+  });
+  //connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
+
+  connectionList.each(function(connectionIndex, connectionObj){
+    connectionObj.setColor(new draw2d.util.Color("#FF0000"));
   });
 }

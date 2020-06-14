@@ -93,8 +93,12 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     cCode += "\t\t}break;";
     return cCode;
   },
+
+  /*
+   *  THIS PROBABLY WOULD BE NEVER USED!!!! LuboJ
+   */
   translateToCppCodePost: function(){
-    return "}";
+    return "} /* THIS IS FROM LOOP2.JS translateToCppCodePost*/";
   },
 
   /*
@@ -255,6 +259,31 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     }
 
     return portObj;
-  }
+  },
+
+  /**
+   * @method getVisibleLoopAndMultilayered
+   * @description Return all loops and multilayered objects from all nested loops and multilayered objects.
+   * @returns {draw2d.util.ArrayList}
+   */
+   getVisibleLoopAndMultilayered: function(){
+
+     let childrenList = this.getAssignedFigures();
+     let multilayeredList = new draw2d.util.ArrayList();
+     multilayeredList.push(this);
+     childrenList.each(function(figureIndex, figureObj){
+       if (figureObj.NAME.toLowerCase().search("multilayered") > -1){
+           let nestedMultilayeredList = figureObj.getVisibleLoopAndMultilayered();
+           if (!nestedMultilayeredList.isEmpty()) multilayeredList.addAll(nestedMultilayeredList); //recursive call to add all nested multilayered figures
+       }else{
+         if (figureObj.NAME.toLowerCase().search("loop") > -1){
+           multilayeredList.push(figureObj); //add also loop into list
+         }
+       }
+     });
+
+     return multilayeredList;
+   }
+
 
 });

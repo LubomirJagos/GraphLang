@@ -223,6 +223,8 @@ document.addEventListener("DOMContentLoaded",function () {
                 var portDatatype = lastCommand.source.userData.datatype;
                 portDatatype = portDatatype ? portDatatype : 'broken';
                 lastCommand.connection.setColor(wireColor.getByName(portDatatype));
+
+                GraphLang.Utils.detectTunnels(appCanvas, lastCommand.connection);  //there is also in Utils.js in Connection() LOOK THERE
               }
 
               /*
@@ -230,7 +232,7 @@ document.addEventListener("DOMContentLoaded",function () {
                *  THIS IS NOT RUNNING HOW IT SHOULD BE, BUT FOR DEBUGGING PROBABLY ENOUGH GOOD
                *    It's creating tunnels even when block is moved and wire goes through structures like while or case
                */
-               GraphLang.Utils.detectTunnels(appCanvas);
+               //GraphLang.Utils.detectTunnels(appCanvas);  //there is also in Utils.js in Connection() LOOK THERE
   	      }
   	  });
 

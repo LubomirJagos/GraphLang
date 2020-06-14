@@ -52,7 +52,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     //this.layerChooser = new GraphLang.Shapes.Basic.LayerChooser();
     //this.add(this.layerChooser, new draw2d.layout.locator.TopLocator(this));
     this.renewLayerChooser();
-    //this.renewLayerSelector();  //NOT WORKING WHEN LOADING FROM FILE
+    this.renewLayerSelector();  //NOT WORKING WHEN LOADING FROM FILE
 
     //USER DATA/
     this.userData = {};
@@ -228,6 +228,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
         childObj.toFront();
       }
 
+/*    THIS WAS MAKING HARM AND CAUSING ORPHANS LINES ON CANVAS,
+      IT'S DONE AUTOMATICALLY NOW WHEN LAYERS ARE SWITCHED DUE THEY ARE NOW STRONG COMPOSITE
+
       //SHOWING WIRES FROM LEFTTUNNELS
       if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
         childObj.getOutputPorts().each(function(portIndex, portObj){
@@ -250,6 +253,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
           });
         });
       }
+*/
+
+
     });
   },
 
@@ -288,8 +294,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
 
   /**
-   * @method
-   * Return an objects with all important attributes for XML or JSON serialization
+   * @method getPersistentAttributes
+   * @description Return an objects with all important attributes for XML or JSON serialization
    *
    * @returns {Object}
    */
@@ -313,11 +319,10 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   },
 
   /**
-   * @method
-   * Read all attributes from the serialized properties and transfer them into the shape.
+   * @method setPersistentAttributes
+   * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
    *
    * @param {Object} memento
-   * @returns
    */
   setPersistentAttributes : function(memento)
   {
@@ -366,12 +371,14 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
      */
     cCode = "";
 
+    cCode += this.getTunnelsDeclarationCppCode();
+
     selectorPort = this.getInputPort("layerSelector");
     selectorPortWires = selectorPort.getConnections();
     if (selectorPortWires.getSize() > 0){
-      cCode = "switch(" + selectorPortWires.first().getId() + "){\n";
+      cCode += "switch(" + selectorPortWires.first().getId() + "){\n";
     }else{
-      cCode = "switch(/* selectorPort not connected*/){\n";
+      cCode += "switch(/* selectorPort not connected*/){\n";
     }
 
     this.getAllLayers().each(function(layerIndex, layerObj){
@@ -379,7 +386,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
         cCode += layerObj.translateToCppCode();
         cCode += "break;\n"
     });
-    cCode += "}\n";
+    cCode += "} //end of generated switch \n";
 
     return cCode;
   },
@@ -478,6 +485,54 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
     //this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
     this.layers.get(this.activeLayer).userData.layerText = this.layerChooser.getText();
+  },
+
+  /**
+   * @method getVisibleLoopAndMultilayered
+   * @description Return all loops and multilayered objects from all nested loops and multilayered objects.
+   * @returns {draw2d.util.ArrayList}
+   */
+  getVisibleLoopAndMultilayered: function(){
+    if (this.layers.isEmpty()) return new draw2d.util.ArrayList();  //if empty return empty ArrayList
+
+    let childrenList = this.layers.get(this.activeLayer).getAssignedFigures();
+    let multilayeredList = new draw2d.util.ArrayList();
+    multilayeredList.push(this);
+    childrenList.each(function(figureIndex, figureObj){
+      if (figureObj.NAME.toLowerCase().search("multilayered") > -1){
+          let nestedMultilayeredList = figureObj.getVisibleLoopAndMultilayered();
+          if (!nestedMultilayeredList.isEmpty()) multilayeredList.addAll(nestedMultilayeredList); //recursive call to add all nested multilayered figures
+      }else{
+        if (figureObj.NAME.toLowerCase().search("loop") > -1){
+          multilayeredList.push(figureObj); //add also loop into list
+        }
+      }
+    });
+
+    return multilayeredList;
+  },
+
+  /**
+   * @method getVisibleConnections
+   * @description Return all visible connections.
+   * @returns {draw2d.util.ArrayList}
+   */
+  getVisibleConnections: function(){
+    if (this.layers.isEmpty()) return new draw2d.util.ArrayList();  //if empty return empty ArrayList
+    var layerObjects = this.layers.get(this.activeLayer).getChildren();
+    let curLayer = this.layers.get(this.activeLayer);
+    let connectionList = new draw2d.util.ArrayList();
+    let portList = new draw2d.util.ArrayList();
+
+
+    var num = "";
+    curLayer.getAssignedFigures().each(function(index, obj){
+      obj.getPorts().each(function(portIndex, portObj){
+        connectionList.addAll(portObj.getConnections());
+      });
+    });
+
+    return connectionList;
   }
 
 });

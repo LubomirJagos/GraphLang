@@ -375,6 +375,23 @@ example.Toolbar = Class.extend({
 		}));
 		this.html.append(this.showUserDataButton);
 
+		/**
+		*	highlightVisibleLoopsAndMultilayered Button
+		*/
+		this.highlightVisibleLoopsAndMultilayeredButton  = $("<button id=\"highlightVisibleLoopsAndMultilayeredButton\">highlightVisibleLoopsAndMultilayered</button>");
+		this.highlightVisibleLoopsAndMultilayeredButton.button().click($.proxy(function(){
+			GraphLang.Utils.highlightVisibleLoopsAndMultilayered(appCanvas);
+		}));
+		this.html.append(this.highlightVisibleLoopsAndMultilayeredButton);
+
+		/**
+		*	highlightVisibleConnectionsButton Button
+		*/
+		this.highlightVisibleConnectionsButton  = $("<button id=\"highlightVisibleConnectionsButton\">highlightVisibleConnections</button>");
+		this.highlightVisibleConnectionsButton.button().click($.proxy(function(){
+			GraphLang.Utils.highlightVisibleConnections(appCanvas);
+		}));
+		this.html.append(this.highlightVisibleConnectionsButton);
 	},
 
 	/**
