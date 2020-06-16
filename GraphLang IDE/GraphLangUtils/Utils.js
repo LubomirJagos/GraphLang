@@ -1988,8 +1988,8 @@ GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
         canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(layerObj));
       });
       figureObj.layers = new draw2d.util.ArrayList();
-      figureObj.removeSelectorPort();
-      figureObj.renewLayerSelector();
+//      figureObj.removeSelectorPort();
+//      figureObj.renewLayerSelector();
       allMultilayered.push(figureObj);
     }
   });
@@ -2083,6 +2083,7 @@ GraphLang.Utils.displayContents = function(contents){
         figureObj.layers.push(assignedFigureObj);
       });
       figureObj.renewLayerChooser();
+      //figureObj.renewLayerSelector();
     }
   });
 }

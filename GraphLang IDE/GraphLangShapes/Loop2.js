@@ -35,6 +35,7 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
          output.push(childObj.getInputPort(0));
       }
     });
+
     return output;
   },
   getPort: function(id){
