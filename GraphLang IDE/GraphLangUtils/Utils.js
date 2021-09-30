@@ -2045,6 +2045,7 @@ GraphLang.Utils.readSingleFile = function(e){
   reader.onload = function(e) {
     var contents = e.target.result;             //result is read
     GraphLang.Utils.displayContents(contents);  //display as alert
+    GraphLang.Utils.correctWiresAfterLoad(appCanvas)
   };
   reader.readAsText(file);  //this will put result into internal variable named result
 }
@@ -2080,16 +2081,17 @@ GraphLang.Utils.displayContents = function(contents){
     //if (figureObj.getComposite)
     if (figureObj.NAME.toLowerCase().search('multilayered') != -1){
       figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
-        figureObj.layers.push(assignedFigureObj);
+        figureObj.layers.push(assignedFigureObj); //THIS ADD EACH LAYER TO PARENT JAILHOUSE COMPOSITE OBJECT, this is needed to be here
       });
       figureObj.renewLayerChooser();
-      //figureObj.renewLayerSelector();
+      figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
     }
   });
+
 }
 
 /**
- *  @method loadSchematic
+ *  @method hematic
  *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
  *  @description This function run directly after click on button "choose file"
  */
@@ -2188,5 +2190,18 @@ GraphLang.Utils.highlightVisibleConnections = function(canvas) {
 
   connectionList.each(function(connectionIndex, connectionObj){
     connectionObj.setColor(new draw2d.util.Color("#FF0000"));
+  });
+}
+
+GraphLang.Utils.getCurrentLayerChildren = function(canvas){
+  canvas.getSelection().each(function(objIndex, obj){
+    //alert(obj.NAME.toLowerCase())
+    if (obj.NAME.toLowerCase().indexOf("multilayered") > -1){
+      obj.getAllLayers().each(function(layerIndex, layerObj){
+        layerObj.getAssignedFigures().each(function(childIndex, childObj){
+          alert( layerObj.getId() + "\n" + childObj.NAME);
+        });
+      });
+    }
   });
 }

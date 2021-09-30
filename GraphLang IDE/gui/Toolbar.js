@@ -352,7 +352,7 @@ example.Toolbar = Class.extend({
 		//
 		this.loadSchematicButton  = $('<input type="file" id="file-input" />');
 		this.loadSchematicButton.button().click($.proxy(function(){
-			GraphLang.Utils.loadSchematic(appCanvas2);
+			GraphLang.Utils.loadSchematic(appCanvas);
 		}));
 		this.html.append(this.loadSchematicButton);
 		document.getElementById('file-input').addEventListener('change', GraphLang.Utils.readSingleFile, false);
@@ -392,6 +392,16 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.highlightVisibleConnections(appCanvas);
 		}));
 		this.html.append(this.highlightVisibleConnectionsButton);
+
+		/**
+		*	getCurrentLayerChildren Button
+		*/
+		this.getCurrentLayerChildrenButton  = $("<button id=\"getCurrentLayerChildrenButton\">getCurrentLayerChildren</button>");
+		this.getCurrentLayerChildrenButton.button().click($.proxy(function(){
+			GraphLang.Utils.getCurrentLayerChildren(appCanvas);
+		}));
+		this.html.append(this.getCurrentLayerChildrenButton);
+
 	},
 
 	/**

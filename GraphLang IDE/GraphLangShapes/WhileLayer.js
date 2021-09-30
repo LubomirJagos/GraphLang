@@ -41,7 +41,15 @@ GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this, 1);
+    cCode += "/*code inside loop*/\n";
+    this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCode){
+        cCode += figObj.translateToCppCode()
+      }else if (figObj.translateToCppCode2){
+        cCode += figObj.translateToCppCode2()
+      }
+    });
+    cCode += "/*END code inside loop*/\n";
 
     return cCode;
   },

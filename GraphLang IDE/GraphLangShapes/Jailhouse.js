@@ -69,6 +69,10 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
         cCode += figureObj.translateToCppCodePost() + "\n";                   //because translating loop adding end of loop code
       }else if (figureObj.NAME.toLowerCase().search("connection") == -1){
         cCode += figureObj.translateToCppCode() + "\n";                       //translation of normal nodes except wires
+      }else if (figureObj.translateToCppCode2){
+        cCode += figureObj.translateToCppCode() + "\n";                       //translation of normal nodes except wires        
+      }else if(figureObj.translateToCppCode2){
+        cCode += figureObj.translateToCppCode2() + "\n";                       //translation of normal nodes except wires
       }
     });
 

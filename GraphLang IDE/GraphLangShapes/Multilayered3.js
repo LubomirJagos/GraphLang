@@ -69,6 +69,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
   renewLayerSelector: function(){
     //port = this.createPort("input", new draw2d.layout.locator.XYAbsPortLocator(-0.7,17));
+    if (this.selectorPort) return;
+
     port = new GraphLang.InputPort();
 
     port.setConnectionDirection(3);
@@ -83,13 +85,16 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   renewLayerChooser: function(){
 
     if (this.layerChooser != undefined){
-      this.remove(this.layerChooser);
-      this.remove(this.getChildren().get(0));
+      //this.remove(this.layerChooser);
+      //this.remove(this.getChildren().get(0));
+      this.layerChooser = this.getChildren().get(0);
+    }else{
+      this.layerChooser = new draw2d.shape.basic.Label();
     }
 
-    this.layerChooser = new draw2d.shape.basic.Label();
     //there is no layer 0 in constructor so this is not used now //this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
-    this.layerChooser.setText('none');  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+    //this.layerChooser.setText('none');  //after place structure into diagram, it's layer selector is set to has name as layer 0.
+
     //CLICK ON LAYER NAME AT TOP OF MULTILAYER STRUCTURE WHERE ARE THEIR NAMES
     this.layerChooser.on("click", function(emitter, event){
       emitter.getParent().switchActiveLayer();
@@ -196,7 +201,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   switchActiveLayer: function(){
     this.activeLayer++;
     if (this.activeLayer >= this.layers.getSize()) this.activeLayer = 0;
-    var layerObjects = this.layers.get(this.activeLayer).getChildren();
+    //var layerObjects = this.layers.get(this.activeLayer).getChildren();
     var activeLayer = this.layers.get(this.activeLayer);
     activeLayer.toFront();
 /*
@@ -321,6 +326,15 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
       //DONT ERASE SELECTOR PORT THEN THERE IS MESS WHEN SOMETHING CONNECTED TO IT
       //memento.ports = [];       //ERASE ALL PORTS, THERE ARE JUST TUNNELS AND SELECTOR IS ALWAYS RECREATED!
 
+      layerSelectorPort = null;
+      for(port in memento.ports){
+        if (port.name && port.name.toLowerCase().indexOf("layerselector") > -1){
+          alert(port.name)
+          layerSelectorPort = port;
+        }
+      }
+      //memento.ports = [this.selectorPort];
+
       return memento;
   },
 
@@ -332,44 +346,53 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
    */
   setPersistentAttributes : function(memento)
   {
-      this._super(memento);
+      mementoPorts = memento.ports;   //taking ports out, because there is creation of them in parent and I want to create them in my way
+      mementoLabels = memento.labels; //taking labels away
+
+      memento.ports = [];
+      memento.labels = [];
+      this._super(memento);           //CALLING PARENT METHOD, these will rerecreate this showSelectedObjExecutionOrder
 
       // remove all decorations created in the constructor of this element
       //
       this.resetChildren();
 
       // and add all children of the JSON document.
-      $.each(memento.labels, $.proxy(function(i,json){
+      $.each(mementoLabels, $.proxy(function(i,json){
 
           //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
           curDatatype = json.type;
 
-/*        SEEMS LIKE ORPHAN CODE
-          if (curDatatype.toLowerCase().search("tunnel") > -1){
-            var msg = JSON.stringify(json);
-          }
-*/
-
           var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
           figure.attr(json);                                                                            // apply all attributes
 
-          var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+          if (json.locatorX != undefined && json.locatorY != undefined){
+            var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+          }else{
+            var locator =  eval("new draw2d.layout.locator.XYAbsPortLocator(" + json.x + "," + json.y + ")"); //DEFAULT LOCATOR
+          }
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
 
-      $.each(memento.ports, $.proxy(function(i,json){
-          var figure =  eval("new "+json.type+"()");
-          figure.setId(json.id);                                                    // create the figure stored in the JSON
-          figure.attr(json);                                                                            // apply all attributes
-          if (json.locatorX != undefined &&
-              json.locatorY != undefined){
-                var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
-          }else{
-            var locator =  eval("new "+json.locator+"()"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
-          }
+      //RERECREATE JUST SELECTOR PORT
+      $.each(mementoPorts, $.proxy(function(i,json){
+        if (json.name.toLowerCase().search('layerselector') > -1){
+            var figure =  eval("new "+json.type+"()");
+            figure.setId(json.id);                                                    // create the figure stored in the JSON
+            figure.attr(json);                                                                            // apply all attributes
+            if (json.locatorX != undefined &&
+                json.locatorY != undefined){
+                  var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
+            }else if (json.locator){
+              var locator =  eval("new "+json.locator+"()"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
+            }else{
+              var locator =  eval("new draw2d.layout.locator.XYAbsPortLocator(" + json.x + "," + json.y + ")"); //DEFAULT LOCATOR
+            }
 
-          if (json.name.toLowerCase().search('layerselector') > -1) this.selectorPort = figure; //assign port which is layerSelector to internal variable
+            this.selectorPort = figure; //assign port which is layerSelector to internal variable
+            this.selectorPort.setName("layerSelector");
+          }
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
   },
@@ -387,16 +410,16 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
     cCode += this.getTunnelsDeclarationCppCode();
 
-    selectorPort = this.getInputPort("layerSelector");
-    selectorPortWires = selectorPort.getConnections();
-    if (selectorPortWires.getSize() > 0){
+    selectorPortWires = this.selectorPort.getConnections();
+    if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
       cCode += "switch(wire_" + selectorPortWires.first().getId() + "){\n";
     }else{
       cCode += "switch(/* selectorPort not connected*/){\n";
     }
 
     this.getAllLayers().each(function(layerIndex, layerObj){
-        cCode += "case " + layerObj.getId() + ":\n";
+        //cCode += "case " + layerObj.getId() + ":\n";
+        cCode += "case " + layerObj.userData.layerText + ":\n";
         cCode += layerObj.translateToCppCode();
         cCode += "break;\n"
     });
@@ -556,7 +579,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   */
   getPort: function(name){
     port = this._super(name);
-    if (name.search('layerSelector') > -1){
+    if (name.indexOf('layerSelector') > -1){
       return this.selectorPort;
     }
     return port;
