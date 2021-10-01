@@ -303,7 +303,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
   /**
    * @method getPersistentAttributes
-   * @description Return an objects with all important attributes for XML or JSON serialization
+   * @description Return an objects with all important attributes for XML or JSON serialization.
+   * This is used when file IS SAVED.
    *
    * @returns {Object}
    */
@@ -326,14 +327,28 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
       //DONT ERASE SELECTOR PORT THEN THERE IS MESS WHEN SOMETHING CONNECTED TO IT
       //memento.ports = [];       //ERASE ALL PORTS, THERE ARE JUST TUNNELS AND SELECTOR IS ALWAYS RECREATED!
 
-      layerSelectorPort = null;
-      for(port in memento.ports){
-        if (port.name && port.name.toLowerCase().indexOf("layerselector") > -1){
-          alert(port.name)
-          layerSelectorPort = port;
-        }
-      }
-      //memento.ports = [this.selectorPort];
+      port = {}
+      port.type = "GraphLang.InputPort"
+      port.id = this.selectorPort.id
+      port.width =  this.selectorPort.width
+      port.height =  this.selectorPort.height
+      port.alpha =  this.selectorPort.alpha
+      port.angle =  this.selectorPort.angle
+      port.userData =  this.selectorPort.userData
+      port.cssClass =  this.selectorPort.cssClass
+      port.bgColor =  this.selectorPort.bgColor
+      port.color =  this.selectorPort.color
+      port.stroke =  this.selectorPort.stroke
+      port.dasharray =  this.selectorPort.dasharray
+      port.stroke =  this.selectorPort.stroke
+      port.maxFanOut =  this.selectorPort.maxFanOut
+      port.name =  this.selectorPort.name
+      port.port =  this.selectorPort.port
+      port.locator =  "draw2d.layout.locator.XYAbsPortLocator"
+
+
+      //alert(JSON.stringify(port))
+      memento.ports = [port];
 
       return memento;
   },
@@ -341,6 +356,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   /**
    * @method setPersistentAttributes
    * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
+   * This is used when file is lOADED.
    *
    * @param {Object} memento
    */
