@@ -314,41 +314,21 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
       // add all decorations to the memento
       //
-      memento.labels = [];
+      memento.labels = [];                                        //custom labels save, here will be tunnles and label for switch layers saved
+      memento.ports = [];                                         //custom ports save
       this.children.each(function(i,e){
           var labelJSON = e.figure.getPersistentAttributes();
           labelJSON.locator=e.locator.NAME;
           labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
           labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
 
-          memento.labels.push(labelJSON);
+          //layerSelector is based on its name pushed into ports, tunnels and layer switch label is pushed into labels
+          if (e.figure.name != "layerSelector"){
+            memento.labels.push(labelJSON);
+          }else{
+            memento.ports.push(labelJSON)
+          }
       });
-
-      //DONT ERASE SELECTOR PORT THEN THERE IS MESS WHEN SOMETHING CONNECTED TO IT
-      //memento.ports = [];       //ERASE ALL PORTS, THERE ARE JUST TUNNELS AND SELECTOR IS ALWAYS RECREATED!
-
-      port = {}
-      port.type = "GraphLang.InputPort"
-      port.id = this.selectorPort.id
-      port.width =  this.selectorPort.width
-      port.height =  this.selectorPort.height
-      port.alpha =  this.selectorPort.alpha
-      port.angle =  this.selectorPort.angle
-      port.userData =  this.selectorPort.userData
-      port.cssClass =  this.selectorPort.cssClass
-      port.bgColor =  this.selectorPort.bgColor
-      port.color =  this.selectorPort.color
-      port.stroke =  this.selectorPort.stroke
-      port.dasharray =  this.selectorPort.dasharray
-      port.stroke =  this.selectorPort.stroke
-      port.maxFanOut =  this.selectorPort.maxFanOut
-      port.name =  this.selectorPort.name
-      port.port =  this.selectorPort.port
-      port.locator =  "draw2d.layout.locator.XYAbsPortLocator"
-
-
-      //alert(JSON.stringify(port))
-      memento.ports = [port];
 
       return memento;
   },
