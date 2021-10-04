@@ -91,6 +91,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     }else{
       this.layerChooser = new draw2d.shape.basic.Label();
     }
+    this.layerChooser.setId("layerChooser");
+
 
     //there is no layer 0 in constructor so this is not used now //this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
     //this.layerChooser.setText('none');  //after place structure into diagram, it's layer selector is set to has name as layer 0.
@@ -316,6 +318,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
       //
       memento.labels = [];                                        //custom labels save, here will be tunnles and label for switch layers saved
       memento.ports = [];                                         //custom ports save
+
       this.children.each(function(i,e){
           var labelJSON = e.figure.getPersistentAttributes();
           labelJSON.locator=e.locator.NAME;
@@ -323,12 +326,16 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
           labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
 
           //layerSelector is based on its name pushed into ports, tunnels and layer switch label is pushed into labels
-          if (e.figure.name != "layerSelector"){
+          if (labelJSON.name != "layerSelector"){
             memento.labels.push(labelJSON);
           }else{
             memento.ports.push(labelJSON)
           }
       });
+
+      if (memento.ports.length == 0){
+        memento.ports.push(this.getPort("layerSelector").getPersistentAttributes())
+      }
 
       return memento;
   },
@@ -378,8 +385,13 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
             figure.setId(json.id);                                                    // create the figure stored in the JSON
             figure.attr(json);                                                                            // apply all attributes
             if (json.locatorX != undefined &&
-                json.locatorY != undefined){
-                  var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
+                json.locatorY != undefined)
+            {
+                  if (json.locator){
+                    var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
+                  }else{
+                    var locator =  eval("new draw2d.layout.locator.XYAbsPortLocator(" + json.locatorX + "," + json.locatorY + ")"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
+                  }
             }else if (json.locator){
               var locator =  eval("new "+json.locator+"()"); //NEED TO CHECK IF IS RUNNING GOOD BUT TILL NOW NOT CAUSING HARM    // instantiate the locator
             }else{
@@ -574,9 +586,11 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     THIS IS MODIFIED VERSION TO ALSO LOOK FOR LAYER SELECTOR PORT, BUT THERE IS SOMETHING WRONG WITH ITS CREATION BECAUSE WIRES ARE BROKEN
   */
   getPort: function(name){
-    port = this._super(name);
+
     if (name.indexOf('layerSelector') > -1){
       return this.selectorPort;
+    }else{
+      port = this._super(name);
     }
     return port;
   }
