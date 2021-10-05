@@ -83,15 +83,26 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   },
 
   renewLayerChooser: function(){
-
     if (this.layerChooser != undefined){
-      //this.remove(this.layerChooser);
-      //this.remove(this.getChildren().get(0));
-      this.layerChooser = this.getChildren().get(0);
+      //remove all labels from multilayered
+      /*
+      this.remove(this.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().indexOf("draw2d.shape.basic.Label") > -1){
+          alert("removing labels multilayer");
+          this.remove(childObj)
+        }
+      }));
+      */
+      //this.layerChooser = this.getChildren().get(0);
+      this.layerChooser = new draw2d.shape.basic.Label();
     }else{
       this.layerChooser = new draw2d.shape.basic.Label();
     }
     this.layerChooser.setId("layerChooser");
+
+    if (this.layers.getSize() > 0){
+      this.layerChooser.setText(this.layers.get(0).userData.layerText);
+    }
 
 
     //there is no layer 0 in constructor so this is not used now //this.layerChooser.setText(this.layers.get(0).userData.layerText);  //after place structure into diagram, it's layer selector is set to has name as layer 0.
@@ -327,9 +338,13 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
 
           //layerSelector is based on its name pushed into ports, tunnels and layer switch label is pushed into labels
           if (labelJSON.name != "layerSelector"){
-            memento.labels.push(labelJSON);
+            if (labelJSON.type.indexOf("draw2d.shape.basic.Label") == -1 ) {
+              memento.labels.push(labelJSON);
+            }else{
+              //alert(labelJSON.type)
+            }
           }else{
-            memento.ports.push(labelJSON)
+              memento.ports.push(labelJSON);
           }
       });
 
@@ -366,8 +381,12 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
           //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
           curDatatype = json.type;
 
-          var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
-          figure.attr(json);                                                                            // apply all attributes
+
+          /*
+           *  HERE IS REALLY IMPORTANT TO SET SAME ID TO TUNNEL AS IT WAS SAVED, it then creates ports for that tunnel with same id as from file and wires can be connected to that
+           */
+          var figure =  eval("new "+json.type+"({id: '" + json.id + "'})"); // create the figure stored in the JSON, SET SAME ID AS SAVED IN FILE, THIS IS IMPORTANT!!! (for tunnels, look at its init() function)
+          figure.attr(json);
 
           if (json.locatorX != undefined && json.locatorY != undefined){
             var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
@@ -590,7 +609,19 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     if (name.indexOf('layerSelector') > -1){
       return this.selectorPort;
     }else{
-      port = this._super(name);
+      //port = this._super(name); //THIS IS NOT RUNNING, TESTED
+
+      port = null
+      auxPort = null
+      strList = name + "\n\n"
+      this.getChildren().each(function(childIndex, childObj){
+        childObj.getPorts().each(function(portIndex, portObj){
+          strList += portObj.getId() + "\n"
+          if (portObj.getId() == name){
+            port = portObj
+          }
+        });
+      });
     }
     return port;
   }

@@ -14,12 +14,27 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
         portObj = this.getInputPorts().first();
         portObj.userData = {};
         portObj.userData.datatype = "undefined";
-        //portObj.setName(portObj.getName() + "_" + Date.now());
+
+        if (attr && attr.id){
+            portObj.setId(attr.id + "-in0");
+            portObj.setName(attr.id + "-in0");
+        }else{
+            portObj.setId(this.getId() + "-in0");
+            portObj.setName(this.getId() + "-in0");
+        }
         //portObj.setName(portObj.getName() + "_" + this.getId());
 
         portObj = this.getOutputPorts().first();
         portObj.userData = {};
         portObj.userData.datatype = "undefined";
+        //portObj.setName(this.getId() + "-out0");
+        if (attr && attr.id){
+            portObj.setId(attr.id + "-out0");
+            portObj.setName(this.getId() + "-out0");
+        }else{
+            portObj.setId(this.getId() + "-out0");
+            portObj.setName(this.getId() + "-out0");
+        }
         //portObj.setName(portObj.getName() + Date.now());
         //portObj.setName(portObj.getName() + "_" + this.getId());
         //this.add(new draw2d.shape.basic.Label({text: "tunnel"}), new draw2d.layout.locator.CenterLocator(this));

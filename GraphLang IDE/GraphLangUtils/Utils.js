@@ -1922,12 +1922,12 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
    *  Wires has from serialization in userData info about tunnel if they are connected to some so if wire target is assigned bad, this will correct it.
    */
   canvas.getLines().each(function(lineIndex, lineObj){
-    if (lineObj.userData.targetTunnel != undefined){
+    if (lineObj.userData.targetTunnel !== undefined){
       canvas.getFigures().each(function(figureIndex, figureObj){
-        if (figureObj.NAME.toLowerCase().search("loop") > -1){
+        if (figureObj.NAME.toLowerCase().indexOf("loop") > -1){
           figureObj.getChildren().each(function(childIndex, childObj){
-            if (childObj.NAME.toLowerCase().search("tunnel") > -1 &&
-                childObj.getId().search(lineObj.userData.targetTunnel) > -1){
+            if (childObj.NAME.toLowerCase().indexOf("tunnel") > -1 &&
+                childObj.getId().indexOf(lineObj.userData.targetTunnel) > -1){
                 lineObj.setTarget(childObj.getPort(lineObj.userData.targetPortName));
             }
           });
@@ -1940,12 +1940,12 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
    *  Same correction as before but this is for wire source.
    */
   canvas.getLines().each(function(lineIndex, lineObj){
-    if (lineObj.userData.sourceTunnel != undefined){
+    if (lineObj.userData.sourceTunnel !== undefined){
       canvas.getFigures().each(function(figureIndex, figureObj){
-        if (figureObj.NAME.toLowerCase().search("loop") > -1){
+        if (figureObj.NAME.toLowerCase().indexOf("loop") > -1){
           figureObj.getChildren().each(function(childIndex, childObj){
-            if (childObj.NAME.toLowerCase().search("tunnel") > -1 &&
-                childObj.getId().search(lineObj.userData.sourceTunnel) > -1){
+            if (childObj.NAME.toLowerCase().indexOf("tunnel") > -1 &&
+                childObj.getId().indexOf(lineObj.userData.sourceTunnel) > -1){
                 lineObj.setSource(childObj.getPort(lineObj.userData.sourcePortName));
             }
           });
@@ -1982,51 +1982,15 @@ GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
   var allJailhouse = new draw2d.util.ArrayList();
 
   //1st Get all multilayered structures
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("multilayered") > -1){
-      figureObj.layers.each(function(layerIndex, layerObj){
-        canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(layerObj));
+  canvas.getFigures().each(function(multilayerIndex, multilayerObj){
+    if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
+      multilayerObj.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().indexOf("tunnel") > -1){
+          childObj.setBackgroundColor(new draw2d.util.Color(255,0,0));
+          //multilayerObj.assignFigure(childObj);
+          //alert("kokot")
+        }
       });
-      figureObj.layers = new draw2d.util.ArrayList();
-//      figureObj.removeSelectorPort();
-//      figureObj.renewLayerSelector();
-      allMultilayered.push(figureObj);
-    }
-  });
-
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("jailhouse") > -1){
-      var multilayeredObj = canvas.getFigure(figureObj.userData.owner);   //get layer owner
-      multilayeredObj.layers.push(figureObj);
-      multilayeredObj.renewLayerChooser();
-    }
-  });
-
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("rectangle") > -1 &&
-        figureObj.userData != undefined &&
-        figureObj.userData.multilayeredOwner != undefined){
-
-
-/*        WRONG NOT RUNNING
-          if (figureObj.getId().toLowerCase().search("protection") > -1){
-            canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
-
-          }
-*/
-
-/*        WRONG NOT RUNNING
-      if (canvas.getFigure(figureObj.userData.multilayeredOwner) != undefined){
-        canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
-      }
-*/
-          allMultilayered.each(function(multilayeredIndex, multilayeredObj){
-            if (multilayeredObj.getId().search(figureObj.userData.multilayeredOwner) > -1){
-
-                //multilayeredObj.rect0 = figureObj;
-                canvas.getCommandStack().execute(new GraphLang.Utils.CommandDelete(figureObj));
-            }
-          });
     }
   });
 }
@@ -2045,7 +2009,7 @@ GraphLang.Utils.readSingleFile = function(e){
   reader.onload = function(e) {
     var contents = e.target.result;             //result is read
     GraphLang.Utils.displayContents(contents);  //display as alert
-    GraphLang.Utils.correctWiresAfterLoad(appCanvas)
+    //GraphLang.Utils.correctWiresAfterLoad(appCanvas)
   };
   reader.readAsText(file);  //this will put result into internal variable named result
 }

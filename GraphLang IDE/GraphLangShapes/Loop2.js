@@ -240,7 +240,14 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
             //alert("tunnel:" + msg);
           }
 
-          var figure =  eval("new "+json.type+"()");                                                    // create the figure stored in the JSON
+          /*
+           *  REALLY IMPORTANT TO LOAD FROM FILE TUNNELS WITH SAME id AS THEY WERE SAVED, because port names for tunnels contains tunnel id and that name is stored also in wire endpoints also
+           */
+          if (json.id){
+            var figure =  eval("new "+json.type+"(id:'" + json.id + "')");                                 // create the figure stored in the JSON
+          }else{
+            var figure =  eval("new "+json.type+"()");                                 // create the figure stored in the JSON
+          }
           figure.attr(json);                                                                            // apply all attributes
           var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
 
