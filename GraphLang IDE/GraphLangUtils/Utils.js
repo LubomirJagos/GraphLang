@@ -209,6 +209,9 @@ var createConnection=function(sourcePort, targetPort){
     return conn;
 };
 
+
+bullshit = 0;
+
 /**
  *  @method detectTunnels
  *  @param {draw2d.Canvas} canvas - schematic in which is loop located
@@ -247,10 +250,11 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
     connectionList.addAll(loopObj.getVisibleConnections());
   });
 */
-//  connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
+  //connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
   if (lastConnection == null) return;
   connectionList.push(lastConnection);
 
+  let additionalWires = []; //newly created wires list
   loopList.each(function(loopIndex, loopObj){
     let loopBoundingRect = loopObj.getBoundingBox();
 
@@ -282,18 +286,6 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
       if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
         if (targetPort.getParent() == loopObj) return;
       }
-/*
-      if (sourcePort.getParent() != loopObj.getComposite() && targetPort.getParent() != loopObj.getComposite()){
-        return;
-      }
-*/
-
-      //NO ADDING TUNNEL WHEN SOURCE AND WIRE TARGET ARE PART OF THE SAME LOOP
-/*
-      if (GraphLang.Utils.getNodeLoopOwner(canvas, sourcePort) == GraphLang.Utils.getNodeLoopOwner(canvas, targetPort)){
-        return;
-      }
-*/
 
       let lineSegments = lineObj.getSegments();
       lineSegments.each(function(segmentIndex, segmentObj){
@@ -302,17 +294,19 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
           segmentObj.start,
           segmentObj.end
         );
-        if (intersectPoint){
+        if (intersectPoint.getSize() > 0){
           loopIntersections.push(intersectPoint);
-          intersectedLines.push(lineObj);
 
           //GETTING KNOW WHICH LINE OF LOOP RECTANGLE WAS CROSSED
           // 1 = right, 2 = bottom, 3 = left, 4 = top
           if (intersectPoint.data.length > 0){
-            if (intersectPoint.data[0].x == loopBoundingRect.getX()) intersectionEdge.push(3);
-            else if (intersectPoint.data[0].y == loopBoundingRect.getY()) intersectionEdge.push(0);
-            else if (intersectPoint.data[0].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersectionEdge.push(1);
-            else if (intersectPoint.data[0].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersectionEdge.push(2);
+            for (k = 0; k < intersectPoint.data.length; k++){
+              intersectedLines.push(lineObj);
+              if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersectionEdge.push(3);                                        //LEFT edge
+              else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersectionEdge.push(0);                                   //TOP edge
+              else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersectionEdge.push(1);     //RIGHT edge
+              else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersectionEdge.push(2);    //BOTTOM edge
+            }
           }else{
             intersectionEdge.push(1);
           }
@@ -341,27 +335,6 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
       lineVert.push(lineObj.getVertices());
     });
 
-    //going through all connection segments and on each vertice put red point
-  /*
-    for (var k = 0; k < lineVert.length; k++){
-      lineVert[k].each(function(i, caller){
-        pObj = new GraphLang.geo.Point(caller);
-        pX = pObj.getX();
-        pY = pObj.getY();
-
-        var shape =  new draw2d.shape.basic.Circle({stroke:1, color:"#00FF00", bgColor:"#FF0000"});
-        shape.setWidth(10);
-        shape.setHeight(10);
-        shape.setX(pX);
-        shape.setY(pY);
-        pX = pX - shape.width/2;
-        pY = pY - shape.width/2;
-        shape.setX(pX);
-        shape.setY(pY);
-        appCanvas.add(shape);
-      });
-    }
-  */
     if (loopIntersections.length > 0){
       for (var k = 0; k < loopIntersections.length; k++){
         loopIntersections[k].each(function(i, caller){
@@ -372,29 +345,6 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
           outMsg = "> " + String(pX) + "," + String(pY) + "\n";
           $("#logitem2").html(outMsg);
 
-          /*******************************************************
-           *  Adding CIRCLE POINT
-           *******************************************************/
-  /*
-          var shape =  new draw2d.shape.basic.Circle({stroke:3, color:"#3d3d3d", bgColor:"#3dff3d"});
-          shape.setWidth(10);
-          shape.setHeight(10);
-          shape.setX(pX);
-          shape.setY(pY);
-
-          pX = pX - shape.width/2;
-          pY = pY - shape.width/2;
-          //based on direction in which wire is crossing boundary box, tunnel is moved inside
-          //raft object, so when raft object is moved all placed tunnels are also moving
-          if (loopIntersctDirection[k+i] == 1) pY -= 5;
-          if (loopIntersctDirection[k+i] == 2) pY += 5;
-          if (loopIntersctDirection[k+i] == 3) pX -= 5;
-          if (loopIntersctDirection[k+i] == 4) pX += 5;
-
-          shape.setX(pX);
-          shape.setY(pY);
-          appCanvas.add(shape);
-  */
           /*******************************************************
            *  Adding TUNNEL (custom figure)
            *******************************************************/
@@ -437,61 +387,78 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
            //loopObj.addPort(tunnelObj);
 
            //this is for relative locator
+           var tunnelLocatorRel = {}
            if (intersectionEdge[k+i] == 0){ //TOP edge
-             var tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
+               tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
                Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
                tunnelObj.getHeight()/2
              );
            }
            if (intersectionEdge[k+i] == 1){ //RIGHT edge
-             var tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
+               tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
                tunnelObj.getWidth()/2,
                Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
            if (intersectionEdge[k+i] == 2){ //BOTTOM edge
-             var tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
+               tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
                Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
                tunnelObj.getHeight()/2
              );
            }
            if (intersectionEdge[k+i] == 3){ //LEFT edge
-             var tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
+               tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
                tunnelObj.getWidth()/2,
                Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
 
-
-           //ABSOLUTE POSITIONING OF TUNNELS
-  /*
-           pX = pX - tunnelObj.getWidth()/2;
-           pY = pY - tunnelObj.getHeight()/2;
-           tunnelObj.setX(pX);
-           tunnelObj.setY(pY);
-           appCanvas.add(tunnelObj);
-  */
            //RELATIVE POSITIOINING OF TUNNELS
            /*
             This calculation of realtive position is not totaly correct, because when resizing loop its width and height is changing, but locator percentage is still same and not changing accordingly to new width and height of loop, it was normalized by the previous dimensions and dimension of tunnels is not changing, so right resize method would be recalculate relative locator, or figure out how to snap tunnels to right and left and top and bottom wall of loop
             */
            loopObj.add(tunnelObj,tunnelLocatorRel)
 
-           var oldSource = intersectedLines[k+i].getSource();
-           intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
 
-           //var additionalConnection = createConnection();
-           var additionalConnection = new HoverConnection();
-           additionalConnection.setSource(oldSource);
-           additionalConnection.setTarget(tunnelObj.getInputPort(0));
-           appCanvas.add(additionalConnection);
-           tunnelObj.setSelectable(true);
+          /*
+           *  Wire can go in two directions, going from outside into structure or going out of it. So here is quick test what is actual case, if wire
+           *  goes inside structure it mus be connected to appropriate  tunnel input. (previous generation left and right tunnels is still not differentaiate here).
+           */
+          if (loopBoundingRect.hitTest(intersectedLines[k+i].getSource().getAbsoluteX(), intersectedLines[k+i].getSource().getAbsoluteY())){
+            var oldTarget = intersectedLines[k+i].getTarget();
+            intersectedLines[k+i].setTarget(tunnelObj.getInputPort(0));
+
+            var additionalConnection = new HoverConnection();
+            additionalConnection.setTarget(oldTarget);
+            additionalConnection.setSource(tunnelObj.getOutputPort(0));
+          }else{
+            var oldSource = intersectedLines[k+i].getSource();
+            intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
+
+            var additionalConnection = new HoverConnection();
+            additionalConnection.setSource(oldSource);
+            additionalConnection.setTarget(tunnelObj.getInputPort(0));
+          }
+
+          appCanvas.add(additionalConnection);
+          tunnelObj.setSelectable(true);
+
+
+          /*
+           *  This is really important to recursive call this.
+           *  Tunnels are inserted into wire path, but as they are iterated in array they doesn't have to necessarily be order
+           * in order how they are place on wire, it means first tunnel could be middle one created, wires ends will be moved
+           * and there will left right half of wire and left one and on both of these ends needs to be added any other tunnels,
+           * if there wouldn't be this recursive call there will be missing tunnels on one wire half because it will be
+           * never iterated, so here is this method recusively call on additional wire.
+           * If there are no connection to be added this function will stop and that's all.
+           */
+            GraphLang.Utils.detectTunnels(canvas, additionalConnection);
 
         });
       }
     }
   }); //end function to add tunnel to each intersect of wires with loops
-
 };
 
 /**
