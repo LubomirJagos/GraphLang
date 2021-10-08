@@ -462,6 +462,286 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
 };
 
 /**
+ *  @method detectTunnels2
+ *  @param {draw2d.Canvas} canvas - schematic in which is loop located
+ *  @description Rework function to detectTunnels.
+ */
+GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
+  let loopList = new draw2d.util.ArrayList();
+  let connectionList = new draw2d.util.ArrayList();
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+        figureObj.getComposite() == null){
+
+      let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
+      if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
+    }
+  });
+
+  if (wire == null) return;
+
+  let additionalWires = []; //newly created wires list
+  let loopIntersections = [];
+  let intersectionEdge = []; //0 = top, 1 = right, 2 = bottom, 3 = left
+  let intersectionEdgeStr = []; //0 = top, 1 = right, 2 = bottom, 3 = left
+
+  loopList.each(function(loopIndex, loopObj){
+    let loopBoundingRect = loopObj.getBoundingBox();
+
+    let loopIntersctDirection = []; //1=top to bottom, 2=bottom to top, 3=left to right, 4=right to left
+    let intersectedLines = [];
+    let intersectionInOutDirection = []; //0 = going into structure, 1 = going out of structure
+
+    /*****************************************************************************
+     *  CONDITIONS NOT TO DETECT TUNNEL AND GO AWAY FROM THIS FUNCTION
+     *
+     *  SOMEHOW RUNNING BUT STILL NEED REWORK!!!!! HERE ARE SOME ERRORS PROBABLY
+     *      need to rethin rules when used tunnel, ie. use just one when
+     *      wire ie. cross loop at some corner at two points
+     *****************************************************************************/
+
+     //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
+
+    //THIS HERE PREVENTS PUTTING TUNNELS TO WIRES WHICH ARE PART OF THIS LOOP AND GOING OUT AND IN AGAIN
+    //TO OVERCOME PUTTING TUNNELS ON WIRES WHERE TUNNELS ALREADY ARE
+    var sourcePort = wire.sourcePort.getParent();
+    var targetPort = wire.targetPort.getParent();
+    if (sourcePort.NAME.toLowerCase().search("tunnel") >= 0){
+      if (sourcePort.getParent() == wire) return;
+    }
+    if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
+      if (targetPort.getParent() == wire) return;
+    }
+
+    let lineSegments = wire.getSegments();
+    lineSegments.each(function(segmentIndex, segmentObj){
+
+      let intersectPoint = loopBoundingRect.intersectionWithLine(
+        segmentObj.start,
+        segmentObj.end
+      );
+      if (intersectPoint.getSize() > 0){
+        loopIntersections.push(intersectPoint);
+
+        //GETTING KNOW WHICH LINE OF LOOP RECTANGLE WAS CROSSED
+        // 1 = right, 2 = bottom, 3 = left, 4 = top
+        if (intersectPoint.data.length > 0){
+          for (k = 0; k < intersectPoint.data.length; k++){
+            intersectedLines.push(wire);
+            if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersectionEdge.push(3);                                        //LEFT edge
+            else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersectionEdge.push(0);                                   //TOP edge
+            else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersectionEdge.push(1);     //RIGHT edge
+            else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersectionEdge.push(2);    //BOTTOM edge
+
+            if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersectionEdgeStr.push("left");                                        //LEFT edge
+            else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersectionEdgeStr.push("top");                                   //TOP edge
+            else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersectionEdgeStr.push("right");     //RIGHT edge
+            else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersectionEdgeStr.push("bottom");    //BOTTOM edge
+          }
+        }
+
+        //looking which point of segment is inside, which is otuside
+        let insidePoint, outsidePoint;
+        if (loopBoundingRect.hitTest(segmentObj.start.getX(), segmentObj.start.getY())){
+          insidePoint = segmentObj.start;
+          outsidePoint = segmentObj.end;
+          intersectionInOutDirection.push(0); // wire is leaving structure, so this intersection is for going out of structure
+        }else{
+          insidePoint = segmentObj.end;
+          outsidePoint = segmentObj.start;
+          intersectionInOutDirection.push(1); // intersection is for wire going into structure
+        }
+        //based on X,Y coords of inside and outside point I'm able to compute dircetion
+        //in which segment cross bounding box, whether is it crossing it top to bottom,
+        //left to right or opposite direction, so I store this direction along with
+        //intersection points
+        if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() < outsidePoint.getY()) loopIntersctDirection.push(1);
+        if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(3);
+        if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(4);
+      }
+    });
+
+  }); //end function to add tunnel to each intersect of wires with loops
+
+  /*
+   *	ADDING ALL INTERSECTION INTO ONE ARRAY
+   */
+  let allLoopIntersections = []
+  let loopIntersectionsOrdered = [];
+  for (k = 0; k < loopIntersections.length; k++){
+  	for (l = 0; l < loopIntersections[k].data.length; l++){
+		allLoopIntersections.push(loopIntersections[k].data[l]);
+	}
+  }
+
+  /*
+   *	ORDERING WIRES INTERSECTIONS
+   */
+  let lineSegments = wire.getSegments();
+  lineSegments.each(function(segmentIndex, segmentObj){
+  	if (segmentObj.start.x == segmentObj.end.x){
+
+		auxLoopIntersections = [];
+		if (segmentObj.start.y < segmentObj.end.y){
+			for (k = 0; k < allLoopIntersections.length; k++){
+				if (/*loopIntersections[k].data.x == segmentObj.start.x && */allLoopIntersections[k].y >= segmentObj.start.y && allLoopIntersections[k].y <= segmentObj.end.y){
+					auxLoopIntersections.push(loopIntersections[k]);
+				}
+			}
+		}else{
+			for (k = 0; k < allLoopIntersections.length; k++){
+				if (/*loopIntersections[k].data.x == segmentObj.start.x && */allLoopIntersections[k].y >= segmentObj.end.y && allLoopIntersections[k].y <= segmentObj.start.y){
+					auxLoopIntersections.push(loopIntersections[k]);
+				}
+			}
+		}
+
+		auxLoopIntersections.sort(function compare( a, b ) {
+		  if ( a.data.y > b.data.y ){
+		    return -1;
+		  }
+		  if ( a.data.y < b.data.y ){
+		    return 1;
+		  }
+		  return 0;
+		});
+		for (k = 0; k < auxLoopIntersections.length; k++){
+			loopIntersectionsOrdered.push(auxLoopIntersections[k])
+		}
+	}
+  	if (segmentObj.start.y == segmentObj.end.y){
+
+		auxLoopIntersections = [];
+		if (segmentObj.start.x < segmentObj.end.x){
+			for (k = 0; k < allLoopIntersections.length; k++){
+				if (/*loopIntersections[k].data.y == segmentObj.start.y && */allLoopIntersections[k].x >= segmentObj.start.x && allLoopIntersections[k].x <= segmentObj.end.x && (loopIntersctDirection[k] == 3 || loopIntersctDirection[k] == 4)){
+					auxLoopIntersections.push(loopIntersections[k]);
+				}
+			}
+		}else{
+			for (k = 0; k < allLoopIntersections.length; k++){
+				if (/*loopIntersections[k].data.y == segmentObj.start.y && */allLoopIntersections[k].x >= segmentObj.end.x && allLoopIntersections[k].x <= segmentObj.start.x && (loopIntersctDirection[k] == 3 || loopIntersctDirection[k] == 4)){
+					auxLoopIntersections.push(loopIntersections[k]);
+				}
+			}
+		}
+		auxLoopIntersections.sort(function compare( a, b ) {
+		  if ( a.data.x > b.data.x ){
+		    return -1;
+		  }
+		  if ( a.data.x < b.data.x ){
+		    return 1;
+		  }
+		  return 0;
+		});
+		
+		for (k = 0; k < auxLoopIntersections.length; k++){
+			loopIntersectionsOrdered.push(auxLoopIntersections[k])
+		}
+	}
+  });
+  
+
+
+
+  /*
+   *	PUTTNG LABEL FOR EACH INTERSECTION POINT WITH ITS ORDER AND WHICH LINE IT'S CROSSING
+   */
+   /*
+  orderCounter = 0;
+  for (k = 0; k < loopIntersections.length; k++){
+  	for (l = 0; l < loopIntersections[k].data.length; l++){
+		
+		canvas.add(
+		  new draw2d.shape.basic.Label({
+		    x: loopIntersections[k].data[l].x,
+		    y: loopIntersections[k].data[l].y,
+		    text:new String(orderCounter) + ".." + new String(intersectionEdgeStr[orderCounter]),
+		    bgColor: "#FFFFFF",
+		    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+		  })
+		);
+		
+		orderCounter++;
+	}
+  }
+  */
+
+
+
+
+  /*
+   *	PUTTNG LABEL FOR EACH ORDERED INTERSECTION
+   */
+  orderCounter = 0;
+  for (k = 0; k < loopIntersectionsOrdered.length; k++){
+  	for (l = 0; l < loopIntersectionsOrdered[k].data.length; l++){
+		
+		canvas.add(
+		  new draw2d.shape.basic.Label({
+		    x: loopIntersectionsOrdered[k].data[l].x,
+		    y: loopIntersectionsOrdered[k].data[l].y,
+		    text:new String(orderCounter) + ".." + new String(intersectionEdgeStr[orderCounter]),
+		    bgColor: "#FFFFFF",
+		    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+		  })
+		);
+		
+		orderCounter++;
+	}
+  }
+
+
+
+  /*
+   *  PUTTING LABELS ON WIRES
+   */
+   /*
+  let lineSegments = wire.getSegments();
+  orderCounter = 0;
+  lineSegments.each(function(segmentIndex, segmentObj){
+  	if (segmentObj.start.x == segmentObj.end.x){
+		if (segmentObj.start.y < segmentObj.end.y){
+			directionStr = "dir DOWN"
+		}else{
+			directionStr = "dir UP"
+		}
+		canvas.add(
+		  new draw2d.shape.basic.Label({
+		    x: segmentObj.start.x,
+		    y: (segmentObj.start.y + segmentObj.end.y)/2,
+		    text: directionStr + '..' + new String(orderCounter),
+		    bgColor: "#FFFFFF",
+		    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+		  })
+		);
+		
+	}
+  	if (segmentObj.start.y == segmentObj.end.y){
+		if (segmentObj.start.x < segmentObj.end.x){
+			directionStr = "dir RIGHT"
+		}else{
+			directionStr = "dir LEFT"
+		}
+		canvas.add(
+		  new draw2d.shape.basic.Label({
+		    y: segmentObj.start.y,
+		    x: (segmentObj.start.x + segmentObj.end.x)/2,
+		    text: directionStr + '..' + new String(orderCounter),
+		    bgColor: "#FFFFFF",
+		    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+		  })
+		);			
+	}
+	orderCounter++;
+  });
+  */
+
+};
+
+/**
  *  @method initAllPortToDefault
  *  @param {draw2d.Canvas} canvas - schematic where ports will be set to default
  *  @description Set default value for all ports. FOR NOW SET VALUE OF EACH PORT TO 0.
