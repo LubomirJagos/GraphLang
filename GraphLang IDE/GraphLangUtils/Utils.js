@@ -703,17 +703,37 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		wire.setTarget(addedTunnels[k].getInputPort(0));
 	}
 	
-	if (k == loopIntersectionsOrdered.length-1){
+	if (k == addedTunnels.length-1){
 		var additionalConnection = new HoverConnection();
 		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
-		additionalConnection.setTarget(wireTarget);		
+		additionalConnection.setTarget(wireTarget);
 	}else{
 		var additionalConnection = new HoverConnection();
 		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
 		additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));	
 	}
+
     canvas.add(additionalConnection);
+
+
+	if (k == addedTunnels.length-1){
+	}else{
+		if (additionalConnection.getSource().getParent().getParent().getId() == additionalConnection.getTarget().getParent().getParent().getId()){
+			loopIntersectionsOrdered[k].loopObj.layers.get(loopIntersectionsOrdered[k].loopObj.activeLayer).assignFigure(additionalConnection);
+		}
+	}
+
   }
+
+
+
+  canvas.getFigures().each(function(figureIndex, figureObj){
+    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+        figureObj.getComposite() == null){
+		
+    }
+  });
+
 
   //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
 

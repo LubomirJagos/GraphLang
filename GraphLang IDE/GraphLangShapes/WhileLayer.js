@@ -66,8 +66,80 @@ GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     cCode += "}while(!" + endCondition + ");";
 
     return cCode;
+  },
+
+  /**
+   * @method getPersistentAttributes
+   * @description Return an objects with all important attributes for XML or JSON serialization.
+   * This is used when file IS SAVED.
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes : function()
+  {
+      var memento = this._super();
+
+      // add all decorations to the memento
+      //
+      memento.labels = [];                                        //custom labels save, here will be tunnles and label for switch layers saved
+      memento.ports = [];                                         //custom ports save
+
+      this.children.each(function(i,e){
+          var labelJSON = e.figure.getPersistentAttributes();
+          labelJSON.locator=e.locator.NAME;
+          labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
+          labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
+
+          memento.labels.push(labelJSON);
+      });
+
+      return memento;
+  },
+
+  /**
+   * @method setPersistentAttributes
+   * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
+   * This is used when file is lOADED.
+   *
+   * @param {Object} memento
+   */
+  setPersistentAttributes : function(memento)
+  {
+      mementoPorts = memento.ports;   //taking ports out, because there is creation of them in parent and I want to create them in my way
+      mementoLabels = memento.labels; //taking labels away
+
+      memento.ports = [];
+      memento.labels = [];
+      this._super(memento);           //CALLING PARENT METHOD, these will rerecreate this showSelectedObjExecutionOrder
+
+      // remove all decorations created in the constructor of this element
+      //
+      this.resetChildren();
+
+      // and add all children of the JSON document.
+      $.each(mementoLabels, $.proxy(function(i,json){
+
+          //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
+          curDatatype = json.type;
+
+
+          /*
+           *  HERE IS REALLY IMPORTANT TO SET SAME ID TO TUNNEL AS IT WAS SAVED, it then creates ports for that tunnel with same id as from file and wires can be connected to that
+           */
+          var figure =  eval("new "+json.type+"({id: '" + json.id + "'})"); // create the figure stored in the JSON, SET SAME ID AS SAVED IN FILE, THIS IS IMPORTANT!!! (for tunnels, look at its init() function)
+          figure.attr(json);
+
+          if (json.locatorX != undefined && json.locatorY != undefined){
+            var locator =  eval("new "+json.locator+"(" + json.locatorX + "," + json.locatorY + ")");     // instantiate the locator
+          }else{
+            var locator =  eval("new draw2d.layout.locator.XYAbsPortLocator(" + json.x + "," + json.y + ")"); //DEFAULT LOCATOR
+          }
+
+          this.add(figure, locator);                                                                    // add the new figure as child to this figure
+      },this));
+
   }
-/*
-  NEEDS TO BE DONE STOP TERMINAL it will go to end condition
-*/
+
+
+
 });
