@@ -27,7 +27,6 @@ GraphLang.Shapes.Basic.LayerChooser = GraphLang.Shapes.Basic.Label.extend({
       emitter.moveActiveLayer();
     });
 
-
   },
 
   layerChooserContextmenu: function(emitter, event){

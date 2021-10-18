@@ -554,14 +554,16 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 			}
 		}
 
+		//depends on wire direction tunnels are numbered 0..n from top down or reversed
   		auxLoopIntersections.sort(function compare( a, b ) {
-  		  if ( a.y < b.y ){
-  		    return -1;
-  		  }
-  		  if ( a.y > b.y ){
-  		    return 1;
-  		  }
-  		  return 0;
+  		    if (lineDirection == "down"){
+				if ( a.y < b.y ) return -1;
+	  			if ( a.y > b.y ) return 1;
+	  		}else if (lineDirection == "up"){
+				if ( a.y > b.y ) return -1;
+	  			if ( a.y < b.y ) return 1;			
+			}
+  			return 0;
   		});
   		for (k = 0; k < auxLoopIntersections.length; k++){
   			loopIntersectionsOrdered.push(auxLoopIntersections[k])
@@ -590,14 +592,16 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 			}
 		}
 
+		//depends on wire direction tunnels are numbered 0..n from left right or reversed
   		auxLoopIntersections = auxLoopIntersections.sort(function compare( a, b ) {
-  		  if ( a.x < b.x ){
-  		    return -1;
-  		  }
-  		  if ( a.x > b.x ){
-  		    return 1;
-  		  }
-  		  return 0;
+			if (lineDirection == "right"){
+				if ( a.x < b.x ) return -1;
+				if ( a.x > b.x ) return 1;
+			}else if (lineDirection == "left"){
+				if ( a.x > b.x ) return -1;
+				if ( a.x < b.x ) return 1;
+			}
+			return 0;
   		});
 
 	    for (k = 0; k < auxLoopIntersections.length; k++){
@@ -630,21 +634,49 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
   for (k = 0; k < loopIntersectionsOrdered.length; k++){
 
            var tunnelObj;
-           tunnelObj = new GraphLang.Shapes.Basic.Tunnel();
+
+           	//LeftTunnel - wire is going INSIDE structure
+           	//RightTunnel - wire is going OUT of structure, it's leaving it
+
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "top" && loopIntersectionsOrdered[k].lineDirection == "down"){
+				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+				tunnelObj.setRotationAngle(90);
+			}
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "top" && loopIntersectionsOrdered[k].lineDirection == "up"){
+				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+				tunnelObj.setRotationAngle(-90);
+			}
+			
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "bottom" && loopIntersectionsOrdered[k].lineDirection == "down"){
+				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+				tunnelObj.setRotationAngle(90);
+			}
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "bottom" && loopIntersectionsOrdered[k].lineDirection == "up"){
+				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+				tunnelObj.setRotationAngle(-90);
+			}
+			
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "left" && loopIntersectionsOrdered[k].lineDirection == "left"){
+				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+				tunnelObj.setRotationAngle(180);
+			}
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "left" && loopIntersectionsOrdered[k].lineDirection == "right"){
+				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+				tunnelObj.setRotationAngle(0);
+			}
+			
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "right" && loopIntersectionsOrdered[k].lineDirection == "left"){
+				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
+				tunnelObj.setRotationAngle(180);
+			}
+			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "right" && loopIntersectionsOrdered[k].lineDirection == "right"){
+				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
+				tunnelObj.setRotationAngle(0);
+			}
+
+		   //debugging
            //tunnelObj.getInputPort(0).setBackgroundColor("#FFFFFF");	//tunnel input will be white
            //tunnelObj.getOutputPort(0).setBackgroundColor("#000000");	//tunnel output will be black
-
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "top" && loopIntersectionsOrdered[k].lineDirection == "down") tunnelObj.setRotationAngle(90);
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "top" && loopIntersectionsOrdered[k].lineDirection == "up") tunnelObj.setRotationAngle(-90);
-			
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "bottom" && loopIntersectionsOrdered[k].lineDirection == "down") tunnelObj.setRotationAngle(90);
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "bottom" && loopIntersectionsOrdered[k].lineDirection == "up") tunnelObj.setRotationAngle(-90);
-			
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "left" && loopIntersectionsOrdered[k].lineDirection == "left") tunnelObj.setRotationAngle(180);
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "left" && loopIntersectionsOrdered[k].lineDirection == "right") tunnelObj.setRotationAngle(0);
-			
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "right" && loopIntersectionsOrdered[k].lineDirection == "left") tunnelObj.setRotationAngle(180);
-			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "right" && loopIntersectionsOrdered[k].lineDirection == "right") tunnelObj.setRotationAngle(0);
 
            var objWidth = tunnelObj.getWidth();
            var objHeight = tunnelObj.getHeight();
@@ -696,10 +728,17 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
   /*
    *	CONNECT ALL TUNNELS
+   *	it was tried that wire.getSource() return figure output point and wire.getTarget() returns figure input port
    */
   wireTarget = wire.getTarget();
   for (k = 0; k < addedTunnels.length; k++){
 	if (k == 0){
+
+		/* debug label
+		wire.getSource().setBackgroundColor("#FFFFFF");
+		wire.getTarget().setBackgroundColor("#000000");
+		*/
+
 		wire.setTarget(addedTunnels[k].getInputPort(0));
 	}
 	
@@ -714,7 +753,6 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	}
 
     canvas.add(additionalConnection);
-
 
 	if (k == addedTunnels.length-1){
 	}else{
@@ -737,6 +775,21 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
   //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
 
+  /*
+   *  PUTTING LABELS ON TUNNELS
+   */
+  /*
+  for (k = 0; k < addedTunnels.length; k++){
+	addedTunnels[k].add(
+	  new draw2d.shape.basic.Label({
+	    text: new String(k),
+	    bgColor: "#FFFFFF",
+	    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
+	  }),
+	  new draw2d.layout.locator.XYRelPortLocator(0,0)
+	);  	
+  }
+  */
 
   /*
    *  PUTTING LABELS ON WIRES
@@ -895,7 +948,13 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
      ****************************************************************/
     multilayerObj = portObj.getParent();
     if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
-      multilayerObj.layers.each(function(childIndex, childObj){
+      
+	  /*
+	   *	THIS SHOULDN'T BE RUNNING BUT THIS REMOVE MOST EXECUTION LABELS, NEED INSPECTION!!!!!!
+	   *	remove execution order labels from all figures inside layers
+	   */
+	  
+	  multilayerObj.layers.each(function(childIndex, childObj){
         if (childObj.NAME.toLowerCase().search("jailhouse") > -1){
           childObj.getChildren().each(function(layerChildIndex, layerChildObj){
             if (layerChildObj.userData.datatype.toLowerCase().search("executionorder") > -1){
@@ -914,7 +973,23 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
 */
 
     }
-
+    
+    /*
+	 *  DON'T KNOW WHY BUT THIS REMOVE TOP LEVEL MULTILAYERED EXECUTION ORDER LABELS?????
+	 *	remove execution order labels from multilayered structure
+	 */
+    multilayerObj = portObj.getParent().getParent();
+    if (multilayerObj && multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
+	  multilayerObj.layers.each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("jailhouse") > -1){
+          childObj.getChildren().each(function(layerChildIndex, layerChildObj){
+            if (layerChildObj.userData.datatype.toLowerCase().search("executionorder") > -1){
+              childObj.remove(layerChildObj);
+            }
+          });
+        }
+      });
+    }
 
     /**********************************************************************************************************************
      *          FEEDBACK NODE PORT INITIALIZATION
@@ -1656,7 +1731,8 @@ GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
   canvas.getFigures().each(function(loopIndex, loopObj){
     if (loopObj.NAME.toLowerCase().search("loop") >= 0 &&
         loopObj.NAME.toLowerCase().search("multilayered") == -1 &&
-        loopObj.NAME.toLowerCase().search("whilelayer") == -1){
+        loopObj.NAME.toLowerCase().search("whilelayer") == -1 &&
+		loopObj.NAME.toLowerCase().search("forloop") == -1){
           loopObj.getAboardFigures(true);
     }
   });
@@ -1769,12 +1845,16 @@ GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas,
       });
     }else{
       loopObj.getAssignedFigures().each(function(aboardFigureIndex, aboardFigureObj){
-        aboardFigureObj.getPorts().each(function(portIndex, portObj){
-          portObj.getConnections().each(function(connectionIndex, connectionObj){
-            if (connectionObj.userData == null) connectionObj.userData = {};
-            connectionObj.userData.wireOwnerId = loopObj.getId();
-          });
-        });
+		
+		if (aboardFigureObj.getPorts){
+			aboardFigureObj.getPorts().each(function(portIndex, portObj){
+	          portObj.getConnections().each(function(connectionIndex, connectionObj){
+	            if (connectionObj.userData == null) connectionObj.userData = {};
+	            connectionObj.userData.wireOwnerId = loopObj.getId();
+	          });
+	        });
+	    }
+        
       });
     }
   });

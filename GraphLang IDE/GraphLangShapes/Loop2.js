@@ -139,7 +139,7 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
   *   This is for Multilayer figure, to get wires list for some layer.
   */
   getLeftTunnelsLayerWires:function(){
-    leftTunnelsWires = new draw2d.util.ArrayList();
+    let leftTunnelsWires = new draw2d.util.ArrayList();
     this.getChildren().each(function(childIndex, childObj){
      if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
        if (childObj.getOutputPort(0).getConnections().getSize() > 0){
@@ -291,7 +291,18 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
      });
 
      return multilayeredList;
-   }
+   },
 
+  /**
+   * @name bringsAllTunnelsToFront
+   * @description Brings all tunnels owned by structure to front, tunnels are owned by Multilayer structure not by layers, so they are common for all layers and always should be displayed at front of structure to be visible. But wires which go from tunnel to particular layer are owned by that layer.
+   */
+  bringsAllTunnelsToFront: function(){
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
+        childObj.toFront();
+      }
+    });
+  }   
 
 });

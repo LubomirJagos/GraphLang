@@ -137,9 +137,24 @@ GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
       },this));
-
+      
+	//rerecreate stop terminal
+	port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(99, 90));
+	port.setConnectionDirection(3);
+	port.setBackgroundColor("#FF0000");
+	port.setName("stopTerminal");
+	port.setMaxFanOut(20);
+	port.userData = {};
+	port.userData.datatype = "bool";
+  },
+    
+  getPort: function(name){
+    if (name.indexOf('stopTerminal') > -1){
+      return this.getInputPort(name);
+    }else{
+      port = this._super(name); //THIS IS NOT RUNNING, TESTED
+      return port;
+    }
   }
-
-
-
+  
 });

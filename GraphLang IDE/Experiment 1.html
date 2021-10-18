@@ -199,8 +199,8 @@ document.addEventListener("DOMContentLoaded",function () {
       /*
        *  KEYBOARD reactions
        */
-      app.view.uninstallEditPolicy(new draw2d.policy.canvas.DefaultKeyboardPolicy());
-      app.view.installEditPolicy(new GraphLang.Utils.KeyboardDeletePolicy());
+      //app.view.uninstallEditPolicy(new draw2d.policy.canvas.DefaultKeyboardPolicy());
+      //app.view.installEditPolicy(new GraphLang.Utils.KeyboardDeletePolicy());
 
       /**
        *  Adding actions TRIGGERED AFTER COMMAND STACK WAS CHANGED, ie. some command run succesfully
@@ -246,8 +246,11 @@ document.addEventListener("DOMContentLoaded",function () {
 
 
 
-      appCanvas2 = app.view2;
-      reader.unmarshal(appCanvas2, jsonDocument2);
+      /*
+       *	LOADING FILE INTO BOTTOM CANVAS
+	   */
+	  //appCanvas2 = app.view2;
+      //reader.unmarshal(appCanvas2, jsonDocument2);
 
 
 

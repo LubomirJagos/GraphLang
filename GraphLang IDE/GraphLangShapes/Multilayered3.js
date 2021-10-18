@@ -154,7 +154,7 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
           {
              switch(key){
              case "rename":                       // <--- Continue here, implement renaming layers, now it's static shit doing nothing
-                 emitter.getParent().renameLayer();
+                 emitter.getParent().renameLayer();                 
                  break;
              case "new":
                 /* this was part of code in example but it's not running so it's disabled, I need to change layer name no selector, it's updated based on active layer ID
@@ -543,11 +543,12 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   },
 
   renameLayer: function(){
-    //this.layerChooser.editor.start(this.layerChooser);
-    layerChooserEditor = new draw2d.ui.LabelEditor();
-    layerChooserEditor.start(this.layerChooser);
+	/* NOT WORKING because in place editor is running separately, so this just run it and continue, so it's not waiting to finish editing, inPlaceEditor is using callbacks needs to think how to use it properly now it's no time to do this
+    layerChooserEditor = new draw2d.ui.LabelInplaceEditor();	//in place of label editor
+	*/
 
-    //this.layers.get(this.activeLayer).setId(this.layerChooser.getText());
+    layerChooserEditor = new draw2d.ui.LabelEditor();			//prompt editor at top of page
+	layerChooserEditor.start(this.layerChooser);
     this.layers.get(this.activeLayer).userData.layerText = this.layerChooser.getText();
   },
 
