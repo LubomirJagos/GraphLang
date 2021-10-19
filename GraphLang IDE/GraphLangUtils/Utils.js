@@ -631,6 +631,8 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
    *	PUTTNG TUNNEL FOR EACH ORDERED INTERSECTION
    */
   addedTunnels = [];
+  addedTunnelsLocator = [];
+  addedTunnelLoopObj = [];
   for (k = 0; k < loopIntersectionsOrdered.length; k++){
 
            var tunnelObj;
@@ -716,15 +718,69 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
              );
            }
 
-           //RELATIVE POSITIOINING OF TUNNELS
-           /*
-            This calculation of realtive position is not totaly correct, because when resizing loop its width and height is changing, but locator percentage is still same and not changing accordingly to new width and height of loop, it was normalized by the previous dimensions and dimension of tunnels is not changing, so right resize method would be recalculate relative locator, or figure out how to snap tunnels to right and left and top and bottom wall of loop
-            */
-           loopObj.add(tunnelObj,tunnelLocatorRel)
-           tunnelObj.setSelectable(true);
-
            addedTunnels.push(tunnelObj);
+           addedTunnelsLocator.push(tunnelLocatorRel);
+           addedTunnelLoopObj.push(loopObj);
   }
+
+  /*
+   *	REMOVE TUNNELS WHICH are going straight through some structure
+   */
+  tunnelsRemovedFromArray = true;
+  while (tunnelsRemovedFromArray){
+  	tunnelsRemovedFromArray = false;
+	for (k = 0; k <= addedTunnels.length - 2; k++){
+  	  if (addedTunnelLoopObj[k].getId() == addedTunnelLoopObj[k+1].getId()){
+  		addedTunnels.splice(k, 2);	//remove tunnel at index k, k+1
+		addedTunnelsLocator.splice(k, 2);
+		addedTunnelLoopObj.splice(k, 2);
+  		tunnelsRemovedFromArray = true;
+  		break;
+	  }
+	}
+  }
+
+  for (k = 0; k < addedTunnels.length; k++){
+         /*
+          *		This calculation of realtive position is not totaly correct, because when resizing loop its width and height
+          *		is changing, but locator percentage is still same and not changing accordingly to new width and height of loop,
+          *		it was normalized by the previous dimensions and dimension of tunnels is not changing, so right resize method
+          *		would be recalculate relative locator, or figure out how to snap tunnels to right and left and top and
+          *		bottom wall of loop
+          */
+         addedTunnelLoopObj[k].add(addedTunnels[k],addedTunnelsLocator[k])
+         addedTunnels[k].setSelectable(true);
+  }
+  
+	/*
+	 *	NO TUNNELS, CONNECTION BETWEEN ALREADY EXISTING TUNNELS INSIDE ONE LOOP, GENERATE WireConnection
+	 */
+	if (
+		addedTunnels.length == 0 &&
+		wire.getSource().getParent().NAME.toLowerCase().search("lefttunnel") > -1 &&
+		wire.getTarget().getParent().NAME.toLowerCase().search("righttunnel") > -1 &&
+		wire.getSource().getParent().getParent().getId() == wire.getTarget().getParent().getParent().getId()
+	){
+		pX = (wire.getSource().getAbsoluteX() + wire.getTarget().getAbsoluteX())/2; 
+		pY = (wire.getSource().getAbsoluteY() + wire.getTarget().getAbsoluteY())/2;
+		wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
+		var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
+	
+		canvas.add(wireConnectionObj, wireConnectionLocatorAbs);
+	
+		wire.getSource().getParent().getParent().getActiveLayer().assignFigure(wireConnectionObj);
+		wireConnectionObj.setRotationAngle(wire.getTarget().getParent().getRotationAngle());
+		if (wire.getTarget().getParent().getRotationAngle() == 0) wireConnectionObj.setWidth(30);
+		else wireConnectionObj.setHeight(30);	 
+	
+		var additionalConnection = new HoverConnection();
+		additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+		additionalConnection.setTarget(wire.getTarget());
+	    canvas.add(additionalConnection);
+
+		wire.setTarget(wireConnectionObj.getInputPort(0));
+	}
+
 
   /*
    *	CONNECT ALL TUNNELS
@@ -732,8 +788,10 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
    */
   wireTarget = wire.getTarget();
   for (k = 0; k < addedTunnels.length; k++){
-	if (k == 0){
 
+
+	//FIRST MOVE WIRE TARGET TO THE FIRST TUNNEL
+	if (k == 0){
 		/* debug, set wire source port WHITE and target BLACK
 		wire.getSource().setBackgroundColor("#FFFFFF");
 		wire.getTarget().setBackgroundColor("#000000");
@@ -742,7 +800,10 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		/*
 		 *	If source is tunnel and it's going through structure WireConnection is added to wire to not broke multilayer structure
 		 */
-		if (wire.getSource().getParent().NAME.toLowerCase().search("tunnel") > -1){
+		if (
+			wire.getSource().getParent().NAME.toLowerCase().search("tunnel") > -1 &&
+			wire.getSource().getParent().getParent().getId() == addedTunnels[k].getParent().getId() 
+		){
 			pX = (wire.getSource().getAbsoluteX() + addedTunnels[k].getAbsoluteX())/2; 
 			pY = (wire.getSource().getAbsoluteY() + addedTunnels[k].getAbsoluteY())/2;
 			wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
@@ -766,6 +827,10 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		}
 	}
 	
+	/*
+	 *	START ADDING NEW WIRES AND CONNECT THEM BETWEEN TUNNELS AND TARGET
+	 */
+	//LAST SEGMENT, CONNECTING LAST TUNNEL AND TARGET
 	if (k == addedTunnels.length-1){
 		var additionalConnection = new HoverConnection();
 		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
@@ -774,6 +839,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	}else{
 
 		/*
+		 *	CONNECTION BETWEEN TUNNELS
 		 *	If source is tunnel and it's going through structure WireConnection is added to wire to not broke multilayer structure
 		 */
 		if (addedTunnels[k].getParent().getId() == addedTunnels[k+1].getParent().getId()){

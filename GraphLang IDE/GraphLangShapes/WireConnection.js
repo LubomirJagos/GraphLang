@@ -12,12 +12,19 @@ GraphLang.Shapes.Basic.WireConnection = GraphLang.Shapes.Basic.Tunnel.extend({
         this._super(attr);
         this.setBackgroundColor("#FFFFFF");
         
+		/*
+		 *	There is added -in0 and -out0 in Tunnel init, this is making mess when code is translated
+		 *	into C++ when ID of wires are replaced by normal number to have readable code, so here
+		 *	these addings to ports IDs are removed
+		 */
+		this.getInputPort(0).setId(this.getInputPort(0).getId().slice(0, -4));		//strip "-in0" from id
+        this.getOutputPort(0).setId(this.getOutputPort(0).getId().slice(0, -5));	//strip "-out0" from id
 	},
 	
     translateToCppCode2: function(){
       outStr = "wire_" + this.getOutputPort(0).getId();
       inStr = "wire_" + this.getInputPort(0).getId();
-      cCode = outStr + ' = ' + inStr + "; /*wireConnection22222222*/ \n"
+      cCode = outStr + ' = ' + inStr + "; /*wireConnection2*/ \n"
 	  return cCode;
     },
     

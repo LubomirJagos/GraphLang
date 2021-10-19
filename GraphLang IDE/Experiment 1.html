@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded",function () {
             if(requestingFigure instanceof TunnelFigure && connectTarget instanceof draw2d.Connection){
                 return connectTarget;
             }
-
+			
             return this._super(requestingFigure, connectTarget);
         }
       }));

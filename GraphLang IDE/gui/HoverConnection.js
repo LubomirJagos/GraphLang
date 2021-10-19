@@ -27,6 +27,7 @@ HoverConnection = draw2d.Connection.extend({
             });
         });
 
+
     },
 
     /**
