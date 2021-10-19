@@ -734,46 +734,80 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
   for (k = 0; k < addedTunnels.length; k++){
 	if (k == 0){
 
-		/* debug label
+		/* debug, set wire source port WHITE and target BLACK
 		wire.getSource().setBackgroundColor("#FFFFFF");
 		wire.getTarget().setBackgroundColor("#000000");
 		*/
 
-		wire.setTarget(addedTunnels[k].getInputPort(0));
+		/*
+		 *	If source is tunnel and it's going through structure WireConnection is added to wire to not broke multilayer structure
+		 */
+		if (wire.getSource().getParent().NAME.toLowerCase().search("tunnel") > -1){
+			pX = (wire.getSource().getAbsoluteX() + addedTunnels[k].getAbsoluteX())/2; 
+			pY = (wire.getSource().getAbsoluteY() + addedTunnels[k].getAbsoluteY())/2;
+			wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
+			var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
+	
+			canvas.add(wireConnectionObj, wireConnectionLocatorAbs);
+	
+			addedTunnels[k].getParent().getActiveLayer().assignFigure(wireConnectionObj);
+			wireConnectionObj.setRotationAngle(addedTunnels[k].getRotationAngle());
+			if (addedTunnels[k].getRotationAngle() == 0) wireConnectionObj.setWidth(30);
+			else wireConnectionObj.setHeight(30);	 
+	
+			wire.setTarget(wireConnectionObj.getInputPort(0));
+	
+			var additionalConnection = new HoverConnection();
+			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+			additionalConnection.setTarget(addedTunnels[k].getInputPort(0));
+		    canvas.add(additionalConnection);
+		}else{
+			wire.setTarget(addedTunnels[k].getInputPort(0));
+		}
 	}
 	
 	if (k == addedTunnels.length-1){
 		var additionalConnection = new HoverConnection();
 		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
 		additionalConnection.setTarget(wireTarget);
+    	canvas.add(additionalConnection);
 	}else{
-		var additionalConnection = new HoverConnection();
-		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
-		additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));	
+
+		/*
+		 *	If source is tunnel and it's going through structure WireConnection is added to wire to not broke multilayer structure
+		 */
+		if (addedTunnels[k].getParent().getId() == addedTunnels[k+1].getParent().getId()){
+
+			pX = (addedTunnels[k].getAbsoluteX() + addedTunnels[k+1].getAbsoluteX())/2; 
+			pY = (addedTunnels[k].getAbsoluteY() + addedTunnels[k+1].getAbsoluteY())/2;
+			wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
+			var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
+
+			canvas.add(wireConnectionObj, wireConnectionLocatorAbs);
+
+			addedTunnels[k].getParent().getActiveLayer().assignFigure(wireConnectionObj);
+			wireConnectionObj.setRotationAngle(addedTunnels[k+1].getRotationAngle());
+			if (addedTunnels[k+1].getRotationAngle() == 0) wireConnectionObj.setWidth(30);
+			else wireConnectionObj.setHeight(30);	 
+
+   			var additionalConnection = new HoverConnection();
+			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
+			additionalConnection.setTarget(wireConnectionObj.getInputPort(0));
+		    canvas.add(additionalConnection);
+
+   			var additionalConnection = new HoverConnection();
+			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+			additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));
+		    canvas.add(additionalConnection);
+
+		}else{
+			var additionalConnection = new HoverConnection();
+			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
+			additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));
+		    canvas.add(additionalConnection);
+		}	
 	}
-
-    canvas.add(additionalConnection);
-
-	if (k == addedTunnels.length-1){
-	}else{
-		if (additionalConnection.getSource().getParent().getParent().getId() == additionalConnection.getTarget().getParent().getParent().getId()){
-			loopIntersectionsOrdered[k].loopObj.layers.get(loopIntersectionsOrdered[k].loopObj.activeLayer).assignFigure(additionalConnection);
-		}
-	}
-
   }
-
-
-
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
-        figureObj.getComposite() == null){
-		
-    }
-  });
-
-
-  //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
 
   /*
    *  PUTTING LABELS ON TUNNELS
@@ -834,12 +868,6 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	orderCounter++;
   });
   */
-
-
-
-
-
-
 
 };
 

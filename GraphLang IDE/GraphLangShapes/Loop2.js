@@ -303,6 +303,10 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
         childObj.toFront();
       }
     });
+  },
+  
+  getActiveLayer: function(){
+  	return this;
   }   
 
 });

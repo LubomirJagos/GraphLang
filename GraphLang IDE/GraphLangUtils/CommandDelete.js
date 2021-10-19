@@ -8,4 +8,11 @@ GraphLang.Utils.CommandDelete = draw2d.command.CommandDelete.extend({
   constructor(obj) {
     obj && Object.assign(this, obj);
   },
+  
+  execute: function(){
+  	if (this.figure.getComposite()){
+		this.figure.getComposite().unassignFigure(this.figure);  
+	}
+	this._super();
+  }
 });

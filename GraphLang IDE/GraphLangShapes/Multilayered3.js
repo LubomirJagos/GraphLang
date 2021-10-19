@@ -303,6 +303,10 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
   getLayerChooser: function(){
     return this.layerChooser;
   },
+  
+  getActiveLayer: function(){
+  	return this.layers.get(this.activeLayer)
+  },
 
 
 
