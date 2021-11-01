@@ -2575,11 +2575,11 @@ GraphLang.Utils.showUserData = function(canvas) {
 }
 
 /**
- *  @method highlightVisibleLoopsAndMultilayered
+ *  @method getVisibleLoopsAndMultilayered
  *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Change border or somehow highlight top visible loops, this is mostly for debugging during development function.
+ *  @description Returns visible loops and multilayered structures. So if there are some loops on non active layers they are not returned.
  */
-GraphLang.Utils.highlightVisibleLoopsAndMultilayered = function(canvas) {
+GraphLang.Utils.getVisibleLoopsAndMultilayered = function(canvas) {
     let loopList = new draw2d.util.ArrayList();
     canvas.getFigures().each(function(figureIndex, figureObj){
       if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
@@ -2590,12 +2590,23 @@ GraphLang.Utils.highlightVisibleLoopsAndMultilayered = function(canvas) {
       }
     });
 
-      str = "";
-      loopList.each(function(loopIndex, loopObj){
-        loopObj.setDashArray("-");
-        str += (loopObj.NAME + "\n");
-      });
-      alert(str);
+	return loopList;
+}
+
+/**
+ *  @method highlightVisibleLoopsAndMultilayered
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Change border or somehow highlight top visible loops, this is mostly for debugging during development function.
+ */
+GraphLang.Utils.highlightVisibleLoopsAndMultilayered = function(canvas) {
+    let loopList = GraphLang.Utils.getVisibleLoopsAndMultilayered(canvas) 
+
+	str = "";
+	loopList.each(function(loopIndex, loopObj){
+	  loopObj.setDashArray("-");
+	  str += (loopObj.NAME + "\n");
+	});
+	alert(str);
 }
 
 /**
