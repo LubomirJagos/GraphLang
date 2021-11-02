@@ -81,5 +81,17 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     directChildren = this.getAssignedFigures();
 
     return cCode;
-  }
+  },
+  
+  /*
+   *    This event is called when figure is dropped on layer.
+   */
+  onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
+    this._super(droppedFigure, x, y, shiftKey, ctrlKey);
+    if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
+        alert('no layer change')
+    }else{
+        alert('new layer assignment')
+    }
+  }    
 });

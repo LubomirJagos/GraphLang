@@ -173,6 +173,4 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
     }
     return cCode;
   }
-
-
 });
