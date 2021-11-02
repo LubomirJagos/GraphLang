@@ -467,6 +467,8 @@ GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
  *  @description Rework function to detectTunnels.
  */
 GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
+  if (wire == null) return;		//tunnel detection is for particular wire, if not set this ends
+
   let loopList = new draw2d.util.ArrayList();
   let connectionList = new draw2d.util.ArrayList();
 
@@ -481,8 +483,6 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
       if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
     }
   });
-
-  if (wire == null) return;
 
   /*
    *	DETECT INTERSECTION WITH WIRE AND EACH MULTILAYERED STRUCTURED AND GATHER ALL NEEDED INFORMATIONS

@@ -89,9 +89,14 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
   onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
     this._super(droppedFigure, x, y, shiftKey, ctrlKey);
     if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
-        alert('no layer change')
+        //alert('no layer change')
     }else{
-        alert('new layer assignment')
+        //alert('new layer assignment')
+        droppedFigure.getPorts().each(function(portIndex, portObj){
+			portObj.getConnections().each(function(connectionIndex, connectionObj){
+				GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
+			});
+		});
     }
   }    
 });
