@@ -637,17 +637,5 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
       });
     }
     return port;
-  },
-  
-  /*
-   *    This event is called when figure is dropped on layer.
-   */
-  onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
-    //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
-    if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
-      this._super(droppedFigure, x, y, shiftKey, ctrlKey);
-    }
-  }    
-
-
+  }
 });

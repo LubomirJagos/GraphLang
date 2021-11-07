@@ -39,29 +39,30 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
 
     //1st define all wires inside layer which are direct children, means not part of nested multilayered structure or loop
     //	here is looking on assigned figures and theirs input ports, if there is loop in layer it's iterated over its tunnels and asking for left tunnels input ports
-	allConnections = new draw2d.util.ArrayList();
-	thisId = this.getComposite();
-    layerFigures.each(function(figureIndex, figureObj){
-	  if (figureObj.getPorts){
-		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
-			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
-				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
-			});
-		}else{
-			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
-			if (figureObj.NAME.toLowerCase().search('loop') > -1){
-				figureObj.getChildren().each(function(childIndex, childObj){
-					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
-						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
-					}
-				});
-			}
-		}
-	  }
-    });
-	allConnections.each(function(connectionindex, connectionObj){
-		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
-	});
+  	allConnections = new draw2d.util.ArrayList();
+  	thisId = this.getComposite();
+      layerFigures.each(function(figureIndex, figureObj){
+  	  if (figureObj.getPorts){
+    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+    			});
+    		}else{
+    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
+    				figureObj.getChildren().each(function(childIndex, childObj){
+    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+    					}
+    				});
+    			}
+    		}
+  	  }
+      });
+
+  	allConnections.each(function(connectionindex, connectionObj){
+  		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
+  	});
 
     //2nd get declaration for wires going from tunnels to figures inside
     leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();

@@ -127,10 +127,38 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
  getWiresInsideLoopDeclarationCppCode:function(){
     cCode = "";
     cCode += "//inside loop wires declaration\n";
-    GraphLang.Utils.getDirectChildrenWires(this.getCanvas(), this.getId()).each(function(wireIndex, wireObj){
-      var wireDatatype = wireObj.getSource().getUserData().datatype;
-      cCode += wireObj.getSource().userData.datatype + " wire_" + wireObj.getId() + ";\n";
+
+    /*
+     *  THIS HERE WAS FIRST DEVELOPED FOR Jailhouse.js, copied here
+     */
+    layerFigures = this.getAssignedFigures();
+    layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
+
+  	allConnections = new draw2d.util.ArrayList();
+  	thisId = this.getComposite();
+      layerFigures.each(function(figureIndex, figureObj){
+  	  if (figureObj.getPorts){
+    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+    			});
+    		}else{
+    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
+    				figureObj.getChildren().each(function(childIndex, childObj){
+    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+    					}
+    				});
+    			}
+    		}
+  	  }
     });
+
+  	allConnections.each(function(connectionindex, connectionObj){
+  		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
+  	});
+
     return cCode;
  },
 
@@ -307,6 +335,18 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
   
   getActiveLayer: function(){
   	return this;
-  }   
+  },
+
+  /*
+   *    This event is called when figure is dropped on layer.
+   */
+  onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
+    //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
+    if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
+      this._super(droppedFigure, x, y, shiftKey, ctrlKey);
+    }
+  }    
+  
+     
 
 });
