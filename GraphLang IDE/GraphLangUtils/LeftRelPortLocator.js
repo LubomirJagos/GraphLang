@@ -8,7 +8,8 @@ GraphLang.Utils.LeftRelPortLocator = draw2d.layout.locator.XYRelPortLocator.exte
   relocate: function(index, figure)
   {
       var node = figure.getParent();
-      var x = -this.x;
+      //var x = -this.x;
+      var x = -figure.getWidth()/2;
       var y = node.getHeight()/100 * this.y;
 
       this.applyConsiderRotation(figure, x, y);

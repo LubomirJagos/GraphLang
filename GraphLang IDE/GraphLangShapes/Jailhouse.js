@@ -104,16 +104,19 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
    *    This event is called when figure is dropped on layer.
    */
   onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
-    this._super(droppedFigure, x, y, shiftKey, ctrlKey);
-    if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
-        //alert('no layer change')
-    }else{
+    //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
+    if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
+      this._super(droppedFigure, x, y, shiftKey, ctrlKey);
+      if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
+          //alert('no layer change')
+      }else{
         //alert('new layer assignment')
         droppedFigure.getPorts().each(function(portIndex, portObj){
-			portObj.getConnections().each(function(connectionIndex, connectionObj){
-				GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
-			});
-		});
+    			portObj.getConnections().each(function(connectionIndex, connectionObj){
+    				GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
+    			});
+  		  });
+      }
     }
   }    
 });

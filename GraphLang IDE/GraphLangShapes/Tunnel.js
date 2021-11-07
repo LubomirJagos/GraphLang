@@ -41,10 +41,12 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
 
         tunnelObj = this
 		this.on('click',function(emitter, event){
-			emitter.setBackgroundColor("#FF0000");
+			//emitter.setBackgroundColor("#FF0000");
+      emitter.setDashArray("--");
+
 			canvas = emitter.getCanvas()
 
-        	if (emitter.userData === null) emitter.userData = {};
+      if (emitter.userData === null) emitter.userData = {};
 			emitter.userData.parentLoop = emitter.getParent().getId();
 			 
 			//alert(emitter.getParent().NAME);
@@ -54,25 +56,81 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
 			canvas.add(emitter)
 			emitter.setX(pX);
 			emitter.setY(pY);
-        	emitter.setDraggable(true);
+      emitter.setDraggable(true);
 						
+      //alert(emitter.NAME);
 						
 		});
 		this.onDragEnd = function(x, y, shiftKey, ctrlKey){
 			//alert("drag end for tunnel");
 			this.setX(x);
 			this.setY(y);
-
+      
 			loopObj = this.getCanvas().getFigure(this.userData.parentLoop);
 			loopBoundingRect = loopObj.getBoundingBox();
-            //tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
-            tunnelLocatorRel =  new draw2d.layout.locator.XYRelPortLocator(
-              -50,//this.getWidth(),
-              Math.abs(y - loopObj.getY() - this.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
-            );
-			//this.getCanvas().remove(this);
+      pX = x;
+      pY = y;
+      tunnelObj = this
+
+      //loopBoundingRect.scale(tunnelObj.getWidth(), tunnelObj.getHeight());
+      //loopObj.setBoundingBox(loopBoundingRect.scale(tunnelObj.getWidth(), tunnelObj.getHeight()));
+              
+      //TUNNEL ATTACHED TO RIGHT EDGE
+      if (Math.abs(x-loopBoundingRect.getRight()) < Math.abs(x-loopBoundingRect.getLeft()) &&
+          Math.abs(x-loopBoundingRect.getRight()) < Math.abs(y-loopBoundingRect.getTop()) &&
+          Math.abs(x-loopBoundingRect.getRight()) < Math.abs(y-loopBoundingRect.getBottom())
+      ){
+        tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
+          tunnelObj.getWidth()/2,
+          Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100
+        );
+        if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(0);
+        else this.setRotationAngle(0);                                                                             
+      }
+      //TUNNEL ATTACHED TO LEFT EDGE
+      else if (Math.abs(x-loopBoundingRect.getLeft()) < Math.abs(x-loopBoundingRect.getRight()) &&
+          Math.abs(x-loopBoundingRect.getLeft()) < Math.abs(y-loopBoundingRect.getTop()) &&
+          Math.abs(x-loopBoundingRect.getLeft()) < Math.abs(y-loopBoundingRect.getBottom())
+      ){
+         tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
+           tunnelObj.getWidth()/2,
+           Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100
+         );
+        if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(0);
+        else this.setRotationAngle(0);                                                                             
+      }
+      //TUNNEL ATTACHED TO BOTTOM
+      else if (Math.abs(y-loopBoundingRect.getBottom()) < Math.abs(x-loopBoundingRect.getRight()) &&
+          Math.abs(y-loopBoundingRect.getBottom()) < Math.abs(x-loopBoundingRect.getLeft()) &&
+          Math.abs(y-loopBoundingRect.getBottom()) < Math.abs(y-loopBoundingRect.getTop())
+      ){
+         tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
+           Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
+           tunnelObj.getHeight()/2
+         );
+        if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(-90);
+        else this.setRotationAngle(90);                                                                             
+      }
+      //TUNNEL ATTACHED TO TOP
+      else if (Math.abs(y-loopBoundingRect.getTop()) < Math.abs(x-loopBoundingRect.getRight()) &&
+          Math.abs(y-loopBoundingRect.getTop()) < Math.abs(x-loopBoundingRect.getLeft()) &&
+          Math.abs(y-loopBoundingRect.getTop()) < Math.abs(y-loopBoundingRect.getBottom())
+      ){
+         tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
+           Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
+           tunnelObj.getHeight()/2
+         );
+        if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(90);
+        else this.setRotationAngle(-90);                                                                             
+      }
+
+      //alert(this.NAME);
+
+      this.setDashArray("");
+			this.getCanvas().remove(this);
 			loopObj.add(this, tunnelLocatorRel);
-			this.setX(this.getX()-this.getWidth());
+      
+      //loopObj.bringsAllTunnelsToFront();      
 		};
 
     },
