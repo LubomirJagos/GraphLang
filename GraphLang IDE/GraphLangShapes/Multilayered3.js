@@ -117,6 +117,14 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     //RIGHT CLICK ON LAYERS NAME SELECTOR
     this.layerChooser.on("contextmenu", this.layerChooserContextmenu);
     this.add(this.layerChooser, new draw2d.layout.locator.TopLocator(this));
+    
+	//put layer chooser into back if it's multilayered structure is not visible, ie. it's somewhere on layer which is not displayed at the time
+    if (this.getComposite() !== null){
+		let visibleLoops = GraphLang.Utils.getVisibleLoopsAndMultilayered(this.getCanvas())
+		if (!visibleLoops.contains(this)){
+			this.layerChooser.toBack();
+		}
+	}
 
     this.on("move", function(emitter, event){
       emitter.moveActiveLayer();

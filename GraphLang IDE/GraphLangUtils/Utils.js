@@ -213,255 +213,6 @@ var createConnection=function(sourcePort, targetPort){
 bullshit = 0;
 
 /**
- *  @method detectTunnels
- *  @param {draw2d.Canvas} canvas - schematic in which is loop located
- *  @description Returns coordinates and put point where wires intersect with loop border (for loop, while loop, case structure, ...)
- */
-GraphLang.Utils.detectTunnels = function(canvas, lastConnection = null){
-  let loopList = new draw2d.util.ArrayList();
-  let connectionList = new draw2d.util.ArrayList();
-  // let loopBoundingRect;
-  // let loopObj;
-/*
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    //remember loop object reference to not lose access to it
-    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1){
-      // loopObj = figureObj;
-      // loopBoundingRect = figureObj.getBoundingBox();
-        loopList.push(figureObj);
-    }
-  });
-*/
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
-        figureObj.getComposite() == null){
-
-      let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
-      if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
-    }
-  });
-
-  //getting all visible connections
-/*  NOT RUNNING PROPERLy
-  loopList.each(function(loopIndex, loopObj){
-    connectionList.addAll(loopObj.getVisibleConnections());
-  });
-  loopList.each(function(loopIndex, loopObj){
-    connectionList.addAll(loopObj.getVisibleConnections());
-  });
-*/
-  //connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
-  if (lastConnection == null) return;
-  connectionList.push(lastConnection);
-
-  let additionalWires = []; //newly created wires list
-  loopList.each(function(loopIndex, loopObj){
-    let loopBoundingRect = loopObj.getBoundingBox();
-
-    let loopIntersections = [];
-    let loopIntersctDirection = []; //1=top to bottom, 2=bottom to top, 3=left to right, 4=right to left
-    let lineVert  = [];
-    let intersectedLines = [];
-    let intersectionInOutDirection = []; //0 = going into structure, 1 = going out of structure
-    let intersectionEdge = []; //0 = top, 1 = right, 2 = down, 3 = left
-    connectionList.each(function(lineIndex, lineObj){
-
-      /*****************************************************************************
-       *  CONDITIONS NOT TO DETECT TUNNEL AND GO AWAY FROM THIS FUNCTION
-       *
-       *  SOMEHOW RUNNING BUT STILL NEED REWORK!!!!! HERE ARE SOME ERRORS PROBABLY
-       *      need to rethin rules when used tunnel, ie. use just one when
-       *      wire ie. cross loop at some corner at two points
-       *****************************************************************************/
-
-       //GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
-
-      //THIS HERE PREVENTS PUTTING TUNNELS TO WIRES WHICH ARE PART OF THIS LOOP AND GOING OUT AND IN AGAIN
-      //TO OVERCOME PUTTING TUNNELS ON WIRES WHERE TUNNELS ALREADY ARE
-      var sourcePort = lineObj.sourcePort.getParent();
-      var targetPort = lineObj.targetPort.getParent();
-      if (sourcePort.NAME.toLowerCase().search("tunnel") >= 0){
-        if (sourcePort.getParent() == loopObj) return;
-      }
-      if (targetPort.NAME.toLowerCase().search("tunnel") >= 0){
-        if (targetPort.getParent() == loopObj) return;
-      }
-
-      let lineSegments = lineObj.getSegments();
-      lineSegments.each(function(segmentIndex, segmentObj){
-
-        let intersectPoint = loopBoundingRect.intersectionWithLine(
-          segmentObj.start,
-          segmentObj.end
-        );
-        if (intersectPoint.getSize() > 0){
-          loopIntersections.push(intersectPoint);
-
-          //GETTING KNOW WHICH LINE OF LOOP RECTANGLE WAS CROSSED
-          // 1 = right, 2 = bottom, 3 = left, 4 = top
-          if (intersectPoint.data.length > 0){
-            for (k = 0; k < intersectPoint.data.length; k++){
-              intersectedLines.push(lineObj);
-              if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersectionEdge.push(3);                                        //LEFT edge
-              else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersectionEdge.push(0);                                   //TOP edge
-              else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersectionEdge.push(1);     //RIGHT edge
-              else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersectionEdge.push(2);    //BOTTOM edge
-            }
-          }else{
-            intersectionEdge.push(1);
-          }
-
-          //looking which point of segment is inside, which is otuside
-          let insidePoint, outsidePoint;
-          if (loopBoundingRect.hitTest(segmentObj.start.getX(), segmentObj.start.getY())){
-            insidePoint = segmentObj.start;
-            outsidePoint = segmentObj.end;
-            intersectionInOutDirection.push(0); // wire is leaving structure, so this intersection is for going out of structure
-          }else{
-            insidePoint = segmentObj.end;
-            outsidePoint = segmentObj.start;
-            intersectionInOutDirection.push(1); // intersection is for wire going into structure
-          }
-          //based on X,Y coords of inside and outside point I'm able to compute dircetion
-          //in which segment cross bounding box, whether is it crossing it top to bottom,
-          //left to right or opposite direction, so I store this direction along with
-          //intersection points
-          if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() < outsidePoint.getY()) loopIntersctDirection.push(1);
-          if (insidePoint.getX() == outsidePoint.getX() && insidePoint.getY() >= outsidePoint.getY()) loopIntersctDirection.push(2);
-          if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() >= outsidePoint.getX()) loopIntersctDirection.push(3);
-          if (insidePoint.getY() == outsidePoint.getY() && insidePoint.getX() < outsidePoint.getX()) loopIntersctDirection.push(4);
-        }
-      });
-      lineVert.push(lineObj.getVertices());
-    });
-
-    if (loopIntersections.length > 0){
-      for (var k = 0; k < loopIntersections.length; k++){
-        loopIntersections[k].each(function(i, caller){
-          pObj = new GraphLang.geo.Point(caller);
-          pX = pObj.getX();
-          pY = pObj.getY();
-
-          outMsg = "> " + String(pX) + "," + String(pY) + "\n";
-          $("#logitem2").html(outMsg);
-
-          /*******************************************************
-           *  Adding TUNNEL (custom figure)
-           *******************************************************/
-           //var tunnelObj = new draw2d.HybridPort({stroke: 2, color: "#FF0000", bgColor: "#00FF00"});
-           var tunnelObj;
-           // tunnelObj = new GraphLang.Shapes.Basic.Tunnel();
-           if (intersectionInOutDirection[k] == 1) tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
-           else if (intersectionInOutDirection[k] == 0) tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
-
-           //this is correct, I tested both are rotating for 90deg, inputs and outputs are then on right side
-           if (intersectionEdge[k+i] == 0 || intersectionEdge[k+i] == 2){
-             if (intersectionInOutDirection[k] == 0){
-               if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(270);
-               if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(90);
-            }else{
-              if (intersectionEdge[k+i] == 0) tunnelObj.setRotationAngle(90);
-              if (intersectionEdge[k+i] == 2) tunnelObj.setRotationAngle(270);
-            }
-             var objWidth = tunnelObj.getWidth();
-             var objHeight = tunnelObj.getHeight();
-             tunnelObj.setWidth(objHeight);
-             tunnelObj.setHeight(objWidth);
-           }
-           //if (loopIntersctDirection[k+i] == 3) tunnelObj.setRotationAngle(180);
-           //if (loopIntersctDirection[k+i] == 4) tunnelObj.setRotationAngle(0);
-
-
-           //pX = pX - tunnelObj.getWidth()/2;
-           //pY = pY - tunnelObj.getHeight()/2;
-           //based on direction in which wire is crossing boundary box, tunnel is moved inside
-           //raft object, so when raft object is moved all placed tunnels are also moving
-           //not needed as ports are placed directly at intersections
-           if (loopIntersctDirection[k+i] == 1) pY -= tunnelObj.getHeight()/2;
-           if (loopIntersctDirection[k+i] == 2) pY += tunnelObj.getHeight()/2;
-           if (loopIntersctDirection[k+i] == 3) pX += tunnelObj.getWidth()/2;
-           if (loopIntersctDirection[k+i] == 4) pX -= tunnelObj.getWidth()/2;
-           var tunnelLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(Math.abs(pX - loopObj.getX()), Math.abs(pY - loopObj.getY()));
-
-           //tunnelObj.setLocator(tunnelLocatorAbs);
-           //loopObj.addPort(tunnelObj);
-
-           //this is for relative locator
-           var tunnelLocatorRel = {}
-           if (intersectionEdge[k+i] == 0){ //TOP edge
-               tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
-               Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
-               tunnelObj.getHeight()/2
-             );
-           }
-           if (intersectionEdge[k+i] == 1){ //RIGHT edge
-               tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
-               tunnelObj.getWidth()/2,
-               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
-             );
-           }
-           if (intersectionEdge[k+i] == 2){ //BOTTOM edge
-               tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
-               Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
-               tunnelObj.getHeight()/2
-             );
-           }
-           if (intersectionEdge[k+i] == 3){ //LEFT edge
-               tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
-               tunnelObj.getWidth()/2,
-               Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
-             );
-           }
-
-           //RELATIVE POSITIOINING OF TUNNELS
-           /*
-            This calculation of realtive position is not totaly correct, because when resizing loop its width and height is changing, but locator percentage is still same and not changing accordingly to new width and height of loop, it was normalized by the previous dimensions and dimension of tunnels is not changing, so right resize method would be recalculate relative locator, or figure out how to snap tunnels to right and left and top and bottom wall of loop
-            */
-           loopObj.add(tunnelObj,tunnelLocatorRel)
-
-
-          /*
-           *  Wire can go in two directions, going from outside into structure or going out of it. So here is quick test what is actual case, if wire
-           *  goes inside structure it mus be connected to appropriate  tunnel input. (previous generation left and right tunnels is still not differentaiate here).
-           */
-          if (loopBoundingRect.hitTest(intersectedLines[k+i].getSource().getAbsoluteX(), intersectedLines[k+i].getSource().getAbsoluteY())){
-            var oldTarget = intersectedLines[k+i].getTarget();
-            intersectedLines[k+i].setTarget(tunnelObj.getInputPort(0));
-
-            var additionalConnection = new HoverConnection();
-            additionalConnection.setTarget(oldTarget);
-            additionalConnection.setSource(tunnelObj.getOutputPort(0));
-          }else{
-            var oldSource = intersectedLines[k+i].getSource();
-            intersectedLines[k+i].setSource(tunnelObj.getOutputPort(0));
-
-            var additionalConnection = new HoverConnection();
-            additionalConnection.setSource(oldSource);
-            additionalConnection.setTarget(tunnelObj.getInputPort(0));
-          }
-
-          appCanvas.add(additionalConnection);
-          tunnelObj.setSelectable(true);
-
-
-          /*
-           *  This is really important to recursive call this.
-           *  Tunnels are inserted into wire path, but as they are iterated in array they doesn't have to necessarily be order
-           * in order how they are place on wire, it means first tunnel could be middle one created, wires ends will be moved
-           * and there will left right half of wire and left one and on both of these ends needs to be added any other tunnels,
-           * if there wouldn't be this recursive call there will be missing tunnels on one wire half because it will be
-           * never iterated, so here is this method recusively call on additional wire.
-           * If there are no connection to be added this function will stop and that's all.
-           */
-            GraphLang.Utils.detectTunnels(canvas, additionalConnection);
-
-        });
-      }
-    }
-  }); //end function to add tunnel to each intersect of wires with loops
-};
-
-/**
  *  @method detectTunnels2
  *  @param {draw2d.Canvas} canvas - schematic in which is loop located
  *  @description Rework function to detectTunnels.
@@ -1322,7 +1073,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
           allNodes.push(childObj);
         }
       });
-    }
+    }	
   });
 
   let cnt1 = 0;
@@ -1373,7 +1124,8 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
                 }
               });
               //if there are no input tunnels go for loop higher look if there are some input tunnels for which we have to wait
-              //if some parent loop has some input tunnels it's not needed to go higher, because everything inside that loop will wait for these input tunnels, so we can set nodeParentLoop to undefined what cause end of while loop
+              //if some parent loop has some input tunnels it's not needed to go higher, because everything inside that loop will
+			  //wait for these input tunnels, so we can set nodeParentLoop to undefined what cause end of while loop
               if (leftTunnelCnt == 0) nodeParentLoop = GraphLang.Utils.getNodeLoopOwner(canvas,nodeParentLoop);
               else nodeParentLoop = undefined;
             }
@@ -1416,8 +1168,11 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
         });
 
         //PLACE LABEL WITH EXECUTION ORDER INTO MIDDLE OF NODE, execept for property and invoke node, they have subelements with labels
-        if (nodeObj.userData.executionOrder == -1 && nodeObj.NAME.toLowerCase().search("itemsnode") == -1){
-          nodeObj.userData.executionOrder = actualStepNum;
+        if (nodeObj.userData.executionOrder == -1 &&
+			nodeObj.NAME.toLowerCase().search("itemsnode") == -1 &&
+			nodeObj.NAME.toLowerCase().search("jailhouse") == -1		//DON'T PUT LABEL FOR jailhouse, they are layers of multilayered structure
+		){
+		  nodeObj.userData.executionOrder = actualStepNum;          
           nodeObj.add(
             new draw2d.shape.basic.Label({
               text:new String(actualStepNum),
@@ -1659,8 +1414,37 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
    *    - THERE IS NOT VALUE ASSIGNEMENT WHEN WIRE IS CONNECTED TO CONSTANT
    *********************************************************************************************************/
   if (nestedLevel == 0){
-    this.getDirectChildrenWires(canvas, parentObj).each(function(lineIndex, lineObj){
-      //LuboJ, for now we trust that each line is wire
+
+  	//FIRST get all top figures (they have no composite set) and then get their input ports and connections connected to them
+  	//	tunnels doesn't have assigned it's loop as its parent, so iterating over tunnels is done when loop is detected, then if it
+  	//	has no composite (what means it's most top structure on canvas) it's iterating over it's children and detecting left tunnels
+  	//
+	allConnections = new draw2d.util.ArrayList();
+	canvas.getFigures().each(function(figureIndex, figureObj){
+		//here it's looking just for figures skipping loops and tunnels
+		if (figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('loop') == -1 &&
+			figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('tunnel') == -1		
+		){
+			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+			});
+		}else{
+			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+			if (figureObj.NAME.toLowerCase().search('loop') > -1 &&
+				figureObj.getComposite() == null
+			){
+				figureObj.getChildren().each(function(childIndex, childObj){
+					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+					}
+				});
+			}
+		}
+	});
+	
+	allConnections.each(function(lineIndex, lineObj){
+      cCode += "\n";
+	  //LuboJ, for now we trust that each line is wire
       //if (lineObj.NAME.toLowerCase().search(""))
       var wireDatatype = lineObj.getSource().getUserData().datatype;
 
@@ -1671,18 +1455,20 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
       if (connectedConstant.NAME.toLowerCase().search("array") > -1){
         cCode += wireDatatype + " wire_" + lineObj.getId() + " = array_" + connectedConstant.getId() + ";\n";
       }
-//NOT NEEDED BECAUSE CONSTANTS HAS IN NAME WORD NODE SO THEY ARE TRANSLATED AT PLACE AND IN THEIR TRANSLATION THERE IS ASSIGNMENET PART FOR CONNECTED WIRES
-/*
-      else if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
-        cCode += wireDatatype + " wire_" + lineObj.getId() + " = const_" + connectedConstant.getId() + ";\n";
-      }
-*/
+		//NOT NEEDED BECAUSE CONSTANTS HAS IN NAME WORD NODE SO THEY ARE TRANSLATED AT PLACE AND IN THEIR TRANSLATION THERE IS ASSIGNMENET PART FOR CONNECTED WIRES
+		/*
+		      else if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
+		        cCode += wireDatatype + " wire_" + lineObj.getId() + " = const_" + connectedConstant.getId() + ";\n";
+		      }
+		*/
       else if (connectedConstant.NAME.toLowerCase().search("cluster") > -1){
         cCode += wireDatatype + " wire_" + lineObj.getId() + " = cluster_" + connectedConstant.getId() + ";\n";
       }else{
         cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
       }
-    });
+	
+	});
+
   }
 
   /*
@@ -1897,77 +1683,6 @@ GraphLang.Utils.initLoopsZOrder = function(canvas){
 GraphLang.Utils.showSelectedObjExecutionOrder = function(canvas){
     var element = canvas.getSelection().getAll().first();
     alert(element.getUserData().executionOrder);
-}
-
-/**
- * @method getDirectChildrenWires
- * @param {draw2d.Canvas} canvas - schematic
- * @param {draw2d.Figure} parentObj - returned wires are direct descendant of this object
- * @description Returns wires which are direct descendant of provided object.
- * @returns {draw2d.util.ArrayList<draw2d.Connection>} Array list of direct children wires
- * of loops or canvas (most top ones, not nested inside some loop).
- */
-GraphLang.Utils.getDirectChildrenWires = function getDirectChildrenWires(canvas, parentObjId = null){
-  var directChildrenWires = new draw2d.util.ArrayList();
-  var allLoops = new draw2d.util.ArrayList();
-
-  //first get all loops, wire could be inside them
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.toLowerCase().search("loop") >= 0){
-      allLoops.push(figureObj);
-    }
-  });
-
-  //clear all lines parents
-  canvas.getLines().each(function(lineIndex, lineObj){
-    if (lineObj.userData == null) lineObj.userData = {};
-    lineObj.userData.wireOwnerId = null;
-  });
-
-  //go through all loops and write into their abroad lines that it's their parent
-  allLoops.each(function(loopIndex, loopObj){
-
-    //loop is implemented as raft or jailhouse, so there are two different functions for getting aboard objects
-    if (typeof loopObj.getAboardFigures !== "undefined"){
-      loopObj.getAboardFigures().each(function(aboardFigureIndex, aboardFigureObj){
-        aboardFigureObj.getPorts().each(function(portIndex, portObj){
-          portObj.getConnections().each(function(connectionIndex, connectionObj){
-            if (connectionObj.userData == null) connectionObj.userData = {};
-            connectionObj.userData.wireOwnerId = loopObj.getId();
-          });
-        });
-      });
-    }else{
-      loopObj.getAssignedFigures().each(function(aboardFigureIndex, aboardFigureObj){
-		
-		if (aboardFigureObj.getPorts){
-			aboardFigureObj.getPorts().each(function(portIndex, portObj){
-	          portObj.getConnections().each(function(connectionIndex, connectionObj){
-	            if (connectionObj.userData == null) connectionObj.userData = {};
-	            connectionObj.userData.wireOwnerId = loopObj.getId();
-	          });
-	        });
-	    }
-        
-      });
-    }
-  });
-
-  //go thorugh all wires and push that which has right parent
-  canvas.getLines().each(function(lineIndex, lineObj){
-    if (parentObjId != null){
-      if (lineObj.userData.wireOwnerId != null && lineObj.userData.wireOwnerId.search(parentObjId) > -1){
-        directChildrenWires.push(lineObj);
-      }
-    }else{
-      if (lineObj.userData.wireOwnerId == null){
-        directChildrenWires.push(lineObj);
-      }
-    }
-  });
-  //alert(directChildrenWires.getSize());
-
-  return directChildrenWires;
 }
 
 /**
@@ -2631,13 +2346,17 @@ GraphLang.Utils.highlightVisibleConnections = function(canvas) {
   loopList.each(function(loopIndex, loopObj){
     connectionList.addAll(loopObj.getVisibleConnections());
   });
-  //connectionList.addAll(GraphLang.Utils.getDirectChildrenWires(canvas));  //add most top wires
 
   connectionList.each(function(connectionIndex, connectionObj){
     connectionObj.setColor(new draw2d.util.Color("#FF0000"));
   });
 }
 
+/**
+ *  @method getCurrentLayerChildren
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Show alert window with ids of current selected multilayered structure layers
+ */
 GraphLang.Utils.getCurrentLayerChildren = function(canvas){
   canvas.getSelection().each(function(objIndex, obj){
     //alert(obj.NAME.toLowerCase())
@@ -2650,3 +2369,19 @@ GraphLang.Utils.getCurrentLayerChildren = function(canvas){
     }
   });
 }
+
+/**
+ *  @method getSelectionPorts
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @description Show alert window with ids of selection input ports
+ */
+GraphLang.Utils.getSelectionPorts = function(canvas){
+  canvas.getSelection().each(function(objIndex, obj){
+	portList = ""
+    obj.getInputPorts().each(function(portIndex, portObj){
+    	portList += portObj.getId() + "\n";
+    });
+    alert(portList);
+  });
+}
+

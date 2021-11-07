@@ -35,24 +35,41 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
      *  Going through all nodes and wires inside Jailhouse and translate them into C/C++ code or call appropriate translate function
      */
     layerFigures = this.getAssignedFigures();
-    //layerFigures.sort("userData.executionOrder"); //this is probably not running for subitems
     layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
 
-    //1st get declaration for wires going from tunnels to figures inside
+    //1st define all wires inside layer which are direct children, means not part of nested multilayered structure or loop
+    //	here is looking on assigned figures and theirs input ports, if there is loop in layer it's iterated over its tunnels and asking for left tunnels input ports
+	allConnections = new draw2d.util.ArrayList();
+	thisId = this.getComposite();
+    layerFigures.each(function(figureIndex, figureObj){
+	  if (figureObj.getPorts){
+		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+			});
+		}else{
+			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+			if (figureObj.NAME.toLowerCase().search('loop') > -1){
+				figureObj.getChildren().each(function(childIndex, childObj){
+					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+					}
+				});
+			}
+		}
+	  }
+    });
+	allConnections.each(function(connectionindex, connectionObj){
+		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
+	});
+
+    //2nd get declaration for wires going from tunnels to figures inside
     leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();
     leftTunnelsWires.each(function(connectionIndex, connectionObj){
       if (layerFigures.contains(connectionObj.getTarget().getParent())){
         cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";  //to get tunnel ID first I got port from wire source and its parent is tunnel
       }
     });
-
-    //2nd define all wires inside layer which are direct children, means not part of nested multilayered structure or loop
-    layerFigures.each(function(figureIndex, figureObj){
-      if (figureObj.NAME.toLowerCase().search("connection") > -1){
-        cCode += figureObj.getSource().userData.datatype + " wire_" + figureObj.getId() + ";\n";
-      }
-    });
-
 
     /*
      *  ...................ToDo.......................

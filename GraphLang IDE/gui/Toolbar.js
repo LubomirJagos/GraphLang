@@ -402,6 +402,15 @@ example.Toolbar = Class.extend({
 		}));
 		this.html.append(this.getCurrentLayerChildrenButton);
 
+		/**
+		*	getSelectionPorts Button
+		*/
+		this.getSelectionPortsButton  = $("<button id=\"getSelectionPortsButton\">getSelectionPorts</button>");
+		this.getSelectionPortsButton.button().click($.proxy(function(){
+			GraphLang.Utils.getSelectionPorts(appCanvas);
+		}));
+		this.html.append(this.getSelectionPortsButton);
+
 	},
 
 	/**
