@@ -468,7 +468,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
                Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
-
+           
            addedTunnels.push(tunnelObj);
            addedTunnelsLocator.push(tunnelLocatorRel);
            addedTunnelLoopObj.push(loopObj);
