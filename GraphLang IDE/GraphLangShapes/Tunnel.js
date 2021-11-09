@@ -75,6 +75,17 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
       //loopBoundingRect.scale(tunnelObj.getWidth(), tunnelObj.getHeight());
       //loopObj.setBoundingBox(loopBoundingRect.scale(tunnelObj.getWidth(), tunnelObj.getHeight()));
               
+       xCoord = (pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100;
+       yCoord = (pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100;
+
+       //alert(xCoord + "   " + yCoord);
+
+       if (xCoord > 95) xCoord = 95;
+       else if (xCoord < 5) xCoord = 5;         
+
+       if (yCoord > 95) yCoord = 95;
+       else if (yCoord < 5) yCoord = 5;
+
       //TUNNEL ATTACHED TO RIGHT EDGE
       if (Math.abs(x-loopBoundingRect.getRight()) < Math.abs(x-loopBoundingRect.getLeft()) &&
           Math.abs(x-loopBoundingRect.getRight()) < Math.abs(y-loopBoundingRect.getTop()) &&
@@ -82,7 +93,7 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
       ){
         tunnelLocatorRel =  new GraphLang.Utils.RightRelPortLocator(
           tunnelObj.getWidth()/2,
-          Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100
+          yCoord
         );
         if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(0);
         else this.setRotationAngle(0);                                                                             
@@ -92,10 +103,10 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
           Math.abs(x-loopBoundingRect.getLeft()) < Math.abs(y-loopBoundingRect.getTop()) &&
           Math.abs(x-loopBoundingRect.getLeft()) < Math.abs(y-loopBoundingRect.getBottom())
       ){
-         tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
-           tunnelObj.getWidth()/2,
-           Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100
-         );
+        tunnelLocatorRel =  new GraphLang.Utils.LeftRelPortLocator(
+          tunnelObj.getWidth()/2,
+          yCoord
+        );
         if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(0);
         else this.setRotationAngle(0);                                                                             
       }
@@ -104,10 +115,10 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
           Math.abs(y-loopBoundingRect.getBottom()) < Math.abs(x-loopBoundingRect.getLeft()) &&
           Math.abs(y-loopBoundingRect.getBottom()) < Math.abs(y-loopBoundingRect.getTop())
       ){
-         tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
-           Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
-           tunnelObj.getHeight()/2
-         );
+        tunnelLocatorRel =  new GraphLang.Utils.BottomRelPortLocator(
+          xCoord,
+          tunnelObj.getHeight()/2
+        );
         if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(-90);
         else this.setRotationAngle(90);                                                                             
       }
@@ -116,10 +127,10 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
           Math.abs(y-loopBoundingRect.getTop()) < Math.abs(x-loopBoundingRect.getLeft()) &&
           Math.abs(y-loopBoundingRect.getTop()) < Math.abs(y-loopBoundingRect.getBottom())
       ){
-         tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
-           Math.abs(pX - loopObj.getX() - tunnelObj.getWidth()/2)/loopBoundingRect.getWidth()*100,
-           tunnelObj.getHeight()/2
-         );
+        tunnelLocatorRel =  new GraphLang.Utils.TopRelPortLocator(
+          xCoord,
+          tunnelObj.getHeight()/2
+        );
         if (this.NAME.toLowerCase().search('lefttunnel') > -1) this.setRotationAngle(90);
         else this.setRotationAngle(-90);                                                                             
       }
@@ -127,8 +138,8 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
       //alert(this.NAME);
 
       this.setDashArray("");
-			this.getCanvas().remove(this);
-			loopObj.add(this, tunnelLocatorRel);
+      this.getCanvas().remove(this);
+      loopObj.add(this, tunnelLocatorRel);
       
       //loopObj.bringsAllTunnelsToFront();      
 		};
