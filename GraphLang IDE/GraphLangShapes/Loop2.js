@@ -96,10 +96,18 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
   },
 
   /*
-   *  THIS PROBABLY WOULD BE NEVER USED!!!! LuboJ
+   *  ASSIGNMENTS VALUES FROM RIGHT TUNNELS TO CONNECTED WIRES
    */
   translateToCppCodePost: function(){
-    return "} /* THIS IS FROM LOOP2.JS translateToCppCodePost*/";
+    cCode = '';
+    this.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search('righttunnel') > -1){
+            childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+                cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";
+            });
+        }
+    });
+    return cCode;
   },
 
   /*
@@ -194,6 +202,21 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
      }
     });
     return cCode;
+  },
+
+
+  getRightTunnelsLayerWires:function(){
+    let rightTunnelsWires = new draw2d.util.ArrayList();
+    this.getChildren().each(function(childIndex, childObj){
+     if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+       if (childObj.getInputPort(0).getConnections().getSize() > 0){
+         childObj.getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+           rightTunnelsWires.push(connectionObj);
+         });
+       }
+     }
+    });
+    return rightTunnelsWires;
   },
 
   /*

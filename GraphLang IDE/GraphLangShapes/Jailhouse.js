@@ -41,24 +41,28 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     //	here is looking on assigned figures and theirs input ports, if there is loop in layer it's iterated over its tunnels and asking for left tunnels input ports
   	allConnections = new draw2d.util.ArrayList();
   	thisId = this.getComposite();
-      layerFigures.each(function(figureIndex, figureObj){
-  	  if (figureObj.getPorts){
-    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
-    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
-    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
-    			});
-    		}else{
-    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
-    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
-    				figureObj.getChildren().each(function(childIndex, childObj){
-    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
-    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
-    					}
-    				});
-    			}
-    		}
-  	  }
-      });
+    layerFigures.each(function(figureIndex, figureObj){
+	  if (figureObj.getPorts){
+  		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+  			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+  				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+  			});
+  		}else{
+  			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+  			if (figureObj.NAME.toLowerCase().search('loop') > -1){
+  				figureObj.getChildren().each(function(childIndex, childObj){
+  					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+  						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+  					}
+  				});
+  			}
+  		}
+	  }
+    });
+
+    //ADD WIRES CONNECTED TO RIGHT TUNNELS
+    rightTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getRightTunnelsLayerWires();
+    allConnections.addAll(rightTunnelsWires);
 
   	allConnections.each(function(connectionindex, connectionObj){
   		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
@@ -94,10 +98,13 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
       }
     });
 
-    //4th translate figures inside
-    //directChildren = GraphLang.Utils.getDirectChildrenWithoutTunnels(this.getCanvas(), this.getCanvas().getFigure(this.getId()));
-    directChildren = this.getAssignedFigures();
-
+    //4th translate wires going OUTSIDE FIGURE THROUGH TUNNELS
+    rightTunnelsWires.each(function(connectionIndex, connectionObj){
+      if (layerFigures.contains(connectionObj.getSource().getParent())){
+        cCode += "tunnel_" + connectionObj.getTarget().getParent().getId() + " = " + "wire_" + connectionObj.getId() + ";" + "\n";
+      }
+    });
+    
     return cCode;
   },
   
@@ -113,11 +120,11 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
       }else{
         //alert('new layer assignment')
         droppedFigure.getPorts().each(function(portIndex, portObj){
-    			portObj.getConnections().each(function(connectionIndex, connectionObj){
-    				GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
-    			});
-  		  });
+    		portObj.getConnections().each(function(connectionIndex, connectionObj){
+    			GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
+    		});
+  		});
       }
     }
-  }    
+  }   
 });

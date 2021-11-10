@@ -407,6 +407,8 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
           }
 
           this.add(figure, locator);                                                                    // add the new figure as child to this figure
+          
+          
       },this));
 
       //RERECREATE JUST SELECTOR PORT
@@ -464,6 +466,9 @@ GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend(
     });
     cCode += "} //end of generated switch \n";
 
+    //multilayered structure output ports assignments
+    cCode += this.translateToCppCodePost();
+        
     return cCode;
   },
 

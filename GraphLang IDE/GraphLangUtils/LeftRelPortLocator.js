@@ -11,7 +11,7 @@ GraphLang.Utils.LeftRelPortLocator = draw2d.layout.locator.XYRelPortLocator.exte
       //var x = -this.x;
       var x = -figure.getWidth()/2;
       var y = node.getHeight()/100 * this.y;
-
+      
       this.applyConsiderRotation(figure, x, y);
   }
 });
