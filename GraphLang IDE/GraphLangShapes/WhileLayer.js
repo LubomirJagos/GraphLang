@@ -41,15 +41,19 @@ GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += "/*code inside loop*/\n";
+    cCode += "/*code inside WHILE LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
       if (figObj.translateToCppCode){
-        cCode += figObj.translateToCppCode()
+        cCode += figObj.translateToCppCode() + "\n"
       }else if (figObj.translateToCppCode2){
-        cCode += figObj.translateToCppCode2()
+        cCode += figObj.translateToCppCode2() + "\n"
       }
+      
+     /* in case of post C/C++ code run it */
+     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+
     });
-    cCode += "/*END code inside loop*/\n";
+    cCode += "/*END code inside WHILE LOOP */\n";
 
     return cCode;
   },
@@ -62,8 +66,8 @@ GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
       endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
     }
 
+    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
     cCode += this.getRightTunnelsAssignementOutputCppCode();
-    cCode += "}while(!" + endCondition + ");";
 
     return cCode;
   },

@@ -38,15 +38,27 @@ GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += GraphLang.Utils.translateToCppCode2(this.getCanvas(), this);
+    cCode += "/*code inside FOR LOOP */\n";
+    this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCode){
+        cCode += figObj.translateToCppCode() + "\n"
+      }else if (figObj.translateToCppCode2){
+        cCode += figObj.translateToCppCode2() + "\n"
+      }
+
+     /* in case of post C/C++ code run it */
+     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+
+    });
+    cCode += "/*END code inside FOR LOOP */\n";
 
     return cCode;
 
   },
   translateToCppCodePost: function(){
-    cCode = "";
+    var cCode = "";
+    cCode += "} /* END FOR LOOP */" + "\n";
     cCode += this.getRightTunnelsAssignementOutputCppCode();
-    cCode += "}";
 
     return cCode;
   },
