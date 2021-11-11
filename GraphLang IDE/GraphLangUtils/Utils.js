@@ -1507,7 +1507,7 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
 
             //after loop is translated
             for (var k = 0; k < nestedLevel*2; k++) delimiter += " ";
-            if (loopObj.translateToCppCodePost != undefined || loopObj.translateToCppCodePost != null) cCode += delimiter + nodeObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+            if (loopObj.translateToCppCodePost != undefined || loopObj.translateToCppCodePost != null) cCode += delimiter + loopObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
             else cCode += delimiter + "{end loop}\n";
           }
         }
