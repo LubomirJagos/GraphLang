@@ -1,5 +1,5 @@
-GraphLang.Shapes.Basic.Loop.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop.ForLoop",
+GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
+  NAME: "GraphLang.Shapes.Basic.Loop2.ForLoop",
   init:function(attr, setter, getter)
   {
     this._super( $.extend({color: "#0000FF"},attr), setter, getter);

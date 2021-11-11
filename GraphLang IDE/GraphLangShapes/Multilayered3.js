@@ -7,8 +7,8 @@
  *  detected tunnels on their borders and just one tunnels for common loop would be
  *  generated.
  */
-GraphLang.Shapes.Basic.Loop.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop.Multilayered3",
+GraphLang.Shapes.Basic.Loop2.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend({
+  NAME: "GraphLang.Shapes.Basic.Loop2.Multilayered3",
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
   //   executionOdrder: -1,

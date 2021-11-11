@@ -10,6 +10,18 @@
    <link type="text/css" rel="stylesheet" href="./css/application.css" />
    <link type="text/css" rel="stylesheet" href="./css/GraphLang_application.css" />
 
+    <style type="text/css">
+      .palette_node_element{
+        float: left; /*LuboJ*/
+        margin: 5px 5px 5px 5px;
+        padding: 5px 5px 5px 5px;
+        font-size: 12px;
+      }
+      .palette_node_element img{
+        max-width: 60px;
+      }
+    </style>
+
     <script src="./lib/jquery.js"></script>
     <script src="./lib/jquery-ui.js"></script>
     <script src="./lib/jquery.browser.js"></script>
@@ -50,7 +62,6 @@
       <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
       <script src="./GraphLangShapes/PropertyNode.js"></script>
       <script src="./GraphLangShapes/InvokeNode.js"></script>
-      <script src="./GraphLangShapes/Loop.js"></script>
       <script src="./GraphLangShapes/Loop2.js"></script>
       <script src="./GraphLangShapes/Jailhouse.js"></script>
       <script src="./GraphLangShapes/LayerChooser.js"></script> <!-- LuboJ, my invention -->
@@ -308,14 +319,6 @@ function displayJSON(canvas){
    </div>
 
    <div id="navigation" class="">
-<!--
-      <div data-shape="draw2d.shape.node.Start"   class="palette_node_element draw2d_droppable">Start</div>
-      <div data-shape="draw2d.shape.node.End"     class="palette_node_element draw2d_droppable">End</div>
-    	<div data-shape="draw2d.shape.node.Between" data-width="300" data-height="50" data-label="Hub label" class="palette_node_element draw2d_droppable">Between</div>
-      <div data-shape="draw2d.shape.node.Hub" data-width="10" data-height="100" data-label="Hub label" class="palette_node_element draw2d_droppable">Hub</div>
-      <div data-shape="draw2d.shape.node.VerticalBus" data-width="10" data-height="100" data-label="Hello world" class="palette_node_element draw2d_droppable">VerticalBus</div>
--->
-
       <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="GraphLang SliderNode" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/slider.png" />
         GraphLang SliderNode
@@ -367,7 +370,6 @@ function displayJSON(canvas){
       <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
       <div data-shape="GraphLang.Shapes.Numeric.Add" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Add</div>
       <div data-shape="GraphLang.Shapes.Numeric.Subtract" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Subtract</div>
-      <div data-shape="GraphLang.Shapes.Basic.Loop" data-width="300" data-height="300" data-label="GraphLang Loop" class="palette_node_element draw2d_droppable">GL Loop</div>
       <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
       <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
       <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="GraphLang Arduino Add" class="palette_node_element draw2d_droppable">
@@ -390,9 +392,9 @@ function displayJSON(canvas){
         <img src="GraphLangSymbols/Arduino_waitUntilNextMs.png" />
         Arduino waitUntilNextMs
       </div>
-      <div data-shape="GraphLang.Shapes.Basic.Loop.WhileLayer" data-label="GraphLang Arduino WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
-      <div data-shape="GraphLang.Shapes.Basic.Loop.ForLoop" data-label="GraphLang Arduino ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
-      <div data-shape="GraphLang.Shapes.Basic.Loop.Multilayered3" data-label="GraphLang Arduino Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
+      <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="GraphLang Arduino WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
+      <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="GraphLang Arduino ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
+      <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="GraphLang Arduino Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
       <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="GraphLang Arduino Math Abs" class="palette_node_element draw2d_droppable">
         <img src="GraphLangSymbols/Arduino_Math_Abs.png" />
         Arduino Math.Abs

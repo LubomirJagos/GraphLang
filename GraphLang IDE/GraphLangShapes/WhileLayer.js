@@ -1,5 +1,5 @@
-GraphLang.Shapes.Basic.Loop.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
-  NAME: "GraphLang.Shapes.Basic.Loop.WhileLayer",
+GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
+  NAME: "GraphLang.Shapes.Basic.Loop2.WhileLayer",
 
   init:function(attr, setter, getter)
   {

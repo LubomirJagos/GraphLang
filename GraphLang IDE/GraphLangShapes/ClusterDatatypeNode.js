@@ -1,13 +1,9 @@
 /**
- *  @class GraphLang.Shapes.Basic.Loop.Multilayered
+ *  @class GraphLang.Shapes.Basic.ClusterDatatypeNode
  *  @author Ing. Lubomir Jagos
- *  @description Base class for multilayered structures, they are also loops, but there
- *  are many loops hidden inside, and they share common boundary which is just one.
- *  So Inside should be multiple sheetes without boundaries than there wouldn't be
- *  detected tunnels on their borders and just one tunnels for common loop would be
- *  generated.
+ *  @description Cluster datatype structure, it's rectangle inside which are place datatypes and this will generate C/C++ struct{} equivalent.
  */
-GraphLang.Shapes.Basic.ClusterDatatypeNode = GraphLang.Shapes.Basic.Loop.extend({
+GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend({
   NAME: "GraphLang.Shapes.Basic.ClusterDatatypeNode",
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
