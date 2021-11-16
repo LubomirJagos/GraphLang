@@ -15,6 +15,9 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
     this.installEditor(new draw2d.ui.LabelInplaceEditor());
     this.persistPorts = false;  //IMPORTANT, if ports are in json code it's loaded wrong
 
+    //INIT USER DATA
+    this.userData = {};
+
     /*****************************************************************************
      *  OUTPUT PORT
      *****************************************************************************/
@@ -172,5 +175,12 @@ GraphLang.Shapes.Basic.NumericConstantNode = draw2d.shape.basic.Label.extend({
       cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";\n";
     }
     return cCode;
+  },
+  
+  getDatatype: function(){
+    cCode = "";
+    cCode += this.getOutputPort(0).userData.datatype;
+    return cCode;    
   }
+    
 });

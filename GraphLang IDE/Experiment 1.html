@@ -57,8 +57,6 @@
       <script src="./GraphLangShapes/OutputPort.js"></script>
       <script src="./GraphLangShapes/Shapes.js"></script>
       <script src="./GraphLangShapes/Numeric.js"></script>
-      <script src="./GraphLangShapes/Subtract.js"></script>
-      <script src="./GraphLangShapes/Add.js"></script>
       <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
       <script src="./GraphLangShapes/PropertyNode.js"></script>
       <script src="./GraphLangShapes/InvokeNode.js"></script>
@@ -195,10 +193,6 @@ document.addEventListener("DOMContentLoaded",function () {
             return this._super(requestingFigure, connectTarget);
         }
       }));
-
-
-
-
 
 //draw2d.command.CommandStackListener
 
@@ -368,8 +362,6 @@ function displayJSON(canvas){
         GraphLang BundleByName
       </div>
       <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
-      <div data-shape="GraphLang.Shapes.Numeric.Add" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Add</div>
-      <div data-shape="GraphLang.Shapes.Numeric.Subtract" data-width="300" data-height="300" data-label="GraphLang Add" class="palette_node_element draw2d_droppable">GL Subtract</div>
       <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
       <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
       <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="GraphLang Arduino Add" class="palette_node_element draw2d_droppable">

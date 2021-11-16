@@ -307,13 +307,13 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
 		//depends on wire direction tunnels are numbered 0..n from top down or reversed
   		auxLoopIntersections.sort(function compare( a, b ) {
-  		    if (lineDirection == "down"){
-				if ( a.y < b.y ) return -1;
+  		  if (lineDirection == "down"){
+  				if ( a.y < b.y ) return -1;
 	  			if ( a.y > b.y ) return 1;
 	  		}else if (lineDirection == "up"){
-				if ( a.y > b.y ) return -1;
+  				if ( a.y > b.y ) return -1;
 	  			if ( a.y < b.y ) return 1;			
-			}
+	   	  }
   			return 0;
   		});
   		for (k = 0; k < auxLoopIntersections.length; k++){
@@ -1258,88 +1258,21 @@ GraphLang.Utils.highlightNodesByExecutionOrder = function(canvas, parentLoop = n
  * @description DEPRECATED Traverse digram and execute over each node function which gives it's C/C++ representation.
  * It's not solving translating loops or similar multilayered things, there is another function translateToCppCode2 which is trying to handle these things.
  *
- *    *********************************************************************************
- *    * DEPRECATED method, there is new better, more complete one translateToCppCode2
- *    *********************************************************************************
- *
+ *  DEPRECATED
+ *    This here just call newer one translateToCppCode2, so it's wrapper to have backward compatibility if used somewhere.
+ *    
  */
 GraphLang.Utils.translateToCppCode = function(canvas){
-  var allNodes = canvas.getFigures(); //<--- NEED TO BE REWORKED TJUST FOR TOP CHILDREN NOT ALL INCLUDES TUNNELS
-  var allLoops = new draw2d.util.ArrayList();
+  cCode = GraphLang.Utils.translateToCppCode2(canvas);
+  
+  var copyElement = document.createElement('textarea');
+  copyElement.innerHTML = cCode;
+  copyElement = document.body.appendChild(copyElement);
+  copyElement.select();
+  document.execCommand('copy');
+  copyElement.remove();
 
-  //ADDING LOOP TUNNELS TO OTHER NODES, tunnels are part of loop not canvas so they are not detected by canvas.getFigures()
-  allNodes.each(function(nodeIndex, nodeObj){
-    if (nodeObj.NAME.toLowerCase().search("loop") > 0){ //put label just for nodes, for now suppose that's all shapes.basic
-      if (allLoops.indexOf(nodeObj) == -1) allLoops.push(nodeObj);  //if loop is not in list register it
-      var loopTunnels = new draw2d.util.ArrayList();
-      nodeObj.getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search("tunnel") >= 0){
-          allNodes.push(childObj);
-        }
-      });
-    }
-  });
-
-  /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
-  var cCode = "";
-  for (var actualStep = 0; actualStep < 20; actualStep++){
-    var allNodes = canvas.getFigures();
-
-    /*
-      Translating nodes to C++ code, if there are tunnels of loops, it's going also to translate their definitions, like:
-        while(...condition...){ <--- this is translate just for first tunnel hwne going through nodes to run
-          ...do something....
-        }
-    */
-    allNodes.each(function(nodeIndex, nodeObj){
-        if (nodeObj.NAME.toLowerCase().search("tunnel") >= 0){
-          //var loopObj = new GraphLang.Shapes.Basic.Loop(nodeObj.getParent());
-          var loopObj = nodeObj.getParent();
-          var loopObjIndex = allLoops.indexOf(loopObj)
-
-          if (nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder == actualStep){
-            var tunnelHighestExecutionOrder = -1;
-            loopObj.getChildren().each(function(childIndex, childObj){
-              if (childObj.NAME.toLowerCase().search("lefttunnel") >= 0){
-                var tunnelExecutionOrder = childObj.getUserData().executionOrder;
-                if (tunnelExecutionOrder > tunnelHighestExecutionOrder) tunnelHighestExecutionOrder = tunnelExecutionOrder;
-              }
-            });
-          }
-          //actualStep is same as execution order of input tunnel into loop with, so loop definition is set and flag is set for that loop indicate to not translate its header to C/C++ again
-          if (actualStep == tunnelHighestExecutionOrder && loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){
-            cCode += loopObj.translateToCppCode() + "\n";
-            loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
-          }
-
-          // // FOR TUNNELS MATTER IF IT SHOULD BE ALREADY EXECUTED, BECAUSE THERE COULD BE ANOTHER TUNNELS ON THE SAME LOOP WITH LATER EXEDCUTION ORDER
-          // // NEED TO REWORK EXECUTION ORDER OF TUNNELS
-          // if (nodeObj.getUserData().executionOrder == actualStep){
-          //   if (loopObjIndex >= 0 && loopObj.getUserData() != undefined && loopObj.getUserData().wasTranslatedToCppCode != true){ //translate just for first time, after no
-          //     cCode += loopObj.translateToCppCode();
-          //
-          //     /*
-          //       HERE SHOULD BE RECURSIVE TRANSCRITPING ALL LOOPS, BECAUSE UNTIL NOW PROCESS
-          //       SHOULD BE DONE FOR TOP ELEMENTS AND FOR ALL LOOP WHICH ARE EXECUTED IN THE
-          //       SAME STEP WHAT COULD BE FIGURE OUT BASED ON TUNNELS, ALWAYS ON THE TUNNEL
-          //       WHICH IS EXECUTED AS LATEST, SO EXECUTION ORDER FOR LOOP IS EXECUTION
-          //       ORDER OF TUNNEL WHICH IS THE HIGHEST FROM ALLS
-          //     */
-          //
-          //     //allLoops.removeElementAt(loopObjIndex);
-          //     loopObj.getUserData().wasTranslatedToCppCode = true;  //<--- mark loop as translated, to be sure
-          //   }
-          // }
-        }
-
-        //getting node c code representation (TUNNELS EXCLUDED)
-        if (nodeObj.NAME.toLowerCase().search("tunnel") == -1 && nodeObj.getUserData() != undefined && nodeObj.getUserData().executionOrder != undefined && nodeObj.getUserData().executionOrder == actualStep){
-          cCode += nodeObj.translateToCppCode() + "\n";
-        }
-    });
-  }
-
-  alert(cCode);
+  alert(cCode); 
 }
 
 /*********************************************************************************************************
@@ -1827,7 +1760,6 @@ GraphLang.Utils.getCanvasJson = function(canvas){
  * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
  */
 GraphLang.Utils.getCppCode2 = function(canvas, showCode = true){
-        var copyElement = document.createElement('textarea');
         cCode = "";
         translateToCppCodeDeclarationArray.clear();
 
@@ -1850,8 +1782,6 @@ GraphLang.Utils.getCppCode2 = function(canvas, showCode = true){
 
         //this is element which content is placed into clipboard
         cCode = GraphLang.Utils.translateToCppCode2(canvas, null);
-        cCode = this.rewriteIDtoNumbers(canvas, cCode);                 //THIS WILL CHANGE ALL IDs IN FILE INTO NUMBERS TO MAKE CODE MORE READIBLE! DONT'FORGET ABOUT THAT WHEN DEBUGGING AND EXPECTING ID.
-
 
         /******************************************************************************
          * LuboJ my template for Arduino stuff
@@ -1885,9 +1815,13 @@ GraphLang.Utils.getCppCode2 = function(canvas, showCode = true){
          * END MY TEMPLATE
          *******************************************************************************/
 
+        /******************************************************************************
+         * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
+         *******************************************************************************/
+        cCode = this.rewriteIDtoNumbers(canvas, cCode);
 
+        var copyElement = document.createElement('textarea');
         copyElement.innerHTML = cCode;
-
         copyElement = document.body.appendChild(copyElement);
         copyElement.select();
         document.execCommand('copy');
