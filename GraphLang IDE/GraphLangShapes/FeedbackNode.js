@@ -231,6 +231,7 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
       var out0 = this.getOutputPort(0);                               //for right numbering have to take look at init part and think how numbers are :)
       var in0 = this.getInputPort(0);
       var inDefault = this.getInputPort(1);
+
       var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
       in0.userData.datatype = feedbackDatatype;
       out0.userData.datatype = feedbackDatatype;

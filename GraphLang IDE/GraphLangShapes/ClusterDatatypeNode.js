@@ -124,7 +124,7 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
     cCode += "struct{\n";
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.getDatatype){
-        cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";
+        cCode += figureObj.getDatatype() + " " + figureObj.userData.itemLabel + ";\n";
       }
     });
 
@@ -139,7 +139,10 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
 
   translateToCppCode: function(){
     cCode = "";
-    cCode += "/* Cluster assignment */\n";
+    var id = this.getId();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+      cCode += "wire_" + connectionObj.getId() + " = cluster_" + id + ";\n";
+    });
     return cCode;
   },
 
@@ -163,8 +166,8 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
     var allLabels = new draw2d.util.ArrayList();
     this.getAboardFigures().each(function(figureIndex, figureObj){
       if (!figureObj.getDatatype) return;                                         //continue just for figures which have datatype function
-      if (figureObj.userData && figureObj.userData.clusterItemLabel){
-        allLabels.add(figureObj.userData.clusterItemLabel);
+      if (figureObj.userData && figureObj.userData.itemLabel){
+        allLabels.add(figureObj.userData.itemLabel);
       }          
     }); 
 
@@ -224,17 +227,17 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
     this.getAboardFigures().each(function(figureIndex, figureObj){
       if (!figureObj.getDatatype) return;                                         //continue just for figures which have datatype function
 
-      if (figureObj.clusterItemLabel != undefined){
-        figureObj.clusterItemLabel.text = figureObj.userData.clusterItemLabel;
-        figureObj.clusterItemLabel.setVisible(true);
+      if (figureObj.itemLabel != undefined){
+        figureObj.itemLabel.text = figureObj.userData.itemLabel;
+        figureObj.itemLabel.setVisible(true);
       }else{
-        if (figureObj.userData.clusterItemLabel != null) labelText = figureObj.userData.clusterItemLabel;
+        if (figureObj.userData.itemLabel != null) labelText = figureObj.userData.itemLabel;
         else labelText = '---';
         
-        figureObj.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
-        figureObj.add(figureObj.clusterItemLabel, new draw2d.layout.locator.TopLocator());
-        figureObj.clusterItemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
-        figureObj.clusterItemLabel.on('change:text', function(emitter, event){
+        figureObj.itemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
+        figureObj.add(figureObj.itemLabel, new draw2d.layout.locator.TopLocator());
+        figureObj.itemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+        figureObj.itemLabel.on('change:text', function(emitter, event){
           labelText = emitter.getText(); 
           var allIndexes = clusterObj.getAllItemsLabels();
           
@@ -242,11 +245,11 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
             labelText = labelText + '2';
           }
 
-          emitter.getParent().userData.clusterItemLabel = labelText;                  //when text change do this also in userData
+          emitter.getParent().userData.itemLabel = labelText;                  //when text change do this also in userData
           emitter.text = labelText;                                                   //this will not fire another event!
         });
       }
-      figureObj.userData.clusterItemLabel = figureObj.clusterItemLabel.getText();  //to not begin from 0
+      figureObj.userData.itemLabel = figureObj.itemLabel.getText();  //to not begin from 0
 
       figureObj.getPorts().each(function(portIndex, portObj){
         portObj.getConnections().each(function(connectionIndex, connectionObj){
@@ -270,8 +273,8 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode = draw2d.shape.composite.Raft.extend(
     this.getAboardFigures(true);                                                  //first recalculate all nodes inside cluster
 
     this.getAboardFigures().each(function(figureIndex, figureObj){
-      if (figureObj.clusterItemLabel != undefined){
-        figureObj.clusterItemLabel.setVisible(false);
+      if (figureObj.itemLabel != undefined){
+        figureObj.itemLabel.setVisible(false);
       }
     });
   },

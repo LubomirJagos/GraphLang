@@ -3,4 +3,3 @@ GraphLang.Shapes = {};
 GraphLang.Shapes.Basic = {};
 GraphLang.Shapes.Basic.Constant = {};
 GraphLang.Shapes.ItemsNode = {};
-GraphLang.geo = new Object();

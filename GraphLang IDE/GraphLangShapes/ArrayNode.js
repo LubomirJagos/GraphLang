@@ -132,11 +132,17 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     this.getOutputPort(0).setLocator(new draw2d.layout.locator.XYRelPortLocator(110, 50.0));
   },
 
+  getDatatype: function(){
+    cCode = "";
+    cCode += this.getOutputPort(0).userData.datatype + '[]';
+    return cCode;    
+  },
+
   /**
    *  @name translateToCppCode
    *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
    */
-  translateToCppCode: function(){
+  translateToCppCodeDeclaration: function(){
       cCode = "";
       cCode = this.getOutputPort(0).userData.datatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
       this.getChildren().each(function(childIndex, childObj){
@@ -145,12 +151,25 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
             childObj.userData.datatype != undefined &&
             childObj.userData.datatype.toLowerCase().search("executionorder") > -1){
         }else{
-          cCode += childObj.getText() + ",";
+          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
+            cCode += "'" + childObj.getText() + "',";
+          }else{
+            cCode += childObj.getText() + ",";
+          }
         }
       });
       cCode = cCode.slice(0,-1);  //remove last ','
       cCode += "};";
       return cCode;
+  },
+
+  translateToCppCode: function(){
+    cCode = "";
+    var id = this.getId();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+      cCode += "wire_" + connectionObj.getId() + " = array_" + id + ";\n";
+    });
+    return cCode;
   },
 
   /**

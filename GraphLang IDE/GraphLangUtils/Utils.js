@@ -1352,56 +1352,29 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
   	//	tunnels doesn't have assigned it's loop as its parent, so iterating over tunnels is done when loop is detected, then if it
   	//	has no composite (what means it's most top structure on canvas) it's iterating over it's children and detecting left tunnels
   	//
-	allConnections = new draw2d.util.ArrayList();
-	canvas.getFigures().each(function(figureIndex, figureObj){
-		//here it's looking just for figures skipping loops and tunnels
-		if (figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('loop') == -1 &&
-			figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('tunnel') == -1		
-		){
-			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
-				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
-			});
-		}else{
-			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
-			if (figureObj.NAME.toLowerCase().search('loop') > -1 &&
-				figureObj.getComposite() == null
-			){
-				figureObj.getChildren().each(function(childIndex, childObj){
-					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
-						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
-					}
-				});
-			}
-		}
-	});
+  	allConnections = new draw2d.util.ArrayList();
+  	canvas.getFigures().each(function(figureIndex, figureObj){
+  		//here it's looking just for figures skipping loops and tunnels
+  		if (figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('loop') == -1 &&
+  			figureObj.getComposite() == null && figureObj.NAME.toLowerCase().search('tunnel') == -1		
+  		){
+  			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+  				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+  			});
+  		}else{
+  			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+  			if (figureObj.NAME.toLowerCase().search('loop') > -1 &&
+  				figureObj.getComposite() == null
+  			){
+  				figureObj.getChildren().each(function(childIndex, childObj){
+  					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+  						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+  					}
+  				});
+  			}
+  		}
+  	});
 	
-	allConnections.each(function(lineIndex, lineObj){
-      cCode += "\n";
-	  //LuboJ, for now we trust that each line is wire
-      //if (lineObj.NAME.toLowerCase().search(""))
-      var wireDatatype = lineObj.getSource().getUserData().datatype;
-
-      /*
-       *  If wire connected TO NUMERICCONSTNATNODE then assign its value to it
-       */
-      var connectedConstant = lineObj.getSource().getParent();
-      if (connectedConstant.NAME.toLowerCase().search("array") > -1){
-        cCode += wireDatatype + " wire_" + lineObj.getId() + " = array_" + connectedConstant.getId() + ";\n";
-      }
-		//NOT NEEDED BECAUSE CONSTANTS HAS IN NAME WORD NODE SO THEY ARE TRANSLATED AT PLACE AND IN THEIR TRANSLATION THERE IS ASSIGNMENET PART FOR CONNECTED WIRES
-		/*
-		      else if (connectedConstant.NAME.toLowerCase().search("constant") > -1){
-		        cCode += wireDatatype + " wire_" + lineObj.getId() + " = const_" + connectedConstant.getId() + ";\n";
-		      }
-		*/
-      else if (connectedConstant.NAME.toLowerCase().search("cluster") > -1){
-        cCode += wireDatatype + " wire_" + lineObj.getId() + " = cluster_" + connectedConstant.getId() + ";\n";
-      }else{
-        cCode += wireDatatype + " wire_" + lineObj.getId() + ";\n";
-      }
-	
-	});
-
   }
 
   /*
