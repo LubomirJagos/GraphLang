@@ -1447,7 +1447,8 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
            */
           var isNodeInCluster = false;
           allClusterNodes.each(function(clusterIndex, clusterObj){
-            if (clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
+            if (clusterObj.getAboardFigures === 'function' && clusterObj.getAboardFigures(true).contains(nodeObj)) isNodeInCluster = true;
+            if (clusterObj.getAssignedFigures === 'function' && clusterObj.getAssignedFigures(true).contains(nodeObj)) isNodeInCluster = true;
           });
           if (!isNodeInCluster){
               if (nodeObj.getComposite() == null) cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code, rewrite just in case it's not part of some Loop, there is own transcript
