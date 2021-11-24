@@ -3,8 +3,11 @@
  *  @author Ing. Lubomir Jagos
  *  @description Cluster datatype structure, it's rectangle inside which are place datatypes and this will generate C/C++ struct{} equivalent.
  */
-GraphLang.Shapes.Basic.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Jailhouse.extend({
-  NAME: "GraphLang.Shapes.Basic.ClusterDatatypeNode2",
+//GraphLang.Shapes.Basic.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Jailhouse.extend({
+GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2.extend({
+  //NAME: "GraphLang.Shapes.Basic.ClusterDatatypeNode2",
+  NAME: "GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2",
+  
   // //This doesn't run, don't know why, so initialization for userData is done in init()
   // userData: {
   //   executionOdrder: -1,
@@ -102,6 +105,9 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Jailhouse.e
   /********************************************************************************************************************
    *  Functions below are implemented by me (LuboJ)
    ********************************************************************************************************************/
+  getDatatype: function(){
+    return "clusterDatatype_" + this.getId()  
+  },
 
   translateToCppCodeDeclaration: function(){
     var cCode = "";
@@ -121,7 +127,16 @@ GraphLang.Shapes.Basic.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Jailhouse.e
   	  return 0;      
     });
     
-    cCode += "struct{\n";
+    /*
+     *  Translate nested cluster into C/C++ declarations. RECURSIVE.
+     */
+    allFigures.each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search('cluster') > -1){
+            cCode += figureObj.translateToCppCodeDeclaration();
+        }
+    });
+    
+    cCode += "typedef struct clusterDatatype_" + this.getId()+ " {\n";
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.getDatatype){
         cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";

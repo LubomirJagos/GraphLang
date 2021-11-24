@@ -1452,16 +1452,9 @@ GraphLang.Utils.translateToCppCode2 = function translateToCppCode2(canvas, paren
           });
           if (!isNodeInCluster){
               if (nodeObj.getComposite() == null) cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code, rewrite just in case it's not part of some Loop, there is own transcript
-              if (nodeObj.translateToCppCodeDeclaration != undefined) translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
-/*
-            if (GraphLang.Utils.getNodeLoopOwner(canvas, nodeObj) == null){
-              cCode += nodeObj.translateToCppCode() + "\n";           //<--- NODE to C/C++ code
-            }else{
-              //DONT TRANSLATE IF NODE PART OF SOME MULTILAYERED NODE
-            }
-*/
-          }else{
-              //DONT TRANSLATE NODE WHEN IT'S INSIDE CLUSTER
+              if (nodeObj.translateToCppCodeDeclaration != undefined){
+                    translateToCppCodeDeclarationArray.push(nodeObj.translateToCppCodeDeclaration());        //<----- GET NODE DECLARATIONS if there is appropriate function defined inside that node
+              }
           }
 
 
@@ -1519,6 +1512,7 @@ GraphLang.Utils.loopsRecalculateAbroadFigures = function(canvas){
     if (loopObj.NAME.toLowerCase().search("loop") >= 0 &&
         loopObj.NAME.toLowerCase().search("multilayered") == -1 &&
         loopObj.NAME.toLowerCase().search("whilelayer") == -1 &&
+        loopObj.NAME.toLowerCase().search("loop2") == -1 &&
 		loopObj.NAME.toLowerCase().search("forloop") == -1){
           loopObj.getAboardFigures(true);
     }

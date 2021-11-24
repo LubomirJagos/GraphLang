@@ -283,6 +283,7 @@ function displayJSON(canvas){
     });
     return jsonStr;
 }
+
 </script>
 
 </head>
@@ -307,139 +308,148 @@ function displayJSON(canvas){
    </div>
 
    <div id="navigation" class="">
-      <div id="GraphLang.Shapes.Basic">
-        <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="GraphLang SliderNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/slider.png" />
-          GraphLang SliderNode
+
+        <!--
+          Tab 1 - GraphLang core nodes
+        -->
+        <div id="GraphLang.Shapes.Basic">
+          <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="GraphLang SliderNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/slider.png" />
+            GraphLang SliderNode
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
+          <div data-shape="GraphLang.Shapes.ExternalInputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalInputPortNode" class="palette_node_element draw2d_droppable">ExternalInputPortNode</div>
+          <div data-shape="GraphLang.Shapes.ExternalOutputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPortNode" class="palette_node_element draw2d_droppable">ExternalOutputPortNode</div>
+          <div data-shape="GraphLang.Shapes.Basic.ClusterDatatypeNode" data-label="GraphLang ClusterDatatypeNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
+            GraphLang ClusterDatatypeNode
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="GraphLang ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
+            GraphLang ClusterDatatypeNode2
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
+          <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
+          <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
+          <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="GraphLang ArrayNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/ArrayNode.png" />
+            GraphLang ArrayNode
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="GraphLang ConstantNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Constant.png" />
+            GraphLang ConstantNode
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="GraphLang BundleByName" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/bundleByName.png" />
+            GraphLang BundleByName
+          </div>
+          <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="GraphLang Arduino WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
+          <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="GraphLang Arduino ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
+          <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="GraphLang Arduino Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
+          <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="GraphLang FeedbackNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_feedback.png" />
+            GraphLang FeedbackNode
+          </div>
         </div>
-        <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
-        <div data-shape="GraphLang.Shapes.ExternalInputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalInputPortNode" class="palette_node_element draw2d_droppable">ExternalInputPortNode</div>
-        <div data-shape="GraphLang.Shapes.ExternalOutputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPortNode" class="palette_node_element draw2d_droppable">ExternalOutputPortNode</div>
-        <div data-shape="GraphLang.Shapes.Basic.ClusterDatatypeNode" data-label="GraphLang ClusterDatatypeNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
-          GraphLang ClusterDatatypeNode
+  
+        <!--
+          Tab 1 - GraphLang Arduino nodes
+        -->
+        <div id="GraphLang.ArduinoLib">        
+          <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-width="70" data-height="40" data-label="GraphLang Dragon1Node" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
+            Experiment42Lib Dragon1Node
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.TimeTaskNode" data-width="70" data-height="40" data-label="GraphLang timedTaskNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
+            Experiment42Lib TimeTaskNode
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-width="30" data-height="30" data-label="GraphLang DummyEnd1Node" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/DummyLib_DummyEnd1Node.png" />
+            ArduinoLib DummyEnd1Node
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-width="30" data-height="30" data-label="GraphLang SearchDirectoryNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/FileLib_SearchDirectoryNode.png" />
+            ArduinoLib SearchDirectoryNode
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-width="30" data-height="30" data-label="GraphLang OpenFolderNode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/FileLib_OpenFolderNode.png" />
+            ArduinoLib OpenFolderNode
+          </div>  
+          <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="GraphLang Arduino Add" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_add.png" />
+            Arduino Add
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Subtract" data-label="GraphLang Arduino Subtract" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_subtract.png" />
+            Arduino Subtract
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.digitalWrite" data-label="GraphLang Arduino digtalWrite" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_digitalWrite.png" />
+            Arduino digitalWrite
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.digitalRead" data-label="GraphLang Arduino digtalWrite" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_digitalRead.png" />
+            Arduino digitalRead
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="GraphLang Arduino waitUntilNextMs" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_waitUntilNextMs.png" />
+            Arduino waitUntilNextMs
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="GraphLang Arduino Math Abs" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_Math_Abs.png" />
+            Arduino Math.Abs
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.pinMode" data-label="GraphLang Arduino pinMode" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_pinMode.png" />
+            Arduino pinMode
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Serial.begin" data-label="GraphLang Arduino Serial.begin" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_Serial_begin.png" />
+            Arduino Serial.begin
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Serial.println" data-label="GraphLang Arduino Serial.println" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_Serial_println.png" />
+            Arduino Serial.println
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Multiply" data-label="GraphLang Arduino Multiply" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_multiply.png" />
+            Arduino Multiply
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Divide" data-label="GraphLang Arduino Divide" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_divide.png" />
+            Arduino Divide
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="GraphLang Arduino analogRead" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_analogRead.png" />
+            Arduino analogRead
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.analogWrite" data-label="GraphLang Arduino analogWrite" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_analogWrite.png" />
+            Arduino analogWrite
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="GraphLang Arduino toStr" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_toString.png" />
+            Arduino toStr
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.String.replace" data-label="GraphLang Arduino StringReplace" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_strReplace.png" />
+            Arduino StringReplace
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="GraphLang Arduino ternarOperator" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_ternaryOperator.png" />
+            Arduino ternarOperator
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.LJ42" data-label="GraphLang Arduino LJ42" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/LJ42.png" />
+            Arduino LJ42
+          </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.ArduinoNano" data-label="GraphLang Arduino ArduinoNano" class="palette_node_element draw2d_droppable">
+            <img src="GraphLangSymbols/Arduino_Nano.png" />
+            Arduino Nano
+          </div>
         </div>
-        <div data-shape="GraphLang.Shapes.Basic.ClusterDatatypeNode2" data-label="GraphLang ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
-          GraphLang ClusterDatatypeNode2
-        </div>
-        <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
-        <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
-        <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
-        <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="GraphLang ArrayNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/ArrayNode.png" />
-          GraphLang ArrayNode
-        </div>
-        <div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="GraphLang ConstantNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Constant.png" />
-          GraphLang ConstantNode
-        </div>
-        <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="GraphLang BundleByName" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/bundleByName.png" />
-          GraphLang BundleByName
-        </div>
-        <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="GraphLang Arduino WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
-        <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="GraphLang Arduino ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
-        <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="GraphLang Arduino Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
-        <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="GraphLang FeedbackNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_feedback.png" />
-          GraphLang FeedbackNode
-        </div>
-      </div>
-      <div id="GraphLang.ArduinoLib">
-        <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-width="70" data-height="40" data-label="GraphLang Dragon1Node" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
-          Experiment42Lib Dragon1Node
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.TimeTaskNode" data-width="70" data-height="40" data-label="GraphLang timedTaskNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Experimental42Lib_TimeTaskNode.png" />
-          Experiment42Lib TimeTaskNode
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-width="30" data-height="30" data-label="GraphLang DummyEnd1Node" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/DummyLib_DummyEnd1Node.png" />
-          ArduinoLib DummyEnd1Node
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-width="30" data-height="30" data-label="GraphLang SearchDirectoryNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/FileLib_SearchDirectoryNode.png" />
-          ArduinoLib SearchDirectoryNode
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-width="30" data-height="30" data-label="GraphLang OpenFolderNode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/FileLib_OpenFolderNode.png" />
-          ArduinoLib OpenFolderNode
-        </div>  
-        <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="GraphLang Arduino Add" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_add.png" />
-          Arduino Add
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Subtract" data-label="GraphLang Arduino Subtract" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_subtract.png" />
-          Arduino Subtract
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.digitalWrite" data-label="GraphLang Arduino digtalWrite" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_digitalWrite.png" />
-          Arduino digitalWrite
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.digitalRead" data-label="GraphLang Arduino digtalWrite" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_digitalRead.png" />
-          Arduino digitalRead
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="GraphLang Arduino waitUntilNextMs" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_waitUntilNextMs.png" />
-          Arduino waitUntilNextMs
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="GraphLang Arduino Math Abs" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_Math_Abs.png" />
-          Arduino Math.Abs
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.pinMode" data-label="GraphLang Arduino pinMode" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_pinMode.png" />
-          Arduino pinMode
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Serial.begin" data-label="GraphLang Arduino Serial.begin" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_Serial_begin.png" />
-          Arduino Serial.begin
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Serial.println" data-label="GraphLang Arduino Serial.println" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_Serial_println.png" />
-          Arduino Serial.println
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Multiply" data-label="GraphLang Arduino Multiply" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_multiply.png" />
-          Arduino Multiply
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.Divide" data-label="GraphLang Arduino Divide" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_divide.png" />
-          Arduino Divide
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="GraphLang Arduino analogRead" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_analogRead.png" />
-          Arduino analogRead
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.analogWrite" data-label="GraphLang Arduino analogWrite" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_analogWrite.png" />
-          Arduino analogWrite
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="GraphLang Arduino toStr" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_toString.png" />
-          Arduino toStr
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.String.replace" data-label="GraphLang Arduino StringReplace" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_strReplace.png" />
-          Arduino StringReplace
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="GraphLang Arduino ternarOperator" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_ternaryOperator.png" />
-          Arduino ternarOperator
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.LJ42" data-label="GraphLang Arduino LJ42" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/LJ42.png" />
-          Arduino LJ42
-        </div>
-        <div data-shape="GraphLang.ArduinoLib.Node.ArduinoNano" data-label="GraphLang Arduino ArduinoNano" class="palette_node_element draw2d_droppable">
-          <img src="GraphLangSymbols/Arduino_Nano.png" />
-          Arduino Nano
-        </div>
-      </div>
+
   </div>
 
    <!--
