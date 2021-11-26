@@ -24,8 +24,12 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     // port.setMaxFanOut(20);
 
     //COMMON LOOP BOUNDARY SETTINGS
-    this.setWidth(220);
-    this.setHeight(220);
+    this.originalWidth = 120;
+    this.originalHeight = 70;
+
+
+    this.setWidth(this.originalWidth);
+    this.setHeight(this.originalHeight);
     this.setStroke(2);
     this.setDashArray("-");
     this.setColor("#AA4A4C"); //stroke color
@@ -47,10 +51,29 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.userData = {};
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
+    this.userData.datatype = "clusterDatatype";
 
     this.setPersistPorts(false); 
     
-    this.on('contextmenu', this.clusterContextmenu);   
+    this.on('contextmenu', this.clusterContextmenu);
+
+    /*
+     *  DO SOME ADDITIONAL CHANGES AFTER ADDED TO CANVAS
+     */
+    this.setResizeable(false);
+    this.on('add', function(emitter){
+      //emitter.setResizeable(false);
+      //this.off('resize');
+    });
+    this.on('change:dimension', function(emitter, event){
+      //emitter.setResizeable(false);
+      //this.off('resize');
+      //alert(emitter.NAME + "\n" + JSON.stringify(event));
+      //alert(JSON.stringify(event.value.old));
+    });
+    this.on('change:x', function(emitter, event){
+      //alert(emitter.NAME + "\n");
+    });
   },
 
   //added by LuboJ, here is showed how to add attributes which
@@ -318,6 +341,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
    */
   onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
     //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
+
     if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
       this._super(droppedFigure, x, y, shiftKey, ctrlKey);
       droppedFigure.getPorts().each(function(portIndex, portObj){
@@ -326,6 +350,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   		});
 	  });
     }
-  }
+    
+    //alert("cluster catched figure\n" + this.originalWidth + " " + this.originalHeight + "\n" +this.getWidth() + " " + this.getHeight());    
+  }  
 
 });

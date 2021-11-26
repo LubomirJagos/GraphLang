@@ -5,8 +5,24 @@
 GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   NAME: "GraphLang.Shapes.Basic.ArrayNode",
   init:function(attr, setter, getter){
-    this._super( $.extend({},attr), setter, getter);
+    this._super($.extend({padding: 10},attr), setter, getter);
+    
     this.setPersistPorts(false);
+    
+
+    /* THIS DOESN'T RUN
+    this.width = 200;
+    this.height = 500;
+    */
+
+    /*
+     *  Setting params after node is added to canvas, before it's not possible
+     */
+    this.on('added', function(emitter, event){
+        emitter.setResizeable(true);
+        emitter.setWidth(50);
+        emitter.setHeight(30);
+    });
 
     /*****************************************************************************
      *  DEFAULT PARAMS
@@ -17,16 +33,16 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     /*****************************************************************************
      *  OUTPUT PORT
      *****************************************************************************/
-
-    //port is pushed little away not to be inside outline, otherwise tunnels would be detected
-    //due wire are crossing or touching outline
-    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(110, 50.0));
+    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100, 50));
     port.setConnectionDirection(1);
     port.setBackgroundColor("#37B1DE");
     port.setName("out1");
     port.setMaxFanOut(20);
     port.userData = {};
     port.userData.datatype = defaultDatatype;
+
+    //port is pushed little away not to be inside outline, otherwise tunnels would be detected
+    //due wire are crossing or touching outline
 
     //default values for array, each cell is separate Label for now, userData of array is based on datatype of port,
     //so here are userData just created as empty object.
@@ -52,27 +68,21 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
      * DEFAULT value
      ***************************************************************************************/
 
+    /*
     var label1 =  new draw2d.shape.basic.Label();    //default datatype is int so value is 0
     label1.setText(defaultValue);
     var newColor = new GraphLang.Utils.Color();
     label1.setColor(newColor.getByName(defaultDatatype));
     label1.setFontColor(newColor.getByNameFontColor(defaultDatatype));
     label1.setBackgroundColor(newColor.getByNameBackgroundColor(defaultDatatype));
+    label1.installEditor(new draw2d.ui.LabelInplaceEditor());
     this.addRow(label1);
+    */
 
     /*****************************************************************************
      *  RIGHT CLICK CONTEXT MENU
      *****************************************************************************/
-     this.updateAllItems();
-  },
-
-  /**
-   * @name updateAllItems
-   * @description Goes through all items in array and update their feature on right click to show context menu.
-   */
-  updateAllItems: function(){
-    this.getChildren().each(function(childIndex, childObj){
-      childObj.on("contextmenu", function(emitter, event){
+      this.on("contextmenu", function(emitter, event){
           $.contextMenu({
               selector: 'body',
               events:
@@ -90,24 +100,33 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                   case "double":
                   case "bool":
                   case "String":
-                      emitter.getParent().changeDatatypeAllItems(key);
+                  case "clusterDatatype":
+                      emitter.changeDatatypeAllItems(key);
                       break;
                   case "add item":
-                      var arrayItemDatatype = emitter.getParent().getOutputPort(0).userData.datatype;
-
+                      var arrayItemDatatype = emitter.getOutputPort(0).userData.datatype;
+                      //alert('adding to array: ' + arrayItemDatatype)
+                        
                       //HERE SHOULD BE CREATING SOME NumericConstant or something MORE SPECIFIC
                       //NOW HERE IS JUST CREATED LABEL AND PUSHED INTO ARRAY VERTICAL LAYOUT NEED TO IMPROVE (to be based on datatype of items)!!!
-                      var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}})
+                      if (arrayItemDatatype == "clusterDatatype"){
+                        //var arrayItem = new GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2({minWidth: 100, minHeight: 20})
+                        var arrayItem = new draw2d.shape.basic.Label({text:"clusterName",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}});
+                      }else{
+                        var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}})
+                        arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
+                      }
 
-                      arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
-                      emitter.getParent().addRow(arrayItem);
-                      emitter.getParent().updateAllItems();                               //update array items context menu
-                      emitter.getParent().changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
+                      emitter.getCanvas().add(arrayItem);
+                      emitter.addRow(arrayItem);
+                      emitter.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
+
                       break;
                   default:
+                      alert(JSON.stringify(emitter))
                       emitter.setColor(new draw2d.util.Color("#979595"));
-                      emitter.getParent().userData.datatype = "unknown";
-                      emitter.getParent().getOutputPort(0).userData.datatype = "unknown";
+                      emitter.userData.datatype = "unknown";
+                      //emitter.getOutputPort(0).userData.datatype = "unknown";
                       break;
                 }
               },this),
@@ -121,17 +140,25 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                   "double": {name: "double"},
                   "bool": {name: "bool"},
                   "String": {name: "String"},
+                  "clusterDatatype": {name: "clusterDatatype"},
                   "separator": "--------------",
                   "add item": {name: "Add Item"}
               }
           });
       });
-    });
 
-    //LuboJ this will place port always to right position, but now it's inside add item function so it will repair port position after each add new item
-    this.getOutputPort(0).setLocator(new draw2d.layout.locator.XYRelPortLocator(110, 50.0));
   },
 
+  /*
+   * HACK
+   * There is event to change size fired when items are added and size is adjusted to elements, so for now this method hardwire array size.
+   */
+   /*
+  setDimension: function(w, h){
+    this.width = 400;
+    this.height = 300;
+  },
+  */
   getDatatype: function(){
     cCode = "";
     cCode += this.getOutputPort(0).userData.datatype + '[]';
@@ -146,19 +173,23 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
       cCode = "";
       cCode = this.getOutputPort(0).userData.datatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
       this.getChildren().each(function(childIndex, childObj){
-        //protection agains labels with execution order to be interpreted as part of array
-        if (childObj.userData != undefined &&
-            childObj.userData.datatype != undefined &&
-            childObj.userData.datatype.toLowerCase().search("executionorder") > -1){
+        //alert(childObj.NAME + "\n" + childObj.userData.datatype);
+        
+        if (childObj.userData.datatype.toLowerCase().search('string') > -1){
+          cCode += "'" + childObj.getText() + "',";
+        }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+          if (childObj.translateToCppCode){
+              cCode += childObj.translateToCppCode() + ",";
+          }
+        }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
+              cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
         }else{
-          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
-            cCode += "'" + childObj.getText() + "',";
-          }else{
-            cCode += childObj.getText() + ",";
+          if (childObj.getText){
+              cCode += childObj.getText() + ",";
           }
         }
       });
-      cCode = cCode.slice(0,-1);  //remove last ','
+      //cCode = cCode.slice(0,-1);  //remove last ','
       cCode += "};";
       return cCode;
   },
@@ -179,16 +210,33 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
    */
   changeDatatypeAllItems: function(newDatatype){
         var newColor = new GraphLang.Utils.Color();
+        
         this.getChildren().each(function(childIndex, childObj){
-
           childObj.setColor(newColor.getByName(newDatatype));
           childObj.setFontColor(newColor.getByNameFontColor(newDatatype));
           childObj.setBackgroundColor(newColor.getByNameBackgroundColor(newDatatype));
 
+          if (childObj.userData.datatype.toLowerCase().search("executionorder") == -1){
+            childObj.userData.datatype = newDatatype;
+          }
+            
+          /*
+           *    For cluster there will be editor with available cluster datatypes to change.
+           *    For normal number there will be in place editor.
+           */
+          if (newDatatype.toLowerCase().search("cluster") > -1){
+            childObj.installEditor(null);
+            childObj.setText("clusterDatatypeName");
+          }else{
+            childObj.installEditor(new draw2d.ui.LabelInplaceEditor());
+          }
+
           if (childObj.userData == undefined) childObj.userData = {};
           childObj.userData.datatype = newDatatype;
         });
+        
         this.getOutputPort(0).userData.datatype = newDatatype;
+        //this.fireEvent("resize");
   }
 
 });
