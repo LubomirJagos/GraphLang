@@ -54,7 +54,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.userData.datatype = "clusterDatatype";
 
     this.setPersistPorts(false); 
-    
+
     this.on('contextmenu', this.clusterContextmenu);
 
     /*
@@ -74,6 +74,14 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.on('change:x', function(emitter, event){
       //alert(emitter.NAME + "\n");
     });
+
+    this.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: "clusterName"});
+    this.add(this.clusterItemLabel, new draw2d.layout.locator.TopLocator());
+    this.clusterItemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+    this.clusterItemLabel.userData = {};
+    this.clusterItemLabel.userData.type = "clusterDatatypeName";
+
+
   },
 
   //added by LuboJ, here is showed how to add attributes which
@@ -128,8 +136,12 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   /********************************************************************************************************************
    *  Functions below are implemented by me (LuboJ)
    ********************************************************************************************************************/
+  getName: function(){
+    return this.clusterItemLabel.getText();
+  },
+
   getDatatype: function(){
-    return "clusterDatatype_" + this.getId()  
+    return "clusterDatatype_" + this.clusterItemLabel.getText()  
   },
 
   translateToCppCodeDeclaration: function(){
@@ -159,7 +171,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
         }
     });
     
-    cCode += "typedef struct clusterDatatype_" + this.getId()+ " {\n";
+    cCode += "typedef struct " + this.getDatatype()+ " {\n";
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.getDatatype){
         cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";
@@ -171,7 +183,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
      *  it has same ID number as cluster datatype definition, but keyword before prefix is different,
      *  so into wire is assigned variable starting with cluster_... and wire has right datatype starting with clusterDatatype_...
      */
-    cCode += "} cluster_" + this.getId()+ ";\n";
+    cCode += "} cluster_" + this.getId()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
     return cCode;
   },
 

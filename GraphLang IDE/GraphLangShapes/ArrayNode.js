@@ -105,21 +105,40 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       break;
                   case "add item":
                       var arrayItemDatatype = emitter.getOutputPort(0).userData.datatype;
-                      //alert('adding to array: ' + arrayItemDatatype)
                         
                       //HERE SHOULD BE CREATING SOME NumericConstant or something MORE SPECIFIC
                       //NOW HERE IS JUST CREATED LABEL AND PUSHED INTO ARRAY VERTICAL LAYOUT NEED TO IMPROVE (to be based on datatype of items)!!!
+                      graphLangColors = new GraphLang.Utils.Color();
+                      var arrayItem = new draw2d.shape.basic.Label({
+                          resizeable:true,
+                          bgColor:graphLangColors.getByNameBackgroundColor(arrayItemDatatype),
+                          fontColor:graphLangColors.getByNameFontColor(arrayItemDatatype),
+                          userData: {datatype: arrayItemDatatype}
+                      });
+
                       if (arrayItemDatatype == "clusterDatatype"){
-                        //var arrayItem = new GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2({minWidth: 100, minHeight: 20})
-                        var arrayItem = new draw2d.shape.basic.Label({text:"clusterName",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}});
+                        arrayItem.text = "null";
+                        emitter.getChildren().each(function(childIndex, childObj){
+                            if (childObj.userData && childObj.userData.datatype && childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+                                arrayItem.text = childObj.text;
+                            }
+                        });
+                        arrayItem.userData.datatype = "clusterDatatype";
+                        
+                        arrayItem.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
+                      }else if(arrayItemDatatype.toLowerCase().search("bool") > -1){
+                        arrayItem.setText('false')
+                        arrayItem.on('click', function(emitter){
+                            emitter.setText(emitter.text == 'false' ? 'true' : 'false');
+                        });
                       }else{
-                        var arrayItem = new draw2d.shape.basic.Label({text:"0",resizeable:true, fontColor:"#00AF00", userData: {datatype: arrayItemDatatype}})
+                        arrayItem.text = "0";
                         arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
                       }
 
-                      emitter.getCanvas().add(arrayItem);
+                      //emitter.getCanvas().add(arrayItem);                     //DON'T ADD array items to canvas obj, because then they will be saved as separate objects
                       emitter.addRow(arrayItem);
-                      emitter.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
+                      //emitter.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
 
                       break;
                   default:
@@ -161,8 +180,24 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   */
   getDatatype: function(){
     cCode = "";
-    cCode += this.getOutputPort(0).userData.datatype + '[]';
+    arrayDatatype = this.getOutputPort(0).userData.datatype;
+    if (arrayDatatype.toLowerCase().search('clusterdatatype') > -1){
+        arrayDatatype = this.getChildren().first().getText();
+        cCode += arrayDatatype + '[' + this.getArraySize() + ']';
+    }else{
+        cCode += arrayDatatype + '[]';
+    }    
     return cCode;    
+  },
+  
+  getArraySize: function(){
+    arraySize = 0;
+    this.getChildren().each(function(childIndex, childObj){
+        if (childObj.userData && childObj.userData.datatype && childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+            arraySize++;
+        }
+    });
+    return arraySize;
   },
 
   /**
@@ -171,26 +206,37 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
    */
   translateToCppCodeDeclaration: function(){
       cCode = "";
-      cCode = this.getOutputPort(0).userData.datatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
-      this.getChildren().each(function(childIndex, childObj){
-        //alert(childObj.NAME + "\n" + childObj.userData.datatype);
-        
-        if (childObj.userData.datatype.toLowerCase().search('string') > -1){
-          cCode += "'" + childObj.getText() + "',";
-        }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
-          if (childObj.translateToCppCode){
-              cCode += childObj.translateToCppCode() + ",";
+      arrayDatatype = this.getOutputPort(0).userData.datatype;    
+
+      if (arrayDatatype.toLowerCase().search('cluster') > -1){
+        cCode = arrayDatatype + " array_" + this.getId() + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
+      }else{
+        cCode = arrayDatatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
+        this.getChildren().each(function(childIndex, childObj){
+          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
+            cCode += "'" + childObj.getText() + "',";
+          }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+            /*
+             *    THIS IS IMPROVISATION, there is cluster datatype label, so it has not translateToCpp() and instead there is placed datatype name
+             */
+            if (childObj.translateToCppCode){
+                cCode += childObj.translateToCppCode() + ",";
+            }else{
+                cCode += childObj.getText() + ",";
+            }
+          }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
+                cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
+          }else{
+            if (childObj.getText){
+                cCode += childObj.getText() + ",";
+            }
           }
-        }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
-              cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
-        }else{
-          if (childObj.getText){
-              cCode += childObj.getText() + ",";
-          }
-        }
-      });
-      //cCode = cCode.slice(0,-1);  //remove last ','
-      cCode += "};";
+        });
+        cCode = cCode.slice(0,-1);  //remove last ','
+        cCode += "};\n";
+      }
+
+
       return cCode;
   },
 
@@ -216,6 +262,11 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
           childObj.setFontColor(newColor.getByNameFontColor(newDatatype));
           childObj.setBackgroundColor(newColor.getByNameBackgroundColor(newDatatype));
 
+          //uninstall all previous editors
+          childObj.off('click');    //uninstall changing value for boolean, THIS IS UNIVERSAL THERE IS NO OTHER EDITOR USING CLICK EVENT
+          childObj.installEditor(null);   //uninstall editor
+          
+
           if (childObj.userData.datatype.toLowerCase().search("executionorder") == -1){
             childObj.userData.datatype = newDatatype;
           }
@@ -225,9 +276,15 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
            *    For normal number there will be in place editor.
            */
           if (newDatatype.toLowerCase().search("cluster") > -1){
-            childObj.installEditor(null);
-            childObj.setText("clusterDatatypeName");
+            childObj.setText("null");
+            childObj.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
+          }else if(newDatatype.toLowerCase().search("bool") > -1){
+            childObj.setText("false");
+            childObj.on('click', function(emitter){
+                emitter.setText(emitter.text == 'false' ? 'true' : 'false');
+            });
           }else{
+            childObj.setText("0");
             childObj.installEditor(new draw2d.ui.LabelInplaceEditor());
           }
 
@@ -237,6 +294,53 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
         
         this.getOutputPort(0).userData.datatype = newDatatype;
         //this.fireEvent("resize");
-  }
+  },
+  
+    /**
+   * @method getPersistentAttributes
+   * @description Return an objects with all important attributes for XML or JSON serialization.
+   * This is used when file IS SAVED.
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes : function()
+  {
+      var memento = this._super();
+
+      // add all decorations to the memento
+      //
+      memento.labels = [];                                        //custom labels save, here will be tunnles and label for switch layers saved
+
+      this.children.each(function(i,e){
+          var labelJSON = e.figure.getPersistentAttributes();
+          labelJSON.locator=e.locator.NAME;
+          labelJSON.locatorX=e.locator.x;                         //STORE INFORMATION ABOUT TUNNEL POSITION X
+          labelJSON.locatorY=e.locator.y;                         //STORE INFORMATION ABOUT TUNNEL POSITION Y
+
+          //layerSelector is based on its name pushed into ports, tunnels and layer switch label is pushed into labels
+          memento.labels.push(labelJSON);
+      });
+
+      return memento;
+  },
+  
+  setPersistentAttributes : function(memento)
+  {
+      this._super(memento);           //CALLING PARENT METHOD, these will rerecreate this showSelectedObjExecutionOrder
+
+      // and add all children of the JSON document.
+      $.each(memento.labels, $.proxy(function(i,json){
+          //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
+          curDatatype = json.type;
+
+          /*
+           *  HERE IS REALLY IMPORTANT TO SET SAME ID TO TUNNEL AS IT WAS SAVED, it then creates ports for that tunnel with same id as from file and wires can be connected to that
+           */
+          var figure =  eval("new "+json.type+"({id: '" + json.id + "'})"); // create the figure stored in the JSON, SET SAME ID AS SAVED IN FILE, THIS IS IMPORTANT!!! (for tunnels, look at its init() function)
+          figure.attr(json);
+
+          this.addRow(figure);    // add the new figure as child to this figure
+      },this));
+  },
 
 });

@@ -411,6 +411,32 @@ example.Toolbar = Class.extend({
 		}));
 		this.html.append(this.getSelectionPortsButton);
 
+		/**
+		*	zoomIn Button
+		*/
+		this.zoomInButton  = $("<button id=\"zoomInButton\">zoomIn</button>");
+		this.zoomInButton.button().click($.proxy(function(){
+            appCanvas.setZoom(appCanvas.getZoom()*0.7, true);
+		}));
+		this.html.append(this.zoomInButton);
+
+		/**
+		*	zoomOut Button
+		*/
+		this.zoomOutButton  = $("<button id=\"zoomOutButton\">zoomOut</button>");
+		this.zoomOutButton.button().click($.proxy(function(){
+            appCanvas.setZoom(appCanvas.getZoom()*1.3, true);
+		}));
+		this.html.append(this.zoomOutButton);
+
+		/**
+		*	zoomNormal Button, makes 1:1 zoom
+		*/
+		this.zoomNormalButton  = $("<button id=\"zoomNormalButton\">zoom 1:1</button>");
+		this.zoomNormalButton.button().click($.proxy(function(){
+            appCanvas.setZoom(1.0, true);
+		}));
+		this.html.append(this.zoomNormalButton);
 	},
 
 	/**

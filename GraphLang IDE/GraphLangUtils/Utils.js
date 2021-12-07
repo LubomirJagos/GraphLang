@@ -228,6 +228,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
    */
   canvas.getFigures().each(function(figureIndex, figureObj){
     if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
+        figureObj.NAME.toLowerCase().search("clusterdatatype") == -1 &&
         figureObj.getComposite() == null){
 
       let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
@@ -1189,6 +1190,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
       inputPortCnt = 0;
     });
   }
+
 
   //set EXECUTION ORDER for LOOPS
   allNodes.each(function(nodeIndex, nodeObj){

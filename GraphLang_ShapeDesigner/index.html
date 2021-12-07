@@ -1,0 +1,516 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title>Draw2D Shape Designer</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   
+   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+
+    <link type="text/css" rel="stylesheet" href="./lib/jquery-ui/jquery-ui.min.css" />
+    <link type="text/css" rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="./lib/ionicons/css/ionicons.min.css" />
+    <link type="text/css" rel="stylesheet" href="./lib/prettify/src/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="./assets/stylesheets/application.css" />
+    <link type="text/css" rel="stylesheet" href="./assets/stylesheets/main.css" />
+
+
+
+    <SCRIPT src="./assets/javascript/dependencies.js"></SCRIPT>
+    <SCRIPT src="./assets/javascript/app.js"></SCRIPT>
+    <script src="./lib/prettify/src/prettify.js"></script>
+    <script src="./lib/jscolor/jscolor.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js"></script>
+
+    <script type="text/javascript">
+
+	var app=null;
+	$( window ).load(function() {
+       try{
+	       app  = new shape_designer.Application(true);
+	   }
+	   catch(e){
+	       alert(e);
+	   }
+	});
+    </script>
+</head>
+
+<body id="container">
+
+   <div id="breadcrumb">
+       dir / test / blubber
+   </div>
+
+   <div id="toolbar" class="navbar-default">
+   </div>
+
+   <div id="layer" class="">
+     <div id="layer_elements"></div>
+     <div id="layer_header" class="highlight panetitle blackgradient">Layer</div>
+   </div>
+
+   <div id="canvas" class="" >
+   </div>
+
+   <div id="canvas_zoom" class="btn-group">
+     <button type="button" id="canvas_zoom_in"     class="btn highlight">&#8213;</button>
+     <button type="button" id="canvas_zoom_normal" class="btn highlight">100%</button>
+     <button type="button" id="canvas_zoom_out"    class="btn highlight">&#xFF0B</button>
+   </div>
+
+    <div class="btn-group dropdown">
+       <span id="canvas_config" class="ion-ios-toggle dropdown-toggle " data-toggle="dropdown"></span>
+       <div class="dropdown-menu" id="canvas_config_items">
+          <div class="">
+            <label class="">Grid
+                <input id="canvas_config_grid" type="checkbox" checked="checked" data-toggle="toggle" >
+            </label>
+          </div>
+       </div>
+    </div>
+
+   <div id="filter" class="navbar-default">
+       <div id="filter_actions" ></div>
+       <div id="filter_header" class="highlight panetitle blackgradient">Properties</div>
+       <div id="filter_toolbar" class="blackgradient" >
+
+        <div class="btn-group dropup">
+            <button id="add_filter_button" class="disabled btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                Add
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu" id="add_filter_action_menu">
+
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+
+<!--
+  # Save Dialog
+  #
+  #
+-->
+<div id="githubSaveFileDialog" class="modal fade githubFileDialog" tabindex="-1">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="media-heading">Save on GitHub</h4>
+            </div>
+            <div class="modal-body">
+                <div class="media">
+                    <div class="media-left media-middle">
+                        <a href="#">
+                            <img class="media-object githubFilePreview" src="assets/images/octocat.svg">
+                        </a>
+                    </div>
+                    <div class="media-body">
+
+                        <form class="form-horizontal">
+                            <br>
+                            <br>
+                            <fieldset>
+                                <div class="form-group">
+                                    <div class="col-lg-12">
+                                        <input type="text"
+                                               class="form-control floating-label githubFileName"
+                                               value=""
+                                                >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-12">
+                                        <input type="text"
+                                               class="form-control floating-label githubCommitMessage"
+                                               value=""
+                                               autofocus
+                                               placeholder="commit message"
+                                                >
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="row"></div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Abort</button>
+                <button class="btn btn-primary okButton"><span>Save</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   <!--
+  # General shape settings
+  #
+  -->
+   <div id="shapeSettingsDialog" class="modal fade" tabindex="-1">
+       <div class="modal-dialog ">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h4 class="media-heading">General Shape Settings</h4>
+               </div>
+               <div class="modal-body">
+
+
+                   <fieldset class="form-group">
+                   <label>Shape Base Class</label><br>
+                   <div class="btn-group shapeBaseClass" data-toggle="buttons">
+                       <label class="btn btn-primary active">
+                           <input data-class="draw2d.SetFigure" type="radio" name="shapeBaseClass" > Basic Node
+                       </label>
+
+                       <label class="btn btn-primary">
+                           <input data-class="draw2d.shape.composite.Raft" type="radio" name="shapeBaseClass" > Raft
+                       </label>
+
+                       <label class="btn btn-primary">
+                           <input data-class="draw2d.shape.composite.Jailhouse" type="radio" name="shapeBaseClass"> Jail House
+                       </label>
+                   </div>
+                   </fieldset>
+
+               </div>
+               <div class="modal-footer">
+                   <button class="btn" data-dismiss="modal">Abort</button>
+                   <button class="btn btn-primary okButton"><span>Close</span></button>
+               </div>
+           </div>
+       </div>
+   </div>
+
+
+   <!--
+     # GitHub File select/open dialog
+     #
+     -->
+<div id="githubFileSelectDialog" class="modal fade githubFileDialog" tabindex="-1">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="media-heading">File Open...</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="list-group githubNavigation">
+                    <!-- FileList here -->
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Abort</button>
+                <button class="btn btn-primary okButton"><span>Open</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   <!--
+     # FileSaveAs Dialog
+     #
+     -->
+   <div id="githubFileSaveAsDialog" class="modal fade githubFileDialog" tabindex="-1">
+       <div class="modal-dialog ">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h4 class="media-heading">Save on GitHub</h4>
+               </div>
+               <div class="modal-body">
+
+                   <div class="list-group githubNavigation">
+                       <!-- FileList here -->
+                   </div>
+
+
+                   <div class="media">
+                       <div class="media-left media-middle">
+                           <a href="#">
+                               <img class="media-object githubFilePreview" src="assets/images/octocat.svg">
+                           </a>
+                       </div>
+                       <div class="media-body">
+
+                           <form class="form-horizontal">
+                               <br>
+                               <br>
+                               <fieldset>
+                                   <div class="form-group">
+                                       <div class="col-lg-12">
+                                           <input type="text"
+                                                  class="form-control floating-label githubFileName"
+                                                  value=""
+                                                  placeholder="enter filename"
+                                                   >
+                                       </div>
+                                   </div>
+                                   <div class="form-group">
+                                       <div class="col-lg-12">
+                                           <input type="text"
+                                                  class="form-control floating-label githubCommitMessage"
+                                                  value=""
+                                                  autofocus
+                                                  placeholder="commit message"
+                                                   >
+                                       </div>
+                                   </div>
+                               </fieldset>
+                               <div class="row"></div>
+
+                           </form>
+                       </div>
+                   </div>
+               </div>
+
+               <div class="modal-footer">
+                   <button class="btn" data-dismiss="modal">Abort</button>
+                   <button class="btn btn-primary okButton"><span>Save</span></button>
+               </div>
+           </div>
+       </div>
+   </div>
+
+<script id="shape-edit-template" type="text/js-template">
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+testShape = testShape.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+         // your special code here
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function()
+    {
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function()
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function()
+    {
+    }
+});
+</script>
+
+<script id="shape-base-template" type="text/js-template">
+// Generated Code for the Draw2D touch HTML5 lib
+//                                                        
+// http://www.draw2d.org                                  
+//                                                        
+// Go to the Designer http://www.draw2d.org               
+// to design your own shape or download user generated    
+//                                                        
+var {{{className}}} = {{{baseClass}}}.extend({            
+
+   NAME: "{{{className}}}",
+
+   init:function(attr, setter, getter)
+   {
+     this._super( $.extend({stroke:0, bgColor:null, width:{{width}},height:{{height}}},attr), setter, getter);
+     var port;
+     {{#ports}}
+     // {{{name}}}
+     port = this.{{{method}}}({{{type}}}, new draw2d.layout.locator.XYRelPortLocator({{x}}, {{y}}));
+     port.setConnectionDirection({{direction}});
+     port.setBackgroundColor("{{color}}");
+     port.setName("{{name}}");
+     port.setMaxFanOut({{fanout}});
+     {{/ports}}
+     this.persistPorts=false;
+   },
+
+   createShapeElement : function()
+   {
+      var shape = this._super();
+      this.originalWidth = {{width}};
+      this.originalHeight= {{height}};
+      return shape;
+   },
+
+   createSet: function()
+   {
+       this.canvas.paper.setStart();
+
+        {{#figures}}
+        // {{{name}}}
+        shape = {{{constructor}}};
+        shape.attr({{{attr}}});
+        shape.data("name","{{{name}}}");
+        {{{extra}}}
+        {{/figures}}
+
+        return this.canvas.paper.setFinish();
+   },
+
+   applyAlpha: function()
+   {
+   },
+
+   layerGet: function(name, attributes)
+   {
+      if(this.svgNodes===null) return null;
+
+      var result=null;
+      this.svgNodes.some(function(shape){
+         if(shape.data("name")===name){
+            result=shape;
+         }
+         return result!==null;
+      });
+
+      return result;
+   },
+
+   layerAttr: function(name, attributes)
+   {
+     if(this.svgNodes===null) return;
+
+     this.svgNodes.forEach(function(shape){
+             if(shape.data("name")===name){
+                  shape.attr(attributes);
+             }
+     });
+   },
+
+   layerShow: function(name, flag, duration)
+   {
+      if(this.svgNodes===null) return;
+
+      if(duration){
+        this.svgNodes.forEach(function(node){
+            if(node.data("name")===name){
+                if(flag){
+                    node.attr({ opacity : 0 }).show().animate({ opacity : 1 }, duration);
+                }
+                else{
+                    node.animate({ opacity : 0 }, duration, function () { this.hide() });
+                }
+            }
+        });
+      }
+      else{
+          this.svgNodes.forEach(function(node){
+              if(node.data("name")===name){
+                   if(flag){node.show();}
+                   else{node.hide();}
+               }
+           });
+      }
+   },
+
+    calculate: function()
+    {
+    },
+
+    onStart: function()
+    {
+    },
+
+    onStop:function()
+    {
+    },
+
+    getParameterSettings: function()
+    {
+        return [];
+    },
+
+    /**
+     * @method
+     */
+    addPort: function(port, locator)
+    {
+        this._super(port, locator);
+        return port;
+    },
+
+    /**
+     * @method
+     * Return an objects with all important attributes for XML or JSON serialization
+     *
+     * @returns {Object}
+     */
+    getPersistentAttributes : function()
+    {
+        var memento = this._super();
+
+        // add all decorations to the memento
+        //
+        memento.labels = [];
+        this.children.each(function(i,e){
+            var labelJSON = e.figure.getPersistentAttributes();
+            labelJSON.locator=e.locator.NAME;
+            memento.labels.push(labelJSON);
+        });
+
+        return memento;
+    },
+
+    /**
+     * @method
+     * Read all attributes from the serialized properties and transfer them into the shape.
+     *
+     * @param {Object} memento
+     * @returns
+     */
+    setPersistentAttributes : function(memento)
+    {
+        this._super(memento);
+
+        // remove all decorations created in the constructor of this element
+        //
+        this.resetChildren();
+
+        // and add all children of the JSON document.
+        //
+        $.each(memento.labels, $.proxy(function(i,json){
+            // create the figure stored in the JSON
+            var figure =  eval("new "+json.type+"()");
+
+            // apply all attributes
+            figure.attr(json);
+
+            // instantiate the locator
+            var locator =  eval("new "+json.locator+"()");
+
+            // add the new figure as child to this figure
+            this.add(figure, locator);
+        },this));
+    }
+});
+</script>
+
+</body>
+</html>
