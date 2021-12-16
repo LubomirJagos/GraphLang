@@ -53,7 +53,7 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
      if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
 
     });
-    cCode += "/*END code inside WHILE LOOP */\n";
+    cCode += this.translateToCppCodePost();
 
     return cCode;
   },

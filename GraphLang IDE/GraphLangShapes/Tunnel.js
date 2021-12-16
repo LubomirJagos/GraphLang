@@ -167,6 +167,25 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
       alert("TUNNEL id: " + this.id);
     },
 
+    /*
+     *  Returns tunnel datatype, it's based on connected wire, if wire is connected to tunnel
+     *  then it should recursively get datatype based on port which is traversed back
+     *  and has some datatype.
+     */
+    getDatatype: function(){
+        if (this.getInputPort(0).getConnections().getSize() > 0){
+            wireSource = this.getInputPort(0).getConnections().first().getSource();
+            if (wireSource.getParent().NAME.toLowerCase().search('tunnel') == -1 &&
+                wireSource.userData &&
+                wireSource.userData.datatype
+            ){
+                return wireSource.userData.datatype;
+            }else{
+                return wireSource.getParent().getDatatype();
+            }
+        }
+    },
+
     translateToCppCode: function(){
       return "{Tunnel: executionOrder: " + this.getUserData().executionOrder + "}";
     }

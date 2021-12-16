@@ -115,17 +115,38 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
    */
   getTunnelsDeclarationCppCode:function(){
     cCode = "";
+    cCode += "/* LEFT TUNNELs declarations */\n";
     cCode += "//tunnel declaration, if connected to wire also assignement\n";
     this.getChildren().each(function(childIndex, childObj){
+      /*
+       *    LEFT TUNNEL declaration
+       */
       if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
-        //if tunnel connected on its input assign value to it
+        /*
+         * if tunnel connected on its input its datatype is based on first connection with index 0
+         */
         if (childObj.getInputPort(0).getConnections().getSize() > 0){
-          cCode += childObj.getInputPort(0).userData.datatype + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
         }else{
-          cCode += childObj.getInputPort(0).userData.datatype + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
         }
       }
+
+      /*
+       *    RIGHT TUNNEL declaration
+       *    These tunnels create just declaration and their values are assigned inside each layers where wire is going out of structure.
+       *    
+       *    THIS IS NOT NEEDED because wires going out of tunnel are declared and wries going into tunnel are declared, so in the end of each loop
+       *    there is assignment to output wires from input wires and tunnel variable is NOT NEEDED!
+       */
+      //cCode += "/* RIGHT TUNNELs declarations */\n";
+      //if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+      //    cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
+      //}
+
     });
+    cCode += "/* END LEFT TUNNELs declarations */\n";
+
     return cCode;
   },
 

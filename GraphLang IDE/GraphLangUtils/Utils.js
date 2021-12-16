@@ -2289,3 +2289,142 @@ GraphLang.Utils.getSelectionPorts = function(canvas){
   });
 }
 
+/**
+ * @method getCppCode3
+ * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @param {bool} showCodee - if true there is code showed in alert message after click on button
+ * @returns {String} C/C++ code as string
+ * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
+ */
+GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
+        cCode = "";
+        translateToCppCodeDeclarationArray.clear();
+
+        //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
+        GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
+
+        //THIS ADAPT PORT DATATYPES SAME AS CONNECTED Wires
+        //this can cause some problems because it's not bullet proof function, beacuse it's running statically, need to rewrite it more adaptive but when clicked at least 3 times it's OK
+        GraphLang.Utils.setWiresColorByPorts(canvas);
+
+        //ORIGINAL WITHOUT REWRITING IDs
+        //copyElement.innerHTML = GraphLang.Utils.translateToCppCode2(canvas, null);
+
+        // INITIALIZATION
+        // added by LuboJ. this CAN CAUSE SOME ERRORS IT WASN'T HERE UNTIL RECENTLY when I saw that there is not port initialization and execution order done in this task.
+        this.initAllPortToDefault(canvas);
+        this.executionOrder(canvas);
+
+        /* Now just ticking with clock and run nodes setup to run at that step by execution order. */
+        var cCode = "";
+      
+        /*********************************************************************************************************
+         *  WIRES DECLARATION
+         *
+         *  globals at level of canvas
+         *  ERROR:
+         *    - THERE IS NOT VALUE ASSIGNEMENT WHEN WIRE IS CONNECTED TO CONSTANT
+         *********************************************************************************************************/
+      
+      	//FIRST get all top figures (they have no composite set) and then get their input ports and connections connected to them
+      	//	tunnels doesn't have assigned it's loop as its parent, so iterating over tunnels is done when loop is detected, then if it
+      	//	has no composite (what means it's most top structure on canvas) it's iterating over it's children and detecting left tunnels
+      	//
+      	allConnections = new draw2d.util.ArrayList();
+      	canvas.getLines().each(function(lineIndex, lineObj){
+      		//here it's looking just for figures skipping loops and tunnels
+            if (lineObj.NAME.toLowerCase().search('connection') > -1 &&
+                lineObj.getSource().getParent().NAME.toLowerCase().search('tunnel') == -1 &&
+                lineObj.getSource().getParent().getComposite() == null
+            ){
+                sourceDatatype = lineObj.getSource().getUserData().datatype;
+                cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
+            }
+
+            /*
+             *  for tunnel it's different little, IMPORTANT are just RIGHT TUNNELs because then wire is outside structure,
+             *  in case if source is LEFT TUNNEL we are sure that wire is laying inside some structure
+             */
+            if (lineObj.NAME.toLowerCase().search('connection') > -1 &&
+                lineObj.getSource().getParent().NAME.toLowerCase().search('righttunnel') > -1 &&
+                lineObj.getSource().getParent().getParent().getComposite() == null
+            ){
+                sourceDatatype = lineObj.getSource().getParent().getDatatype();
+                cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
+            }
+      	});
+      
+        /****************************************************************
+         *  NODES TRANSLATING
+         *  Going through diagram and translate each graphical node into its text representation.
+         ****************************************************************/
+ 
+        //obtain list of top level figures, their getComposite() returns null
+        allNodes = new draw2d.util.ArrayList()
+        canvas.getFigures().each(function(figureIndex, figureObj){
+            if (figureObj.getComposite() == null &&
+                figureObj.NAME.toLowerCase().search('tunnel') == -1
+            ){
+                allNodes.push(figureObj);
+            }
+        });
+
+        //translate nodes based on their execution order
+        for (var actualStep = 0; actualStep < 20; actualStep++){
+          allNodes.each(function(nodeIndex, nodeObj){
+            if (nodeObj.getUserData() !== undefined &&
+                nodeObj.getUserData().executionOrder == actualStep
+            ){
+                if (nodeObj.translateToCppCodeDeclaration) cCode += nodeObj.translateToCppCodeDeclaration();
+                if (nodeObj.translateToCppCode) cCode += nodeObj.translateToCppCode(); 
+            }
+          });
+        }
+      
+        /* erase flag for for loops at the end of this operation, to be able run again correctly, otherwise
+        there will be orphans flags that loops were translated and it will make mess when multiple times
+        executed this function without initializing ports */
+        allNodes.each(function(nodeIndex, nodeObj){
+          if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
+            nodeObj.getUserData().wasTranslatedToCppCode = false;
+          }
+        });
+
+        /******************************************************************************
+         * LuboJ my template for Arduino stuff
+         *******************************************************************************/
+         var template_cCode = "";
+        template_cCode += "#define error int\n";
+        template_cCode += "#define int32 int\n";
+        template_cCode += "#define undefined int\n";
+        template_cCode += "#define uint unsigned int\n";
+        //template_cCode += this.getCppCodeDeclaration() + "\n";
+        template_cCode += "void setup() {\n";
+        template_cCode += "\n";
+        template_cCode += cCode;
+        template_cCode += "\n";
+        template_cCode += "}\n";
+        template_cCode += "void loop() {\n";
+        template_cCode += "  // put your main code here, to run repeatedly:\n";
+        template_cCode += "}\n";
+        cCode = template_cCode;
+        /******************************************************************************
+         * END MY TEMPLATE
+         *******************************************************************************/
+
+        /******************************************************************************
+         * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
+         *******************************************************************************/
+        cCode = this.rewriteIDtoNumbers(canvas, cCode);
+
+        var copyElement = document.createElement('textarea');
+        copyElement.innerHTML = cCode;
+        copyElement = document.body.appendChild(copyElement);
+        copyElement.select();
+        document.execCommand('copy');
+        copyElement.remove();
+
+        if (showCode) alert(cCode); //DEBUG show code in alert message
+
+        return cCode; //return C/C++ code as string
+}

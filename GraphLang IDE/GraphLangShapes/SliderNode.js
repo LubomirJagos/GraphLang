@@ -37,15 +37,15 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
   },
 
   translateToCppCodeDeclaration: function(){
-    return "/* Slider declaration */";
+    var cCode = "";
+    var constDatatype = this.getOutputPort(0).userData.datatype;
+    cCode += constDatatype + " const_" + this.getId() + " = " + this.getValue() + ";\n";
+
+    return cCode;
   },
 
   translateToCppCode:function(){
     var cCode = "";
-
-    var constDatatype = this.getOutputPort(0).userData.datatype;
-
-    cCode += constDatatype + " const_" + this.getId() + " = " + this.getValue() + ";\n";
     var constantId = this.getId();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
       cCode += "wire_" + connectionObj.getId() + " = const_" + constantId + ";\n";

@@ -144,13 +144,6 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
    */
   translateToCppCode:function(){
     cCode = "";
-    var constDatatype = this.getOutputPort(0).userData.datatype;
-
-    if (constDatatype.toLowerCase().search("string") > -1){
-      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";\n";
-    }else{
-      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";\n";
-    }
 
     var constantId = this.getId();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
@@ -161,11 +154,11 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   },
 
   /**
-   *  @name getDeclaration
+   *  @name translateToCppCodeDeclaration
    *  @desc Returns constant declaration. NOW INTENTIONALLY SAME AS TRANLSATE TO CPP, BECAUSE it's used during translating function to have translate them before wires declaration
    *  @returns {String} C code string, each line is finished with newline symbol \n
    */
-  getDeclaration:function(){
+  translateToCppCodeDeclaration:function(){
     cCode = "";
     var constDatatype = this.getOutputPort(0).userData.datatype;
 

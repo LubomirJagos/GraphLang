@@ -270,8 +270,16 @@ example.Toolbar = Class.extend({
 		this.getCppCode2Button.button().click($.proxy(function(){
 			GraphLang.Utils.getCppCode2(appCanvas);
 		}));
-
 		this.html.append(this.getCppCode2Button);
+
+		/**
+		*	getCppCode3 Button
+		*/
+		this.getCppCode3Button  = $("<button id=\"getCppCode3Button\">getCppCode3</button>");
+		this.getCppCode3Button.button().click($.proxy(function(){
+			GraphLang.Utils.getCppCode3(appCanvas);
+		}));
+		this.html.append(this.getCppCode3Button);
 
 		/**
 		*	exportCanvasAsPNG Button

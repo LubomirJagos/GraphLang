@@ -50,7 +50,7 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
      if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
 
     });
-    cCode += "/*END code inside FOR LOOP */\n";
+    cCode += this.translateToCppCodePost();
 
     return cCode;
 

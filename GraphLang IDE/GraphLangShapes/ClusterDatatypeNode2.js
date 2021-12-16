@@ -1,4 +1,5 @@
 /**
+
  *  @class GraphLang.Shapes.Basic.ClusterDatatypeNode
  *  @author Ing. Lubomir Jagos
  *  @description Cluster datatype structure, it's rectangle inside which are place datatypes and this will generate C/C++ struct{} equivalent.

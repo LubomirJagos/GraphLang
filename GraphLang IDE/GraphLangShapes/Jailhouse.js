@@ -56,13 +56,25 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
   					}
   				});
   			}
+            
+            //ForLoop has iteration terminal input port
+  			if (figureObj.NAME.toLowerCase().search('forloop') > -1){
+                allConnections.addAll(figureObj.getPort('iterationTerminal').getConnections());	//adding conenction into list of top most connections on canvas			
+  			}
   		}
 	  }
     });
 
-    //ADD WIRES CONNECTED TO RIGHT TUNNELS
+    //ADD WIRES CONNECTED TO RIGHT TUNNELS for THIS LAYER
     rightTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getRightTunnelsLayerWires();
-    allConnections.addAll(rightTunnelsWires);
+    rightTunnelsWires.each(function(connectionIndex, connectionObj){
+      wireSourceFigure = connectionObj.getSource().getParent()
+      if (wireSourceFigure.NAME.toLowerCase().search('tunnel') > -1) wireSourceFigure = wireSourceFigure.getParent();
+      if (layerFigures.contains(wireSourceFigure)){
+        allConnections.add(connectionObj);
+      }
+    });
+
 
   	allConnections.each(function(connectionindex, connectionObj){
   		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
@@ -71,7 +83,9 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     //2nd get declaration for wires going from tunnels to figures inside
     leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();
     leftTunnelsWires.each(function(connectionIndex, connectionObj){
-      if (layerFigures.contains(connectionObj.getTarget().getParent())){
+      wireTargetFigure = connectionObj.getTarget().getParent()
+      if (wireTargetFigure.NAME.toLowerCase().search('tunnel') > -1) wireTargetFigure = wireTargetFigure.getParent();
+      if (layerFigures.contains(wireTargetFigure)){
         cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";  //to get tunnel ID first I got port from wire source and its parent is tunnel
       }
     });
@@ -88,7 +102,6 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
           figureObj.NAME.toLowerCase().search("multilayered") == -1){
         //cCode += figureObj.getTunnelsDeclarationCppCode();  //NOT NEEDED!
         cCode += figureObj.translateToCppCode() + "\n";
-        cCode += figureObj.translateToCppCodePost() + "\n";                   //because translating loop adding end of loop code
       }else if (figureObj.NAME.toLowerCase().search("connection") == -1){
         cCode += figureObj.translateToCppCode() + "\n";                       //translation of normal nodes except wires
       }else if (figureObj.translateToCppCode){
@@ -99,11 +112,22 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     });
 
     //4th translate wires going OUTSIDE FIGURE THROUGH TUNNELS
-    rightTunnelsWires.each(function(connectionIndex, connectionObj){
-      if (layerFigures.contains(connectionObj.getSource().getParent())){
-        cCode += "tunnel_" + connectionObj.getTarget().getParent().getId() + " = " + "wire_" + connectionObj.getId() + ";" + "\n";
+    layerFigures = this.getAssignedFigures();
+    cCode += '/* RIGHT TUNNELS output assignment */' + "\n";
+    this.getCanvas().getFigure(this.userData.owner).getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search('righttunnel') > -1){
+        childObj.getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+          wireSourceFigure = connectionObj.getSource().getParent()
+          if (wireSourceFigure.NAME.toLowerCase().search('tunnel') > -1) wireSourceFigure = wireSourceFigure.getParent();
+          if (layerFigures.contains(wireSourceFigure)){
+            childObj.getOutputPort(0).getConnections().each(function(outputWireIndex, outputWireObj){
+                cCode +=  "wire_" + outputWireObj.getId() + " = wire_" + connectionObj.getId() + ";\n";
+            });
+          }
+        });
       }
     });
+    cCode += '/* END RIGHT TUNNELS output assignment */' + "\n";
     
     return cCode;
   },

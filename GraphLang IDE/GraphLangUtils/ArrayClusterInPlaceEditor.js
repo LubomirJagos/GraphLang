@@ -15,6 +15,7 @@ GraphLang.Utils.ArrayClusterInPlaceEditor = draw2d.ui.LabelEditor.extend({
      */
     init: function(listener)
     {
+    
         this._super();
         
         // register some default listener and override this with the handover one 
