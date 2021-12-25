@@ -17,6 +17,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
 
     //INIT USER DATA
     this.userData = {};
+    this.userData.isTerminal = false
 
     /*****************************************************************************
      *  OUTPUT PORT
@@ -48,10 +49,10 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
      this.on("click",function(emitter,event){
        emitter.changeConstantValueOnClick();
      });
+
     /*****************************************************************************
      *  RIGHT CLICK CONTEXT MENU
      *****************************************************************************/
-
     this.on("contextmenu", function(emitter, event){
         $.contextMenu({
             selector: 'body',
@@ -63,11 +64,16 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
             //these functions are run after user click on some context menu option
             callback: $.proxy(function(key, options)
             {
-               //set label colors
-               var colorObj = new GraphLang.Utils.Color();
-               emitter.setColor(colorObj.getByName(key));
-               emitter.setFontColor(colorObj.getByNameFontColor(key));
-               emitter.setBackgroundColor(colorObj.getByNameBackgroundColor(key));
+               /*
+                *   Set label colors if item in menu was choosed, if there was terminal setting choosed, do nothing
+                *   there are two options set/unset terminal, so it's enough to just search for setTerminal string
+                */
+               if (key.search("setTerminal") == -1){
+                 var colorObj = new GraphLang.Utils.Color();
+                 emitter.setColor(colorObj.getByName(key));
+                 emitter.setFontColor(colorObj.getByNameFontColor(key));
+                 emitter.setBackgroundColor(colorObj.getByNameBackgroundColor(key));
+               }
 
                switch(key){
                case "int":
@@ -94,9 +100,18 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
                    emitter.getOutputPort(0).userData.datatype = "String";
                    emitter.setText("defaultString");                                                //<-- default value
                    break;
+               case "setTerminal":
+                   emitter.setStroke(3);
+                   emitter.setColor("#DD2241");
+                   emitter.setDashArray("-");
+                   emitter.userData.isTerminal = true;
+                   break;
+               case "unsetTerminal":
+                   emitter.userData.isTerminal = false;
+                   break;
                default:
-                   emitter.setBackgroundColor(colorObj.getByNameBackgroundColor("unknown"));
-                   emitter.getOutputPort(0).userData.datatype = "unknown";
+                   //emitter.setBackgroundColor(colorObj.getByNameBackgroundColor("unknown"));
+                   //emitter.getOutputPort(0).userData.datatype = "unknown";
                    break;
                }
 
@@ -110,10 +125,14 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
                 "float":    {name: "float"},
                 "double": {name: "double"},
                 "bool": {name: "bool"},
-                "String": {name: "String"}
+                "String": {name: "String"},
+                "sep1":   "---------",
+                "setTerminal": {name: "Set as terminal"},
+                "unsetTerminal": {name: "Unset terminal"}
             }
         });
     });
+
   },
 
   /**
@@ -170,8 +189,15 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     return cCode;
   },
   
-  getDatatype: function(){
+  translateToCppCodeAsParam:function(){
     cCode = "";
+    var constDatatype = this.getOutputPort(0).userData.datatype;
+    cCode += constDatatype + " const_" + this.getId();              //maybe add default value
+    return cCode;
+  },
+
+  getDatatype: function(){
+    let cCode = "";
     cCode += this.getOutputPort(0).userData.datatype;
     return cCode;    
   }

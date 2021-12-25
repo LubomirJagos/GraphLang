@@ -32,7 +32,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.setWidth(this.originalWidth);
     this.setHeight(this.originalHeight);
     this.setStroke(2);
-    this.setDashArray("-");
+    this.setDashArray("");
     this.setColor("#AA4A4C"); //stroke color
 
     /**********************************************************************************
@@ -52,6 +52,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.userData = {};
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
+    this.userData.isTerminal = false;
     this.userData.datatype = "clusterDatatype";
 
     this.setPersistPorts(false); 
@@ -115,6 +116,18 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
              case "hideItemsLabels":
                 emitter.hideItemsLabels();
                 break;
+             case "setTerminal":
+                emitter.setStroke(3);
+                emitter.setDashArray("-");
+                emitter.setColor("#DD2241");
+                emitter.userData.isTerminal = true;
+                break;
+             case "unsetTerminal":
+                emitter.setStroke(2);
+                emitter.setDashArray("");
+                emitter.setColor("#AA4A4C"); //stroke color
+                emitter.userData.isTerminal = false;
+                break;
              default:
                  break;
              }
@@ -128,7 +141,10 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
               "showItemsLabels": {name: "Show Labels"},
               "sep1":   "---------",
               "hideItemsIndexes": {name: "Hide Indexes"},
-              "hideItemsLabels": {name: "Hide Labels"}
+              "hideItemsLabels": {name: "Hide Labels"},
+              "sep2":   "---------",
+              "setTerminal": {name: "Set as terminal"},
+              "unsetTerminal": {name: "Unset terminal"}
           }
       });
   },

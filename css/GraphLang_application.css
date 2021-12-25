@@ -1,0 +1,31 @@
+/*
+ *  PALLETE NODE ELEMENT IMAGE SIZE
+ */
+.palette_node_element img{
+    width:100%;
+}
+
+/*
+ *  THIS REWIRETES DRAW2D NAVIGANTION PALLETE ELEMENTS ALIGNMENT,
+ * if float left they are assigned as nroma <div>, alignment to the left.
+ */
+.palette_node_element{
+  float: left; /*LuboJ*/
+  margin: 10px 10px 10px 10px;
+}
+
+/*
+ *  This is here because this should take efect on IDE look but now it seems it's not possible to change height, don't know why
+ */
+#canvas{
+}
+
+#canvas2 {
+ padding:0px;
+ margin:0px;
+/* background-color:#F6F6F6; */
+ /*background-color: #AAAAAA;*/
+ background-color: red;
+ float: left;
+ height: 200px; /* LuboJ, not sure if this has really effect, more effect about #canvas2 is in javascript setting in Application.js */
+}

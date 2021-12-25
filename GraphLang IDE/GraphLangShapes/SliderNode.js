@@ -9,6 +9,9 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
   {
       this._super();
 
+      this.userData = {};
+      this.userData.isTerminal = false;
+
       //LuboJ, set userData to tell something about port, THIS MUST BE HERE
       var port = this.createPort("output");
       port.userData = {};
@@ -34,6 +37,56 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
         new draw2d.layout.locator.TopLocator()
       );
 
+    /*****************************************************************************
+     *  RIGHT CLICK CONTEXT MENU
+     *****************************************************************************/
+    this.on("contextmenu", function(emitter, event){
+        $.contextMenu({
+            selector: 'body',
+            events:
+            {
+                hide:function(){ $.contextMenu( 'destroy' ); }
+            },
+
+            //these functions are run after user click on some context menu option
+            callback: $.proxy(function(key, options)
+            {
+               /*
+                *   Set label colors if item in menu was choosed, if there was terminal setting choosed, do nothing
+                *   there are two options set/unset terminal, so it's enough to just search for setTerminal string
+                */
+               if (key.search("setTerminal") > -1){
+               }
+
+               switch(key){
+               case "setTerminal":
+                   emitter.setStroke(3);
+                   emitter.setDashArray("-");
+                   emitter.setColor("#DD2241");
+                   emitter.userData.isTerminal = true;
+                   break;
+               case "unsetTerminal":
+                   emitter.setStroke(1);
+                   emitter.setDashArray("");
+                   emitter.userData.isTerminal = false;
+                   break;
+               default:
+                   //emitter.setBackgroundColor(colorObj.getByNameBackgroundColor("unknown"));
+                   //emitter.getOutputPort(0).userData.datatype = "unknown";
+                   break;
+               }
+
+            },this),
+            x:event.x,
+            y:event.y,
+            items:
+            {
+                "setTerminal": {name: "Set as terminal"},
+                "unsetTerminal": {name: "Unset terminal"}
+            }
+        });
+    });
+
   },
 
   translateToCppCodeDeclaration: function(){
@@ -52,7 +105,12 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
     });
 
     return cCode;
+  },
+  
+  getDatatype: function(){
+    cCode = "";
+    cCode = this.getOutputPort(0).userData.datatype;
+    return cCode;
   }
-
 
 });

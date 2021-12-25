@@ -74,24 +74,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.addWireJointsButton);
 
 		/**
-		 *	BUTTON run() now after click generate some random() number and alert it just to show how to pass function into my newly created blocks.
-		 */
-		this.addRunButton  = $("<button id=\"runButton\">Run</button>");
-		this.addRunButton.button().click($.proxy(function(){
-			GraphLang.Utils.run(appCanvas);
-		}));
- 		this.html.append(this.addRunButton);
-
-		/**
-		 *	RUN INTERPRETER
-		 */
-		this.addRunInterpreterButton  = $("<button id=\"runInterpreterButton\">Run Interpreter</button>");
-		this.addRunInterpreterButton.button().click($.proxy(function(){
-			GraphLang.Utils.run(appCanvas);
-		}));
-		this.html.append(this.addRunInterpreterButton);
-
-		/**
 		*	Show Nodes
 		*/
 		this.showNodesButton  = $("<button id=\"showNodesButton\">Shows Nodes</button>");
@@ -99,15 +81,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.showNodes(appCanvas);
 		}));
 		this.html.append(this.showNodesButton);
-
-		/**
-		*	Go through graph
-		*/
-		this.goThroughGraphButton  = $("<button id=\"goThroughGraphButton\">Go Through Graph</button>");
-		this.goThroughGraphButton.button().click($.proxy(function(){
-			GraphLang.Utils.goThroughGraph(appCanvas);
-		}));
-		this.html.append(this.goThroughGraphButton);
 
 		/**
 		*	Detect Tunnels
@@ -155,15 +128,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.bringToBackButton);
 
 		/**
-		*	Run Nodes In Order Button
-		*/
-		this.runNodesInOrderButton  = $("<button id=\"runNodesInOrderButton\">runNodesInOrder</button>");
-		this.runNodesInOrderButton.button().click($.proxy(function(){
-			GraphLang.Utils.runNodesInOrder(appCanvas);
-		}));
-		this.html.append(this.runNodesInOrderButton);
-
-		/**
 		*	Show Ports Execution Order Button
 		*/
 		this.showPortExecutionOrderButton  = $("<button id=\"showPortExecutionOrderButton\">showPortExecutionOrder</button>");
@@ -171,33 +135,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.showPortExecutionOrder(appCanvas);
 		}));
 		this.html.append(this.showPortExecutionOrderButton);
-
-		/**
-		*	Highlight Nodes by Execution Order Button
-		*/
-		this.highlightNodesByExecutionOrderButton  = $("<button id=\"highlightNodesByExecutionOrderButton\">highlightNodesByExecutionOrder</button>");
-		this.highlightNodesByExecutionOrderButton.button().click($.proxy(function(){
-			GraphLang.Utils.highlightNodesByExecutionOrder(appCanvas);
-		}));
-		this.html.append(this.highlightNodesByExecutionOrderButton);
-
-		/**
-		*	TranslateToCppCode Button
-		*/
-		this.translateToCppCodeButton  = $("<button id=\"translateToCppCodeButton\">translateToCppCode</button>");
-		this.translateToCppCodeButton.button().click($.proxy(function(){
-			GraphLang.Utils.translateToCppCode(appCanvas);
-		}));
-		this.html.append(this.translateToCppCodeButton);
-
-		/**
-		*	TranslateToCppCode2 Button
-		*/
-		this.translateToCppCode2Button  = $("<button id=\"translateToCppCode2Button\">translateToCppCode2</button>");
-		this.translateToCppCode2Button.button().click($.proxy(function(){
-			GraphLang.Utils.translateToCppCode2(appCanvas);
-		}));
-		this.html.append(this.translateToCppCode2Button);
 
 		/**
 		*	LoopsRecalculateAbroadFigures Button
@@ -262,15 +199,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.getCanvasJson(appCanvas);
 		}));
 		this.html.append(this.getCanvasJsonButton);
-
-		/**
-		*	getCppCode2 Button
-		*/
-		this.getCppCode2Button  = $("<button id=\"getCppCode2Button\">getCppCode2</button>");
-		this.getCppCode2Button.button().click($.proxy(function(){
-			GraphLang.Utils.getCppCode2(appCanvas);
-		}));
-		this.html.append(this.getCppCode2Button);
 
 		/**
 		*	getCppCode3 Button
@@ -343,15 +271,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.correctMultilayeredAfterLoad(appCanvas);
 		}));
 		this.html.append(this.correctMultilayeredAfterLoadButton);
-
-		/**
-		*	getCppCode2_2nd_canvas Button
-		*/
-		this.getCppCode2_2nd_canvasButton  = $("<button id=\"getCppCode2_2nd_canvasButton\">getCppCode2_2nd_canvas</button>");
-		this.getCppCode2_2nd_canvasButton.button().click($.proxy(function(){
-			GraphLang.Utils.getCppCode2(appCanvas2);
-		}));
-		this.html.append(this.getCppCode2_2nd_canvasButton);
 
 		/**
 		*	loadSchematic Button
