@@ -47,6 +47,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     //default values for array, each cell is separate Label for now, userData of array is based on datatype of port,
     //so here are userData just created as empty object.
     this.userData = {};
+    this.userData.isTerminal = false;
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
     var label1 =  new draw2d.shape.basic.Label({text:"[0,1] with long long long long label", fontColor:"#00AF00"});
@@ -141,6 +142,18 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       //emitter.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
 
                       break;
+                 case "setTerminal":
+                     emitter.setStroke(3);
+                     emitter.setColor("#DD2241");
+                     emitter.setDashArray("-");
+                     emitter.userData.isTerminal = true;
+                     break;
+                 case "unsetTerminal":
+                     emitter.setStroke(1);
+                     emitter.setColor("#000000");
+                     emitter.setDashArray("");
+                     emitter.userData.isTerminal = false;
+                     break;
                   default:
                       alert(JSON.stringify(emitter))
                       emitter.setColor(new draw2d.util.Color("#979595"));
@@ -161,7 +174,10 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                   "String": {name: "String"},
                   "clusterDatatype": {name: "clusterDatatype"},
                   "separator": "--------------",
-                  "add item": {name: "Add Item"}
+                  "add item": {name: "Add Item"},
+                  "separator2":   "---------",
+                  "setTerminal": {name: "Set as terminal"},
+                  "unsetTerminal": {name: "Unset terminal"}
               }
           });
       });
@@ -198,55 +214,6 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
         }
     });
     return arraySize;
-  },
-
-  /**
-   *  @name translateToCppCode
-   *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
-   */
-  translateToCppCodeDeclaration: function(){
-      cCode = "";
-      arrayDatatype = this.getOutputPort(0).userData.datatype;    
-
-      if (arrayDatatype.toLowerCase().search('cluster') > -1){
-        cCode = arrayDatatype + " array_" + this.getId() + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
-      }else{
-        cCode = arrayDatatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
-        this.getChildren().each(function(childIndex, childObj){
-          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
-            cCode += "'" + childObj.getText() + "',";
-          }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
-            /*
-             *    THIS IS IMPROVISATION, there is cluster datatype label, so it has not translateToCpp() and instead there is placed datatype name
-             */
-            if (childObj.translateToCppCode){
-                cCode += childObj.translateToCppCode() + ",";
-            }else{
-                cCode += childObj.getText() + ",";
-            }
-          }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
-                cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
-          }else{
-            if (childObj.getText){
-                cCode += childObj.getText() + ",";
-            }
-          }
-        });
-        cCode = cCode.slice(0,-1);  //remove last ','
-        cCode += "};\n";
-      }
-
-
-      return cCode;
-  },
-
-  translateToCppCode: function(){
-    cCode = "";
-    var id = this.getId();
-    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "wire_" + connectionObj.getId() + " = array_" + id + ";\n";
-    });
-    return cCode;
   },
 
   /**
@@ -342,5 +309,54 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
           this.addRow(figure);    // add the new figure as child to this figure
       },this));
   },
+
+  /**
+   *  @name translateToCppCode
+   *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
+   */
+  translateToCppCodeDeclaration: function(){
+      cCode = "";
+      arrayDatatype = this.getOutputPort(0).userData.datatype;    
+
+      if (arrayDatatype.toLowerCase().search('cluster') > -1){
+        cCode = arrayDatatype + " array_" + this.getId() + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
+      }else{
+        cCode = arrayDatatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
+        this.getChildren().each(function(childIndex, childObj){
+          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
+            cCode += "'" + childObj.getText() + "',";
+          }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+            /*
+             *    THIS IS IMPROVISATION, there is cluster datatype label, so it has not translateToCpp() and instead there is placed datatype name
+             */
+            if (childObj.translateToCppCode){
+                cCode += childObj.translateToCppCode() + ",";
+            }else{
+                cCode += childObj.getText() + ",";
+            }
+          }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
+                cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
+          }else{
+            if (childObj.getText){
+                cCode += childObj.getText() + ",";
+            }
+          }
+        });
+        cCode = cCode.slice(0,-1);  //remove last ','
+        cCode += "};\n";
+      }
+
+
+      return cCode;
+  },
+
+  translateToCppCode: function(){
+    cCode = "";
+    var id = this.getId();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+      cCode += "wire_" + connectionObj.getId() + " = array_" + id + ";\n";
+    });
+    return cCode;
+  }
 
 });

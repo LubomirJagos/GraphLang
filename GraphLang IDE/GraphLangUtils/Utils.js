@@ -1193,9 +1193,10 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
   //set wires color by connected input ports
   canvas.getLines().each(function(lineIndex, lineObj){
     var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
-    // if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
-    // else var lineColor = color.getByName("broken");
-    var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+
+    if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+    else var lineColor = color.getByName("broken");
+
     lineObj.setColor(lineColor);  //set wire color
   });
 
@@ -2045,7 +2046,7 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
           (figureObj.userData.isTerminal == 1 || figureObj.userData.isTerminal.toLowerCase() == true) &&
           figureObj.translateToCppCodeAsParam != undefined
       ){
-          if (paramsCounter > 0) cCodeParams += ',';
+          if (paramsCounter > 0) cCodeParams += ', ';
           cCodeParams += figureObj.translateToCppCodeAsParam();
           paramsCounter++;
       }
@@ -2062,7 +2063,6 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     });
 
     cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
-    //cCode += 'void ' + nodeObj.NAME.replaceAll('.','_') + '(){' + "\n\t";
     cCode += GraphLang.Utils.translateCanvasToCppCode(appCanvas2, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
     cCode += "\n";  //to not have separate last curly bracket by tabulator
     cCode += '}' + "\n";

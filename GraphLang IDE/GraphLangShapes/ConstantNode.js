@@ -78,25 +78,31 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
                switch(key){
                case "int":
                    emitter.setText("0");                                                //<-- default value
+                   emitter.userData.datatype = "int";
                    emitter.getOutputPort(0).userData.datatype = "int";
                    break;
                case "uint":
+                   emitter.userData.datatype = "uint";
                    emitter.getOutputPort(0).userData.datatype = "uint";
                    emitter.setText("0");                                                //<-- default value
                    break;
                case "float":
+                   emitter.userData.datatype = "float";
                    emitter.getOutputPort(0).userData.datatype = "float";
                    emitter.setText("0.0");                                                //<-- default value
                    break;
                case "double":
+                   emitter.userData.datatype = "double";
                    emitter.getOutputPort(0).userData.datatype = "double";
                    emitter.setText("0.0");                                                //<-- default value
                    break;
                case "bool":
+                   emitter.userData.datatype = "bool";
                    emitter.getOutputPort(0).userData.datatype = "bool";
                    emitter.setText("false");                                                //<-- after change set default value as text to false
                    break;
                case "String":
+                   emitter.userData.datatype = "String";
                    emitter.getOutputPort(0).userData.datatype = "String";
                    emitter.setText("defaultString");                                                //<-- default value
                    break;
@@ -157,6 +163,20 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   },
 
   /**
+   * @method setPersistentAttributes
+   * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
+   * This is used when file is lOADED.
+   *
+   * @param {Object} memento
+   */
+  setPersistentAttributes : function(memento)
+  {
+    this._super(memento);                                               //CALLING PARENT METHOD, these will rerecreate this showSelectedObjExecutionOrder
+    this.setId(memento.id);                                             //set ID same as in saved file
+    this.getOutputPort(0).userData.datatype = this.userData.datatype;   //set output port ID same as cluster when loading from file, MUST BE HERE
+  },
+
+  /**
    *  @method translateToCppCode
    *  @description SThis function translates block into C/C++ code. here is defined template which get wires names connected to inputs and outputs,
    *  and translate content of nummeric constant as assignement to wire.
@@ -180,7 +200,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   translateToCppCodeDeclaration:function(){
     cCode = "";
     var constDatatype = this.getOutputPort(0).userData.datatype;
-
+    
     if (constDatatype.toLowerCase().search("string") > -1){
       cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";\n";
     }else{
@@ -192,13 +212,22 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   translateToCppCodeAsParam:function(){
     cCode = "";
     var constDatatype = this.getOutputPort(0).userData.datatype;
-    cCode += constDatatype + " const_" + this.getId();              //maybe add default value
+    //cCode += constDatatype + " const_" + this.getId();              //maybe add default value
+    
+    //create param definition using also default value, if there is string use quotes
+    if (this.getDatatype().toLowerCase().search("string") == -1){ 
+        cCode += constDatatype + " const_" + this.getId() + ' = ' + this.getText();
+    }else{
+        cCode += constDatatype + " const_" + this.getId() + ' = "' + this.getText() + '"';
+    }
+
     return cCode;
   },
 
   getDatatype: function(){
     let cCode = "";
-    cCode += this.getOutputPort(0).userData.datatype;
+    //cCode += this.getOutputPort(0).userData.datatype;     //datatype from port
+    cCode += this.userData.datatype;                        //from node userData
     return cCode;    
   }
     

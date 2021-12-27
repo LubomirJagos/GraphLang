@@ -98,6 +98,9 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
 
     //3rd translate figures inside layer
     layerFigures.each(function(figureIndex, figureObj){
+      //if there is some declaration translate it
+      if (figureObj.translateToCppCodeDeclaration) cCode += figureObj.translateToCppCodeDeclaration() + "\n";
+
       if (figureObj.NAME.toLowerCase().search("loop") > -1 &&
           figureObj.NAME.toLowerCase().search("multilayered") == -1){
         //cCode += figureObj.getTunnelsDeclarationCppCode();  //NOT NEEDED!

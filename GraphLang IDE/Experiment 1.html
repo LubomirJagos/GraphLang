@@ -42,6 +42,7 @@
       GraphLang.Shapes.Basic.Constant = {};
       GraphLang.Shapes.ItemsNode = {};
 
+      GraphLang.UserDefinedSymbol = {};
       GraphLang.UserDefinedNode = {};
     </script>
 
@@ -57,8 +58,6 @@
       <script src="./GraphLangShapes/OutputPort.js"></script>
       <script src="./GraphLangShapes/Shapes.js"></script>
       <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
-      <script src="./GraphLangShapes/PropertyNode.js"></script>
-      <script src="./GraphLangShapes/InvokeNode.js"></script>
       <script src="./GraphLangShapes/Loop2.js"></script>
       <script src="./GraphLangShapes/Jailhouse.js"></script>
       <script src="./GraphLangShapes/LayerChooser.js"></script> <!-- LuboJ, my invention -->
@@ -73,14 +72,22 @@
       <script src="./GraphLangShapes/FeedbackNode.js"></script>
       <script src="./GraphLangShapes/UnbundleByName.js"></script>
       <script src="./GraphLangShapes/BundleByName.js"></script>
+      <script src="./GraphLangShapes/Unbundle.js"></script>
+      <script src="./GraphLangShapes/Bundle.js"></script>
       <script src="./GraphLangShapes/ConstantNode.js"></script>
       <script src="./GraphLangShapes/ArrayNode.js"></script>
       <script src="./GraphLangShapes/ClusterDatatypeNode2.js"></script>
-      <script src="./GraphLangShapes/ExternalOutputPortNode.js"></script>
-      <script src="./GraphLangShapes/ExternalInputPortNode.js"></script>
-      <script src="./GraphLangShapes/UserCodeBlock.js"></script>
       <script src="./GraphLangShapes/SliderNode.js"></script>
       <script src="./GraphLangShapes/Return.js"></script>
+
+      <!--
+        EXPERIMENTAL, not needed in core
+      -->
+      <script src="./GraphLangExperimental/UserCodeBlock.js"></script>
+      <script src="./GraphLangExperimental/PropertyNode.js"></script>
+      <script src="./GraphLangExperimental/InvokeNode.js"></script>
+      <script src="./GraphLangExperimental/ExternalOutputPortNode.js"></script>
+      <script src="./GraphLangExperimental/ExternalInputPortNode.js"></script>
     <!-- End of GraphLang shapes-->
 
     <!-- These are mine arduino shapes added. LuboJ. -->
@@ -134,10 +141,20 @@
       <script src="./ArduinoLib/Experimental42Lib/Dragon1Node.js"></script>
 
       <!--
-        UserLib
+        UserDefined base
       -->
       <script src="./UserDefinedNode/UserDefinedNode.js"></script>
+
+      <!--
+        UserDefinedSymbol
+      -->
+      <script src="./UserDefinedSymbol/UserDefined3.js"></script>
+
+      <!--
+        UserDefinedNode
+      -->
       <script src="./UserDefinedNode/UserDefined2.js"></script>
+      <script src="./UserDefinedNode/UserDefined3.js"></script>
 
     <!-- End of GraphLang shapes-->
 
@@ -327,16 +344,10 @@ function displayJSON(canvas){
             <img src="GraphLangSymbols/slider.png" />
             GraphLang SliderNode
           </div>
-          <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
-          <div data-shape="GraphLang.Shapes.ExternalInputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalInputPortNode" class="palette_node_element draw2d_droppable">ExternalInputPortNode</div>
-          <div data-shape="GraphLang.Shapes.ExternalOutputPortNode" data-width="300" data-height="300" data-label="GraphLang ExternalOutputPortNode" class="palette_node_element draw2d_droppable">ExternalOutputPortNode</div>
           <div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="GraphLang ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">
             <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
             GraphLang ClusterDatatypeNode2
           </div>
-          <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
-          <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
-          <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
           <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="GraphLang ArrayNode" class="palette_node_element draw2d_droppable">
             <img src="GraphLangSymbols/ArrayNode.png" />
             GraphLang ArrayNode
@@ -349,6 +360,9 @@ function displayJSON(canvas){
             <img src="GraphLangSymbols/bundleByName.png" />
             GraphLang BundleByName
           </div>
+          <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
+          <div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="GraphLang Bundle" class="palette_node_element draw2d_droppable">GraphLang Bundle</div>
+          <div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="GraphLang Unbundle" class="palette_node_element draw2d_droppable">GraphLang Unbundle</div>
           <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="GraphLang WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
           <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="GraphLang ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
           <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="GraphLang Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
@@ -359,6 +373,11 @@ function displayJSON(canvas){
           <div data-shape="GraphLang.Shapes.Basic.Return" data-label="GraphLang Return" class="palette_node_element draw2d_droppable">Return</div>
         </div>
   
+        <div id="GraphLang.Experimental">        
+          <div data-shape="GraphLang.Shapes.Basic.UserCodeBlock" data-width="30" data-height="30" data-label="GraphLang UserCodeBlock" class="palette_node_element draw2d_droppable">UserCodeBlock</div>
+          <div data-shape="GraphLang.Shapes.ItemsNode.PropertyNode" data-width="300" data-height="300" data-label="GraphLang PropertyNode" class="palette_node_element draw2d_droppable">PropertyNode</div>
+          <div data-shape="GraphLang.Shapes.ItemsNode.InvokeNode" data-width="300" data-height="300" data-label="GraphLang InvokeNode" class="palette_node_element draw2d_droppable">InvokeNode</div>
+        </div>
         <!--
           Tab 1 - GraphLang Arduino nodes
         -->
@@ -456,8 +475,11 @@ function displayJSON(canvas){
             Arduino Nano
           </div>
 
-          <div data-shape="GraphLang.UserDefinedNode.UserDefined2" data-label="GraphLang UserDefined1" class="palette_node_element draw2d_droppable">
+          <div data-shape="GraphLang.UserDefinedNode.UserDefined2" data-label="GraphLang UserDefined2" class="palette_node_element draw2d_droppable">
             UserDefined2
+          </div>
+          <div data-shape="GraphLang.UserDefinedNode.UserDefined3" data-label="GraphLang UserDefined3" class="palette_node_element draw2d_droppable">
+            UserDefined3
           </div>
 
         </div>

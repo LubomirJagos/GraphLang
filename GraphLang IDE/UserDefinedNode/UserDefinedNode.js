@@ -24,7 +24,41 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
      *  Passing reference to this object. Schematic in jsonDocument is used.
      */
     let cCode = "";
-    cCode += '/* SubNode schematic translation */' + "\n";
+    
+    let paramsCounter = 0;
+    let paramsStr = "";
+    this.getInputPorts().each(function(portIndex, portObj){
+        let connections = portObj.getConnections();
+        if (paramsCounter > 0) paramsStr += ', ';
+
+        if (connections.getSize() > 0){
+            paramsStr += 'wire_' + connections.first().getId();
+        }else{        
+            paramsStr += 'null';
+        } 
+
+        paramsCounter++;
+    });
+
+    let functionCallStr = this.translateToCppCodeFunctionName() + '(' + paramsStr + ')';
+
+    if (this.getOutputPorts().getSize() > 0){
+        /*
+         *  Node output translation process defined just for first output port! This is for C/C++ there is nothing like multiple rturn values.
+         */
+        let connections = this.getOutputPorts().first().getConnections()
+        if (connections.getSize() > 0){
+          connections.each(function(connectionIndex, connectionObj){
+              cCode += 'wire_' + connectionObj.getId() + ' = ' + functionCallStr + ";\n";
+          });
+        }else{
+            cCode += functionCallStr + "; /* output not assigned */ \n";    
+        }
+        
+    }else{
+        cCode += functionCallStr + "; /* node has no output port */ \n";    
+    }
+    
     return cCode;
   }
     

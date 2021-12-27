@@ -161,55 +161,6 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     return "clusterDatatype_" + this.clusterItemLabel.getText()  
   },
 
-  translateToCppCodeDeclaration: function(){
-    var cCode = "";
-    
-    this.addItemsIndexes();
-    this.addItemsLabels();
-
-    var allFigures = this.getAssignedFigures();
-    allFigures.each(function(figureIndex, figureObj){
-      if (!figureObj.getDatatype) allFigures.remove(figureObj);
-    });    
-    allFigures.sort(function compare(a, b){
-      A = parseInt(a.userData.clusterItemIndex);
-      B = parseInt(b.userData.clusterItemIndex);
-      if (A < B) return -1;
-  	  if (A > B) return 1;
-  	  return 0;      
-    });
-    
-    /*
-     *  Translate nested cluster into C/C++ declarations. RECURSIVE.
-     */
-    allFigures.each(function(figureIndex, figureObj){
-        if (figureObj.NAME.toLowerCase().search('cluster') > -1){
-            cCode += figureObj.translateToCppCodeDeclaration();
-        }
-    });
-    
-    cCode += "typedef struct " + this.getDatatype()+ " {\n";
-    allFigures.each(function(figureIndex, figureObj){
-      if (figureObj.getDatatype){
-        cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";
-      }
-    });
-
-    /*
-     *  THIS CREATES DECLARATION OF CLUSTER ie. it physically creates variable with cluster datatype,
-     *  it has same ID number as cluster datatype definition, but keyword before prefix is different,
-     *  so into wire is assigned variable starting with cluster_... and wire has right datatype starting with clusterDatatype_...
-     */
-    cCode += "} cluster_" + this.getId()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
-    return cCode;
-  },
-
-  translateToCppCode: function(){
-    cCode = "";
-    cCode += "/* Cluster assignment */\n";
-    return cCode;
-  },
-
   getAllItemsIndexes: function(){
     this.getAssignedFigures(true);                                                  //first recalculate all nodes inside cluster
 
@@ -343,6 +294,22 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     });
   },
   
+  getOrderedItems: function(){
+    this.addItemsIndexes();
+    var allFigures = this.getAssignedFigures();
+    allFigures.each(function(figureIndex, figureObj){
+      if (!figureObj.getDatatype) allFigures.remove(figureObj);
+    });    
+    allFigures.sort(function compare(a, b){
+      A = parseInt(a.userData.clusterItemIndex);
+      B = parseInt(b.userData.clusterItemIndex);
+      if (A < B) return -1;
+  	  if (A > B) return 1;
+  	  return 0;      
+    });
+    return allFigures;
+  },
+  
   /**
    * @method setPersistentAttributes
    * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
@@ -381,6 +348,60 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     }
     
     //alert("cluster catched figure\n" + this.originalWidth + " " + this.originalHeight + "\n" +this.getWidth() + " " + this.getHeight());    
-  }  
+  },  
+
+  translateToCppCodeDeclaration: function(){
+    var cCode = "";
+    
+    this.addItemsIndexes();
+    this.addItemsLabels();
+
+    var allFigures = this.getAssignedFigures();
+    allFigures.each(function(figureIndex, figureObj){
+      if (!figureObj.getDatatype) allFigures.remove(figureObj);
+    });    
+    allFigures.sort(function compare(a, b){
+      A = parseInt(a.userData.clusterItemIndex);
+      B = parseInt(b.userData.clusterItemIndex);
+      if (A < B) return -1;
+  	  if (A > B) return 1;
+  	  return 0;      
+    });
+    
+    /*
+     *  Translate nested cluster into C/C++ declarations. RECURSIVE.
+     */
+    allFigures.each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search('cluster') > -1){
+            cCode += figureObj.translateToCppCodeDeclaration();
+        }
+    });
+    
+    cCode += "typedef struct " + this.getDatatype()+ " {\n";
+    allFigures.each(function(figureIndex, figureObj){
+      if (figureObj.getDatatype){
+        cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";
+      }
+    });
+
+    /*
+     *  THIS CREATES DECLARATION OF CLUSTER ie. it physically creates variable with cluster datatype,
+     *  it has same ID number as cluster datatype definition, but keyword before prefix is different,
+     *  so into wire is assigned variable starting with cluster_... and wire has right datatype starting with clusterDatatype_...
+     */
+    cCode += "} cluster_" + this.getId()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
+    return cCode;
+  },
+
+  translateToCppCode: function(){
+    cCode = "";
+
+    clusterId = this.getId();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+        cCode += 'wire_' + connectionObj.getId() + ' = ' + 'cluster_' + clusterId + ";\n";    
+    });
+
+    return cCode;
+  }
 
 });
