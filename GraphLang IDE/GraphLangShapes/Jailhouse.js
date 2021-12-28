@@ -83,8 +83,16 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     //2nd get declaration for wires going from tunnels to figures inside
     leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();
     leftTunnelsWires.each(function(connectionIndex, connectionObj){
-      wireTargetFigure = connectionObj.getTarget().getParent()
-      if (wireTargetFigure.NAME.toLowerCase().search('tunnel') > -1) wireTargetFigure = wireTargetFigure.getParent();
+      wireTargetFigure = connectionObj.getTarget().getParent()      
+      
+      //if (wireTargetFigure.NAME.toLowerCase().search('tunnel') > -1) wireTargetFigure = wireTargetFigure.getParent();
+      
+      //getting parent() until it's nullso that's node which is part of canvas
+      //here must be while() because port can be part fo label which is part of vertical layout which is part of BundleByName
+      while(wireTargetFigure.getParent() != null){
+        wireTargetFigure = wireTargetFigure.getParent();
+      }
+    
       if (layerFigures.contains(wireTargetFigure)){
         cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";  //to get tunnel ID first I got port from wire source and its parent is tunnel
       }

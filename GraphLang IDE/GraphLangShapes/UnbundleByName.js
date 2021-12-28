@@ -18,6 +18,9 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
         rows: "grow"
       },attr));
 
+      //don't save ports into file
+      this.persistPorts = false;
+
       let colorObj = new GraphLang.Utils.Color();
 
       //input for cluster to be wired here
@@ -180,6 +183,10 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
      */
     removeEntity: function(item)
     {
+      item.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+          connectionObj.getCanvas().remove(connectionObj);
+      })
+
       this.items.remove(item);
       this.updateAllItemsOncontext();
     },
@@ -196,47 +203,88 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
     },
 
 
-     /**
-      * @method
-      * Set the name of the DB table. Visually it is the header of the shape
-      *
-      * @param name
-      */
-     setName: function(name)
-     {
-         this.classLabel.setText(name);
 
-         return this;
-     },
 
-     /**
-      * @method
-      * Read all attributes from the serialized properties and transfer them into the shape.
-      *
-      * @param {Object} memento
-      * @return
-      */
-     setPersistentAttributes : function(memento)
-     {
-         this._super(memento);
 
-         this.setName(memento.name);
+   /**
+    * @method setName
+    * @description Set the name of the DB table. Visually it is the header of the shape
+    * @param name
+    */
+   setName: function(name)
+   {
+       this.classLabel.setText(name);
 
-         if(typeof memento.entities !== "undefined"){
-             $.each(memento.entities, $.proxy(function(i,e){
-                 var entity =this.addEntity(e.text);
-                 entity.id = e.id;
-                 entity.getInputPort(0).setName("input_"+e.id);
-                 entity.getOutputPort(0).setName("output_"+e.id);
-             },this));
-         }
+       return this;
+   },
 
-         return this;
-     },
+  /**
+   * @method getPersistentAttributes
+   * @description Return an objects with all important attributes for XML or JSON serialization.
+   * This is used when file IS SAVED.
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes : function()
+  {
+      var memento = this._super();
+      //adding aditional items to memento
+      memento.bundleItems = [];
+      this.items.getChildren().each(function(itemIndex, itemObj){
+        let itemData = {};
+        itemData.name = itemObj.getText();
+        itemData.inputPortName = itemObj.getOutputPort(0).getName();
+        
+        memento.bundleItems.push(itemData);
+      });
 
-     translateToCppCode: function(){
-       cCode = "";
-       cCode += "/* Unbundle by name */";
-       return cCode;
-     }
+      return memento;
+  },
+
+   /**
+    * @method setPersistentAttributes
+    * @description Read all attributes from the serialized properties and transfer them into the shape.
+    * @param {Object} memento
+    * @return
+    */
+   setPersistentAttributes : function(memento)
+   {
+      this._super(memento);
+      this.setId(memento.id);
+
+      //adding items
+      this.add(this.items, {row: 0, col:0});
+
+      $.each(memento.bundleItems, $.proxy(function(i,bundleItem){
+        this.addEntity(bundleItem.name);
+        this.items.getChildren().last().getOutputPort(0).setName(bundleItem.inputPortName);                
+      },this));
+      this.updateAllItemsOncontext();
+   },
+   
+   /*
+    *   IMRPOTANT
+    *   Overloaded function to also return ports of items, must be to return all ports to have defined wires
+    *   inside layer when this node is part of multilayered structure
+    */
+   getInputPorts: function(){
+     let inputPorts = new draw2d.util.ArrayList();
+     inputPorts.add(this.portClusterType);
+     this.items.getChildren().each(function(childIndex, childObj){
+        inputPorts.addAll(childObj.getInputPorts());
+     });
+     return inputPorts;
+   },
+
+
+
+
+
+
+
+    translateToCppCode: function(){
+     cCode = "";
+     cCode += "/* Unbundle by name */";
+     return cCode;
+    }
 });

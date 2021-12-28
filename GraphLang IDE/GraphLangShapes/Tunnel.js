@@ -175,7 +175,17 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
     getDatatype: function(){
         if (this.getInputPort(0).getConnections().getSize() > 0){
             wireSource = this.getInputPort(0).getConnections().first().getSource();
-            if (wireSource.getParent().NAME.toLowerCase().search('tunnel') == -1 &&
+
+            /*
+             *  Returning wire datatype, evaluate in this order:
+             *      1. if connected to cluster
+             *      2. to port with datatype but not tunnel
+             *      3. to tunnel, then recursively asking previous wire
+             */
+            
+            if (wireSource.getParent().NAME.toLowerCase().search('clusterdatatype') > 0){
+                return wireSource.getParent().getDatatype();
+            }else if (wireSource.getParent().NAME.toLowerCase().search('tunnel') == -1 &&
                 wireSource.userData &&
                 wireSource.userData.datatype
             ){

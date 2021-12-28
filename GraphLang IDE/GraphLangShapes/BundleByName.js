@@ -20,6 +20,9 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
 
       let colorObj = new GraphLang.Utils.Color();
 
+      //don't save ports into file
+      this.persistPorts = false;
+
       //output for cluster to be wired here
       port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100.7, 50));
       port.setConnectionDirection(1);
@@ -39,7 +42,6 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       //create vertical list and push it into unbundler object
       this.items = new draw2d.shape.layout.VerticalLayout();
       this.add(this.items, {row: 0, col:0});
-      //this.addEntity("null");
 
       //DEFAULT EXECUTION ORDER
       this.userData = {};
@@ -60,6 +62,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       if (connections.getSize() > 0){
         let clusterObj;
         let clusterName = connections.first().getSource().getParent().getDatatype();
+                
         if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
             this.getCanvas().getFigures().each(function(figureIndex, figureObj){
                 if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
@@ -160,8 +163,12 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
      */
     removeEntity: function(item)
     {
-			this.items.remove(item);
-			this.updateAllItemsOncontext();
+        item.getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+            connectionObj.getCanvas().remove(connectionObj);
+        })
+
+        this.items.remove(item);
+    	this.updateAllItemsOncontext();
     },
 
     /**
@@ -187,7 +194,21 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       var input = label.createPort("input");
       input.userData = {};
       input.userData.datatype = "bool";
-      input.setName("input_" + label.id);
+
+      //set unique input name in scope of bundle node
+      let isUnique;
+      let inputPortName;
+      do{
+        inputPortName = "input_" + Math.floor(Math.random() * 1000);
+        isUnique = true;
+        
+        this.items.getChildren().each(function(childIndex, childObj){
+          if (childObj.getInputPort(0).getName().search(inputPortName) > -1){
+              isUnique = false;
+          }
+        });
+      }while (isUnique == false);
+      input.setName(inputPortName);
       
       var _table = this;
       if($.isNumeric(optionalIndex) && optionalIndex < this.items.getChildren().getSize()){
@@ -221,8 +242,31 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
    {
        this.classLabel.setText(name);
 
-       return this;o
+       return this;
    },
+
+  /**
+   * @method getPersistentAttributes
+   * @description Return an objects with all important attributes for XML or JSON serialization.
+   * This is used when file IS SAVED.
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes : function()
+  {
+      var memento = this._super();
+      //adding aditional items to memento
+      memento.bundleItems = [];
+      this.items.getChildren().each(function(itemIndex, itemObj){
+        let itemData = {};
+        itemData.name = itemObj.getText();
+        itemData.inputPortName = itemObj.getInputPort(0).getName();
+        
+        memento.bundleItems.push(itemData);
+      });
+
+      return memento;
+  },
 
    /**
     * @method setPersistentAttributes
@@ -232,19 +276,31 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
     */
    setPersistentAttributes : function(memento)
    {
-       this._super(memento);
+      this._super(memento);
+      this.setId(memento.id);
 
-       this.setName(memento.name);
+      //adding items
+      this.add(this.items, {row: 0, col:0});
 
-       if(typeof memento.entities !== "undefined"){
-           $.each(memento.entities, $.proxy(function(i,e){
-               var entity =this.addEntity(e.text);
-               entity.id = e.id;
-               entity.getInputPort(0).setName("input_"+e.id);
-           },this));
-       }
-
-       return this;
+      $.each(memento.bundleItems, $.proxy(function(i,bundleItem){
+        this.addEntity(bundleItem.name);
+        this.items.getChildren().last().getInputPort(0).setName(bundleItem.inputPortName);                
+      },this));
+      this.updateAllItemsOncontext();
+   },
+   
+   /*
+    *   IMRPOTANT
+    *   Overloaded function to also return ports of items, must be to return all ports to have defined wires
+    *   inside layer when this node is part of multilayered structure
+    */
+   getInputPorts: function(){
+     let inputPorts = new draw2d.util.ArrayList();
+     inputPorts.add(this.portClusterType);
+     this.items.getChildren().each(function(childIndex, childObj){
+        inputPorts.addAll(childObj.getInputPorts());
+     });
+     return inputPorts;
    },
 
    translateToCppCode: function(){

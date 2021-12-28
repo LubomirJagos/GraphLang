@@ -16,7 +16,7 @@ GraphLang.Shapes.Basic.Bundle = GraphLang.Shapes.Basic.BundleByName.extend({
        *    after right click on bundle by name item.
        */
       let bundleObj = this;
-      this.items.resetChildren();   //remove items
+      //this.items.resetChildren();   //remove items
 
       let connections = this.portClusterType.getConnections();
       let contextMenu = {};
@@ -24,6 +24,7 @@ GraphLang.Shapes.Basic.Bundle = GraphLang.Shapes.Basic.BundleByName.extend({
           
         let clusterObj;
         let clusterName = connections.first().getSource().getParent().getDatatype();
+        console.log("bundle: searching for " + clusterName);
         if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
             this.getCanvas().getFigures().each(function(figureIndex, figureObj){
                 if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
@@ -32,9 +33,23 @@ GraphLang.Shapes.Basic.Bundle = GraphLang.Shapes.Basic.BundleByName.extend({
             }); 
         }
         
-        clusterObj.getOrderedItems().each(function(itemIndex, itemObj){
-            bundleObj.addEntity(itemObj.getDatatype());
+        let clusterOrderedItems = clusterObj.getOrderedItems();
+        clusterOrderedItems.each(function(itemIndex, itemObj){
+            if (itemIndex >= bundleObj.items.getChildren().getSize()){
+                bundleObj.addEntity(itemObj.getDatatype());
+            }else{
+                bundleObj.items.getChildren().get(itemIndex).setText(itemObj.getDatatype());
+            }
         });
+        
+        while(clusterOrderedItems.getSize() < this.items.getChildren().getSize()){
+            //there is problem that wires are not removed properly so this should erase them
+            this.items.getChildren().last().getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+                connectionObj.getCanvas().remove(connectionObj);
+            });
+
+            this.items.remove(this.items.getChildren().last());
+        }
       }
     },
 

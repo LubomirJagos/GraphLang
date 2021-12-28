@@ -42,7 +42,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100, 50));
     port.setConnectionDirection(1);
     port.setBackgroundColor("#7D1A4C");
-    port.setName("layerSelector");
+    port.setName("clusterOutput");
     port.setMaxFanOut(20);
 
     port.userData = {};
@@ -78,12 +78,14 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     });
 
     this.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: "clusterName"});
-    this.add(this.clusterItemLabel, new draw2d.layout.locator.TopLocator());
+    
+    //this.add(this.clusterItemLabel, new draw2d.layout.locator.TopLocator());
+    this.add(this.clusterItemLabel, new draw2d.layout.locator.BottomLocator());
+    //this.add(this.clusterItemLabel, new draw2d.layout.locator.XYAbsPortLocator(0,0));
+    
     this.clusterItemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
     this.clusterItemLabel.userData = {};
     this.clusterItemLabel.userData.type = "clusterDatatypeName";
-
-
   },
 
   //added by LuboJ, here is showed how to add attributes which
@@ -183,7 +185,9 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       if (!figureObj.getDatatype) return;                                         //continue just for figures which have datatype function
       if (figureObj.userData && figureObj.userData.clusterItemLabel){
         allLabels.add(figureObj.userData.clusterItemLabel);
-      }          
+      }else if (figureObj.NAME.toLowerCase().search("clusterdatatype") > -1){
+        allLabels.add(figureObj.getName());
+      }        
     }); 
 
     return allLabels;
@@ -319,9 +323,23 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
    */
   setPersistentAttributes : function(memento)
   {
+    //memento.labels = [];
+
     this._super(memento);           //CALLING PARENT METHOD, these will rerecreate this showSelectedObjExecutionOrder
     this.setId(memento.id);         //set ID same as in saved file
-    this.getOutputPort(0).userData.datatype = "clusterDatatype_" + this.getId();  //set output port ID same as cluster when loading from file, MUST BE HERE
+
+    let clusterObj = this;
+    this.getChildren().each(function(childIndex, childObj){
+        console.log('loading cluster: ' + JSON.stringify(childObj.userData))
+        if (childObj.userData && childObj.userData.type && childObj.userData.type == 'clusterDatatypeName'){
+            console.log("loading cluster: name label found");
+            clusterObj.clusterItemLabel = childObj;
+        }
+    });
+
+    let outputPort = this.getOutputPort(0);
+    outputPort.userData.datatype = "clusterDatatype_" + this.getId();  //set output port ID same as cluster when loading from file, MUST BE HERE
+    outputPort.setName("clusterOutput");
   },
   
 
@@ -349,6 +367,19 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     
     //alert("cluster catched figure\n" + this.originalWidth + " " + this.originalHeight + "\n" +this.getWidth() + " " + this.getHeight());    
   },  
+
+  /* @method getPort
+   * @description This method is used when loading file, it redefine here to return just clusterOutput port, without definitio this method
+   * wires are not loading correctly, they are missing.
+   */
+  getPort: function(name){
+    if (name.indexOf('clusterOutput') > -1){
+      return this.getOutputPort(0);
+    }else{
+      port = this._super(name); //THIS IS NOT RUNNING, TESTED
+    }
+    return port;
+  },
 
   translateToCppCodeDeclaration: function(){
     var cCode = "";
