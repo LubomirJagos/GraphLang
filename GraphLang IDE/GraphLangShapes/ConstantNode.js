@@ -65,47 +65,45 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
             //these functions are run after user click on some context menu option
             callback: $.proxy(function(key, options)
             {
-               /*
-                *   Set label colors if item in menu was choosed, if there was terminal setting choosed, do nothing
-                *   there are two options set/unset terminal, so it's enough to just search for setTerminal string
-                */
-               if (key.search("setTerminal") == -1){
-                 var colorObj = new GraphLang.Utils.Color();
-                 emitter.setColor(colorObj.getByName(key));
-                 emitter.setFontColor(colorObj.getByNameFontColor(key));
-                 emitter.setBackgroundColor(colorObj.getByNameBackgroundColor(key));
-               }
-
                switch(key){
                case "int":
+                   emitter.changeDatatype(key);
                    emitter.setText("0");                                                //<-- default value
-                   emitter.userData.datatype = "int";
-                   emitter.getOutputPort(0).userData.datatype = "int";
                    break;
                case "uint":
-                   emitter.userData.datatype = "uint";
-                   emitter.getOutputPort(0).userData.datatype = "uint";
+                   emitter.changeDatatype(key);
                    emitter.setText("0");                                                //<-- default value
                    break;
                case "float":
-                   emitter.userData.datatype = "float";
-                   emitter.getOutputPort(0).userData.datatype = "float";
+                   emitter.changeDatatype(key);
                    emitter.setText("0.0");                                                //<-- default value
                    break;
                case "double":
-                   emitter.userData.datatype = "double";
-                   emitter.getOutputPort(0).userData.datatype = "double";
+                   emitter.changeDatatype(key);
                    emitter.setText("0.0");                                                //<-- default value
                    break;
                case "bool":
-                   emitter.userData.datatype = "bool";
-                   emitter.getOutputPort(0).userData.datatype = "bool";
+                   emitter.changeDatatype(key);
                    emitter.setText("false");                                                //<-- after change set default value as text to false
                    break;
                case "String":
-                   emitter.userData.datatype = "String";
-                   emitter.getOutputPort(0).userData.datatype = "String";
+                   emitter.changeDatatype(key);
                    emitter.setText("defaultString");                                                //<-- default value
+                   break;
+               case "showNodeLabel":
+                    if (emitter.userData.nodeLabel != null) labelText = emitter.userData.nodeLabel;
+                    else labelText = 'nodeLabel';
+
+                    emitter.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
+                    emitter.add(emitter.nodeLabel, new draw2d.layout.locator.TopLocator());
+                    emitter.nodeLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+                    emitter.nodeLabel.on('change:text', function(nodeEmitter, event){
+                      labelText = nodeEmitter.getText();
+                      labelText = labelText.replaceAll(" ","_"); 
+                      nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
+                      nodeEmitter.text = labelText;                                                   //this will not fire another event!
+                    });
+
                    break;
                case "setTerminal":
                    emitter.setStroke(3);
@@ -114,6 +112,9 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
                    emitter.userData.isTerminal = true;
                    break;
                case "unsetTerminal":
+                   emitter.setStroke(2);
+                   emitter.setDashArray("");
+                   emitter.setColor("#AA4A4C"); //stroke color
                    emitter.userData.isTerminal = false;
                    break;
                default:
@@ -134,12 +135,28 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
                 "bool": {name: "bool"},
                 "String": {name: "String"},
                 "sep1":   "---------",
+                "showNodeLabel": {name: "Show node label"},
+                "sep2":   "---------",
                 "setTerminal": {name: "Set as terminal"},
                 "unsetTerminal": {name: "Unset terminal"}
             }
         });
     });
 
+  },
+
+ /*
+  *   Set label colors if item in menu was choosed, if there was terminal setting choosed, do nothing
+  *   there are two options set/unset terminal, so it's enough to just search for setTerminal string
+  */
+  changeDatatype: function(datatype){
+    this.userData.datatype = datatype;
+    this.getOutputPort(0).userData.datatype = datatype;
+
+    var colorObj = new GraphLang.Utils.Color();
+    this.setColor(colorObj.getByName(datatype));
+    this.setFontColor(colorObj.getByNameFontColor(datatype));
+    this.setBackgroundColor(colorObj.getByNameBackgroundColor(datatype));
   },
 
   /**

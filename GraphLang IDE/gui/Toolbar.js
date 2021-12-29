@@ -228,15 +228,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.correctWiresAfterLoadButton);
 
 		/**
-		*	correctMultilayeredAfterLoad Button
-		*/
-		this.correctMultilayeredAfterLoadButton  = $("<button id=\"correctMultilayeredAfterLoadButton\">correctMultilayeredAfterLoad</button>");
-		this.correctMultilayeredAfterLoadButton.button().click($.proxy(function(){
-			GraphLang.Utils.correctMultilayeredAfterLoad(appCanvas);
-		}));
-		this.html.append(this.correctMultilayeredAfterLoadButton);
-
-		/**
 		*	loadSchematic Button
 		*/
 		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");

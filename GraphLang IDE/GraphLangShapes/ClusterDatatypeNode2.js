@@ -46,7 +46,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     port.setMaxFanOut(20);
 
     port.userData = {};
-    port.userData.datatype = "clusterDatatype_" + this.getId();
+    port.userData.datatype = "clusterDatatype_notDefinedYet";
 
     //USER DATA/
     this.userData = {};
@@ -77,15 +77,24 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       //alert(emitter.NAME + "\n");
     });
 
-    this.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: "clusterName"});
+    this.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: "clusterName"});
+    this.nodeLabel.on('change:text', function(nodeEmitter, event){
+      labelText = nodeEmitter.getText();
+      labelText = labelText.replaceAll(" ","_"); 
+      nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
+      nodeEmitter.text = labelText;                                                   //this will not fire another event!
+
+      if (!nodeEmitter.getOutputPort(0).userData) nodeEmitter.getOutputPort(0).userData = {};
+      nodeEmitter.getOutputPort(0).userData.datatype = nodeEmitter.getDatatype();
+    });
     
-    //this.add(this.clusterItemLabel, new draw2d.layout.locator.TopLocator());
-    this.add(this.clusterItemLabel, new draw2d.layout.locator.BottomLocator());
-    //this.add(this.clusterItemLabel, new draw2d.layout.locator.XYAbsPortLocator(0,0));
+    //this.add(this.nodeLabel, new draw2d.layout.locator.TopLocator());
+    this.add(this.nodeLabel, new draw2d.layout.locator.BottomLocator());
+    //this.add(this.nodeLabel, new draw2d.layout.locator.XYAbsPortLocator(0,0));
     
-    this.clusterItemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
-    this.clusterItemLabel.userData = {};
-    this.clusterItemLabel.userData.type = "clusterDatatypeName";
+    this.nodeLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+    this.nodeLabel.userData = {};
+    this.nodeLabel.userData.type = "clusterDatatypeName";
   },
 
   //added by LuboJ, here is showed how to add attributes which
@@ -156,15 +165,15 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
    *  Functions below are implemented by me (LuboJ)
    ********************************************************************************************************************/
   setName: function(name){
-    return this.clusterItemLabel.setText(name);
+    return this.nodeLabel.setText(name.replaceAll(" ", "_"));
   },
 
   getName: function(){
-    return this.clusterItemLabel.getText();
+    return this.nodeLabel.getText();
   },
 
   getDatatype: function(){
-    return "clusterDatatype_" + this.clusterItemLabel.getText()  
+    return "clusterDatatype_" + this.nodeLabel.getText()  
   },
 
   /*
@@ -175,7 +184,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   getItemByLabel: function(itemLabel){
     let clusterItem = null;
     this.getAssignedFigures().each(function(figureIndex, figureObj){
-      if (figureObj.userData && figureObj.userData.clusterItemLabel == itemLabel){
+      if (figureObj.userData && figureObj.userData.nodeLabel == itemLabel){
         clusterItem = figureObj;
       }else if(figureObj.NAME.toLowerCase().search("clusterdatatype") > -1 && figureObj.getName() == itemLabel){
         clusterItem = figureObj;
@@ -204,8 +213,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     var allLabels = new draw2d.util.ArrayList();
     this.getAssignedFigures().each(function(figureIndex, figureObj){
       if (!figureObj.getDatatype) return;                                         //continue just for figures which have datatype function
-      if (figureObj.userData && figureObj.userData.clusterItemLabel){
-        allLabels.add(figureObj.userData.clusterItemLabel);
+      if (figureObj.userData && figureObj.userData.nodeLabel){
+        allLabels.add(figureObj.userData.nodeLabel);
       }else if (figureObj.NAME.toLowerCase().search("clusterdatatype") > -1){
         allLabels.add(figureObj.getName());
       }        
@@ -272,19 +281,19 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.getAssignedFigures().each(function(figureIndex, figureObj){
       if (!figureObj.getDatatype) return;                                         //continue just for figures which have datatype function
 
-      if (figureObj.clusterItemLabel != undefined){
-        figureObj.clusterItemLabel.text = figureObj.userData.clusterItemLabel;
-        figureObj.clusterItemLabel.setVisible(true);
+      if (figureObj.nodeLabel != undefined){
+        figureObj.nodeLabel.text = figureObj.userData.nodeLabel;
+        figureObj.nodeLabel.setVisible(true);
       }else if (figureObj.NAME.toLowerCase().search("clusterdatatype") > -1){
         // for now do nothing
       }else{
-        if (figureObj.userData.clusterItemLabel != null) labelText = figureObj.userData.clusterItemLabel;
+        if (figureObj.userData.nodeLabel != null) labelText = figureObj.userData.nodeLabel;
         else labelText = 'item_' + figureIndex;
         
-        figureObj.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
-        figureObj.add(figureObj.clusterItemLabel, new draw2d.layout.locator.TopLocator());
-        figureObj.clusterItemLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
-        figureObj.clusterItemLabel.on('change:text', function(emitter, event){
+        figureObj.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
+        figureObj.add(figureObj.nodeLabel, new draw2d.layout.locator.TopLocator());
+        figureObj.nodeLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+        figureObj.nodeLabel.on('change:text', function(emitter, event){
           labelText = emitter.getText(); 
           var allIndexes = clusterObj.getAllItemsLabels();
           
@@ -292,11 +301,11 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
             labelText = labelText + '2';
           }
 
-          emitter.getParent().userData.clusterItemLabel = labelText;                  //when text change do this also in userData
+          emitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
           emitter.text = labelText;                                                   //this will not fire another event!
         });
       }
-      figureObj.userData.clusterItemLabel = figureObj.clusterItemLabel.getText();  //to not begin from 0
+      figureObj.userData.nodeLabel = figureObj.nodeLabel.getText();  //to not begin from 0
 
       figureObj.getPorts().each(function(portIndex, portObj){
         portObj.getConnections().each(function(connectionIndex, connectionObj){
@@ -320,8 +329,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.getAssignedFigures(true);                                                  //first recalculate all nodes inside cluster
 
     this.getAssignedFigures().each(function(figureIndex, figureObj){
-      if (figureObj.clusterItemLabel != undefined){
-        figureObj.clusterItemLabel.setVisible(false);
+      if (figureObj.nodeLabel != undefined){
+        figureObj.nodeLabel.setVisible(false);
       }
     });
   },
@@ -359,7 +368,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     let clusterObj = this;
     this.getChildren().each(function(childIndex, childObj){
         if (childObj.userData && childObj.userData.type && childObj.userData.type == 'clusterDatatypeName'){
-            clusterObj.clusterItemLabel = childObj;
+            clusterObj.nodeLabel = childObj;
         }
     });
 
@@ -434,10 +443,10 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
         }
     });
     
-    cCode += "typedef struct " + this.getDatatype()+ " {\n";
+    cCode += "struct " + this.getDatatype()+ " {\n";
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.getDatatype){
-        cCode += figureObj.getDatatype() + " " + figureObj.userData.clusterItemLabel + ";\n";
+        cCode += figureObj.getDatatype() + " " + figureObj.userData.nodeLabel + ";\n";
       }
     });
 

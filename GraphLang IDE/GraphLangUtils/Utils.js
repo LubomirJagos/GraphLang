@@ -1500,30 +1500,6 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
 }
 
 /**
- *  @method correctMultilayeredAfterLoad
- *  @param {draw2d.Canvas} canvas
- *  @description Should correct layers for multilayered structures after load from json.
- */
-GraphLang.Utils.correctMultilayeredAfterLoad = function(canvas){
-
-  var allMultilayered = new draw2d.util.ArrayList();
-  var allJailhouse = new draw2d.util.ArrayList();
-
-  //1st Get all multilayered structures
-  canvas.getFigures().each(function(multilayerIndex, multilayerObj){
-    if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
-      multilayerObj.getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().indexOf("tunnel") > -1){
-          childObj.setBackgroundColor(new draw2d.util.Color(255,0,0));
-          //multilayerObj.assignFigure(childObj);
-          //alert("kokot")
-        }
-      });
-    }
-  });
-}
-
-/**
  *  @method readSingleFile
  *  @param {HTMLInputFileTag} e Javascript object for input file tag placed somewhere in toolbar or else.
  *  @description Registered on some file input, at it change it will read chosen file and display its content.
