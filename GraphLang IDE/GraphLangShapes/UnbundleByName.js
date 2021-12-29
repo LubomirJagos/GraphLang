@@ -43,23 +43,49 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
       this.updateBasicContextMenu();
     },
     
+    getConnectedCluster: function(){
+        let connections = this.portClusterType.getConnections();
+        let clusterObj = null;
+
+        if (connections.getSize() > 0){
+          let connectedNode = connections.first().getSource().getParent();
+          let clusterName = null;
+
+          /*
+           *    There are two options:
+           *        - there is cluster connected to cluster input or some tunnel which has function getDatatype()
+           *          and this function should have just nodes which represent some datatype or tunnels
+           *        - it's connected to some Unbundle, UnbundleByName which output is cluster
+           */
+          if (connectedNode.getDatatype){
+            clusterName = connectedNode.getDatatype();
+          }else if (connectedNode.getConnectedClusterDatatype){
+            clusterName = connectedNode.getConnectedClusterDatatype();          
+          }else if (connections.first().getSource().userData &&
+                    connections.first().getSource().userData.datatype &&
+                    connections.first().getSource().userData.datatype.toLowerCase().search('clusterdatatype') > -1){
+            clusterName = connections.first().getSource().userData.datatype;
+          }
+
+          if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
+              this.getCanvas().getFigures().each(function(figureIndex, figureObj){
+                  if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
+                      clusterObj = figureObj;
+                  } 
+              }); 
+          }
+        }
+        return clusterObj;    
+    },
+    
     getContextMenu: function(){
       /*
        *    Adding connected cluster items labels into context menu which appears
        *    after right click on bundle by name item.
        */
-      let connections = this.portClusterType.getConnections();
       let contextMenu = {};
-      if (connections.getSize() > 0){
-        let clusterObj;
-        let clusterName = connections.first().getSource().getParent().getDatatype();
-        if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
-            this.getCanvas().getFigures().each(function(figureIndex, figureObj){
-                if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
-                    clusterObj = figureObj;
-                } 
-            }); 
-        }
+      let clusterObj = this.getConnectedCluster();
+      if (clusterObj){
         clusterObj.getAllItemsLabels().each(function(itemIndex, itemObj){
             contextMenu[itemObj] = {name: itemObj};
         });
@@ -101,7 +127,17 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
                       emitter.getParent().getParent().removeEntity(itemObj);	//POSSIBLE TO ADD INDEX AFTER WHICH IT HAS TO ADD ITEM
                       break;
                    default:
-                      emitter.setText(key);
+                      let itemObj = emitter.getParent().getParent().getConnectedCluster().getItemByLabel(key);
+                      if (itemObj){
+                        var colorObj = new GraphLang.Utils.Color();
+                        emitter.setText(key);
+                        portObj = emitter.getOutputPort(0)
+                        portObj.userData.datatype = itemObj.getDatatype();
+                        portObj.useGradient = false;
+                        portObj.setBackgroundColor(colorObj.getByName(itemObj.getDatatype()));
+                      }else{
+                        emitter.setText("not found");
+                      }
                       break;
                    }
 
@@ -201,10 +237,6 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
     {
         return this.children.get(index+1).figure;
     },
-
-
-
-
 
    /**
     * @method setName

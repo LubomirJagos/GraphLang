@@ -31,6 +31,7 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "char") return "#4286f4";
     else if (colorName == "long") return "#4286f4";
     else if (colorName == "word") return "#4286f4";
+    else if (colorName == "uint") return "#4286f4";
     else if (colorName == "int") return "#4286f4";
     else if (colorName == "int8") return "#4286f4";
     else if (colorName == "uint8" || colorName == "uint") return "#4286f4";
@@ -39,11 +40,11 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "int32") return "#4286f4";
     else if (colorName == "uint32") return "#4286f4";
     else if (colorName == "single") return "#AA2200";
-    else if (colorName == "float") return "#AA2200";
+    else if (colorName == "float") return "#FAB700";
     else if (colorName == "double") return "#AA2200";
     else if (colorName == "bool" || colorName == "boolean") return "#009900";
     else if (colorName == "string" || colorName == "String") return "#ff3385";
-    else if (colorName == "cluster" || colorName == "clusterDatatype") return "#7D1A4C";
+    else if (colorName == "cluster" || colorName == "clusterDatatype" || colorName.toLowerCase().search("clusterdatatype") > -1) return "#7D1A4C";
     else if (colorName == "error") return "#cccc00";
     else if (colorName == "broken") return "#666666";
     else if (colorName == "undefined" || colorName == "unknown") return "#666666";
@@ -66,6 +67,7 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "char") return "#000000";
     else if (colorName == "long") return "#000000";
     else if (colorName == "word") return "#000000";
+    else if (colorName == "uint") return "#000000";
     else if (colorName == "int") return "#FFFFFF";
     else if (colorName == "int8") return "#000000";
     else if (colorName == "uint8" || colorName == "uint") return "#000000";

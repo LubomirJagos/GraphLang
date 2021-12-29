@@ -18,30 +18,37 @@ GraphLang.Shapes.Basic.Bundle = GraphLang.Shapes.Basic.BundleByName.extend({
       let bundleObj = this;
       //this.items.resetChildren();   //remove items
 
-      let connections = this.portClusterType.getConnections();
+      /*
+       *  Searching for connected cluster datatype, looking on wirource and asking its datatype.
+       *  Afterwards ask canvas for particular cluster to get its reference.
+       */
+      let clusterObj = this.getConnectedCluster();
       let contextMenu = {};
-      if (connections.getSize() > 0){
-          
-        let clusterObj;
-        let clusterName = connections.first().getSource().getParent().getDatatype();
-        console.log("bundle: searching for " + clusterName);
-        if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
-            this.getCanvas().getFigures().each(function(figureIndex, figureObj){
-                if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
-                    clusterObj = figureObj;
-                } 
-            }); 
-        }
-        
+      if (clusterObj){
+        /*
+         *  Updtabe Bundle obj:
+         *      - change each row fatatype according to connected object to connected cluster obj, also change port datatype
+         *      - if there is more items than current row, add new entities, this way already connected wires
+         *        stay connected to items and there is no corruption in gui
+         */
         let clusterOrderedItems = clusterObj.getOrderedItems();
         clusterOrderedItems.each(function(itemIndex, itemObj){
             if (itemIndex >= bundleObj.items.getChildren().getSize()){
                 bundleObj.addEntity(itemObj.getDatatype());
-            }else{
-                bundleObj.items.getChildren().get(itemIndex).setText(itemObj.getDatatype());
             }
+            var colorObj = new GraphLang.Utils.Color();
+            bundleItem = bundleObj.items.getChildren().get(itemIndex);
+            bundleItem.setText(itemObj.getDatatype());
+            portObj = bundleItem.getInputPort(0)
+            portObj.userData.datatype = itemObj.getDatatype();
+            portObj.useGradient = false;
+            portObj.setBackgroundColor(colorObj.getByName(itemObj.getDatatype()));
         });
         
+        /*
+         *  If newly connected cluster datatype has less items inside it, this removes redundat items from end of this item
+         *  and also connected wires to these items.
+         */
         while(clusterOrderedItems.getSize() < this.items.getChildren().getSize()){
             //there is problem that wires are not removed properly so this should erase them
             this.items.getChildren().last().getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){

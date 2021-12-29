@@ -19,27 +19,21 @@ GraphLang.Shapes.Basic.Unbundle = GraphLang.Shapes.Basic.UnbundleByName.extend({
       let bundleObj = this;
       //this.items.resetChildren();   //remove items
 
-      let connections = this.portClusterType.getConnections();
       let contextMenu = {};
-      if (connections.getSize() > 0){
-          
-        let clusterObj;
-        let clusterName = connections.first().getSource().getParent().getDatatype();
-        if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
-            this.getCanvas().getFigures().each(function(figureIndex, figureObj){
-                if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
-                    clusterObj = figureObj;
-                } 
-            }); 
-        }
-        
+      let clusterObj = this.getConnectedCluster();
+      if (clusterObj){        
         let clusterOrderedItems = clusterObj.getOrderedItems();
         clusterOrderedItems.each(function(itemIndex, itemObj){
             if (itemIndex >= bundleObj.items.getChildren().getSize()){
                 bundleObj.addEntity(itemObj.getDatatype());
-            }else{
-                bundleObj.items.getChildren().get(itemIndex).setText(itemObj.getDatatype());
             }
+            var colorObj = new GraphLang.Utils.Color();
+            bundleItem = bundleObj.items.getChildren().get(itemIndex);
+            bundleItem.setText(itemObj.getDatatype());
+            portObj = bundleItem.getOutputPort(0)
+            portObj.userData.datatype = itemObj.getDatatype();
+            portObj.useGradient = false;
+            portObj.setBackgroundColor(colorObj.getByName(itemObj.getDatatype()));
         });
         
         while(clusterOrderedItems.getSize() < this.items.getChildren().getSize()){

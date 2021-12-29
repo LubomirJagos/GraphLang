@@ -17,6 +17,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
 
     //INIT USER DATA
     this.userData = {};
+    this.userData.datatype = "int";
     this.userData.isTerminal = false
 
     /*****************************************************************************

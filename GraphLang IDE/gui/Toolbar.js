@@ -174,24 +174,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.setWiresColorByPortsButton);
 
 		/**
-		*	getDirectChildrenWiresButton Button
-		*/
-		this.getDirectChildrenOfSelectedNodeButton  = $("<button id=\"getDirectChildrenOfSelectedNodeButton\">getDirectChildrenOfSelectedNode</button>");
-		this.getDirectChildrenOfSelectedNodeButton.button().click($.proxy(function(){
-			GraphLang.Utils.getDirectChildrenOfSelectedNode(appCanvas);
-		}));
-		this.html.append(this.getDirectChildrenOfSelectedNodeButton);
-
-		/**
-		*	getSelectedLoopTunnelCount Button
-		*/
-		this.getSelectedLoopTunnelCountButton  = $("<button id=\"getSelectedLoopTunnelCountButton\">getSelectedLoopTunnelCount</button>");
-		this.getSelectedLoopTunnelCountButton.button().click($.proxy(function(){
-			GraphLang.Utils.getSelectedLoopTunnelCount(appCanvas);
-		}));
-		this.html.append(this.getSelectedLoopTunnelCountButton);
-
-		/**
 		*	getCanvasJson Button
 		*/
 		this.getCanvasJsonButton  = $("<button id=\"getCanvasJsonButton\">getCanvasJson</button>");
@@ -237,15 +219,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.setTunnelColorByWireButton);
 
 		/**
-		*	setTunnelColorByWire Button
-		*/
-		this.showLoopsExecutionOrderButton  = $("<button id=\"showLoopsExecutionOrderButton\">showLoopsExecutionOrder</button>");
-		this.showLoopsExecutionOrderButton.button().click($.proxy(function(){
-			GraphLang.Utils.showLoopsExecutionOrder(appCanvas);
-		}));
-		this.html.append(this.showLoopsExecutionOrderButton);
-
-		/**
 		*	correctWiresAfterLoad Button
 		*/
 		this.correctWiresAfterLoadButton  = $("<button id=\"correctWiresAfterLoadButton\">correctWiresAfterLoad</button>");
@@ -253,15 +226,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.correctWiresAfterLoad(appCanvas);
 		}));
 		this.html.append(this.correctWiresAfterLoadButton);
-
-		/**
-		*	selectedLoopShowAboardFigures Button
-		*/
-		this.selectedLoopShowAboardFiguresButton  = $("<button id=\"selectedLoopShowAboardFiguresButton\">selectedLoopShowAboardFigures</button>");
-		this.selectedLoopShowAboardFiguresButton.button().click($.proxy(function(){
-			GraphLang.Utils.selectedLoopShowAboardFigures(appCanvas);
-		}));
-		this.html.append(this.selectedLoopShowAboardFiguresButton);
 
 		/**
 		*	correctMultilayeredAfterLoad Button
@@ -301,42 +265,6 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.showUserData(appCanvas);
 		}));
 		this.html.append(this.showUserDataButton);
-
-		/**
-		*	highlightVisibleLoopsAndMultilayered Button
-		*/
-		this.highlightVisibleLoopsAndMultilayeredButton  = $("<button id=\"highlightVisibleLoopsAndMultilayeredButton\">highlightVisibleLoopsAndMultilayered</button>");
-		this.highlightVisibleLoopsAndMultilayeredButton.button().click($.proxy(function(){
-			GraphLang.Utils.highlightVisibleLoopsAndMultilayered(appCanvas);
-		}));
-		this.html.append(this.highlightVisibleLoopsAndMultilayeredButton);
-
-		/**
-		*	highlightVisibleConnectionsButton Button
-		*/
-		this.highlightVisibleConnectionsButton  = $("<button id=\"highlightVisibleConnectionsButton\">highlightVisibleConnections</button>");
-		this.highlightVisibleConnectionsButton.button().click($.proxy(function(){
-			GraphLang.Utils.highlightVisibleConnections(appCanvas);
-		}));
-		this.html.append(this.highlightVisibleConnectionsButton);
-
-		/**
-		*	getCurrentLayerChildren Button
-		*/
-		this.getCurrentLayerChildrenButton  = $("<button id=\"getCurrentLayerChildrenButton\">getCurrentLayerChildren</button>");
-		this.getCurrentLayerChildrenButton.button().click($.proxy(function(){
-			GraphLang.Utils.getCurrentLayerChildren(appCanvas);
-		}));
-		this.html.append(this.getCurrentLayerChildrenButton);
-
-		/**
-		*	getSelectionPorts Button
-		*/
-		this.getSelectionPortsButton  = $("<button id=\"getSelectionPortsButton\">getSelectionPorts</button>");
-		this.getSelectionPortsButton.button().click($.proxy(function(){
-			GraphLang.Utils.getSelectionPorts(appCanvas);
-		}));
-		this.html.append(this.getSelectionPortsButton);
 
 		/**
 		*	zoomIn Button

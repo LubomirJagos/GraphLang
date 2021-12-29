@@ -155,12 +155,33 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   /********************************************************************************************************************
    *  Functions below are implemented by me (LuboJ)
    ********************************************************************************************************************/
+  setName: function(name){
+    return this.clusterItemLabel.setText(name);
+  },
+
   getName: function(){
     return this.clusterItemLabel.getText();
   },
 
   getDatatype: function(){
     return "clusterDatatype_" + this.clusterItemLabel.getText()  
+  },
+
+  /*
+   *    Returns object reference inside cluster based on its label.
+   *    There shouldn't be more with same label inside cluster, but if so last one is returned.
+   *    If item is not found null is returned.
+   */
+  getItemByLabel: function(itemLabel){
+    let clusterItem = null;
+    this.getAssignedFigures().each(function(figureIndex, figureObj){
+      if (figureObj.userData && figureObj.userData.clusterItemLabel == itemLabel){
+        clusterItem = figureObj;
+      }else if(figureObj.NAME.toLowerCase().search("clusterdatatype") > -1 && figureObj.getName() == itemLabel){
+        clusterItem = figureObj;
+      }          
+    }); 
+    return clusterItem;
   },
 
   getAllItemsIndexes: function(){
@@ -191,6 +212,11 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     }); 
 
     return allLabels;
+  },
+  
+  isItemNameUnique: function(name){
+    let itemNames = this.getAllItemsLabels();
+    return itemNames.contains(name);
   },
 
   /*
@@ -249,9 +275,11 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       if (figureObj.clusterItemLabel != undefined){
         figureObj.clusterItemLabel.text = figureObj.userData.clusterItemLabel;
         figureObj.clusterItemLabel.setVisible(true);
+      }else if (figureObj.NAME.toLowerCase().search("clusterdatatype") > -1){
+        // for now do nothing
       }else{
         if (figureObj.userData.clusterItemLabel != null) labelText = figureObj.userData.clusterItemLabel;
-        else labelText = '---';
+        else labelText = 'item_' + figureIndex;
         
         figureObj.clusterItemLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
         figureObj.add(figureObj.clusterItemLabel, new draw2d.layout.locator.TopLocator());
@@ -330,9 +358,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
     let clusterObj = this;
     this.getChildren().each(function(childIndex, childObj){
-        console.log('loading cluster: ' + JSON.stringify(childObj.userData))
         if (childObj.userData && childObj.userData.type && childObj.userData.type == 'clusterDatatypeName'){
-            console.log("loading cluster: name label found");
             clusterObj.clusterItemLabel = childObj;
         }
     });

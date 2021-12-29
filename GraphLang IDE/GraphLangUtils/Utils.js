@@ -1252,27 +1252,6 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
 }
 
 /**
- * @method getSelectedLoopTunnelCount
- * @param {draw2d.Canvas} canvas - schematic
- * @description For selected loop show number of tunnels.
- * @returns {Number} Tunnels count of currently selected loop.
- */
-GraphLang.Utils.getSelectedLoopTunnelCount = function setWiresColorByPorts(canvas){
-  var node = canvas.getPrimarySelection();
-  var tunnelCount = 0;
-
-  if (node.NAME.toLowerCase().search("loop") >= 0){
-    node.getChildren().each(function(tunnelIndex, tunnelObj){
-      if (tunnelObj.NAME.toLowerCase().search("tunnel") >= 0){
-        tunnelCount++;
-      }
-    });
-  }
-  alert(tunnelCount);
-  return tunnelCount;
-}
-
-/**
  * @method getCanvasJson
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
  * @returns {String} jsonStr
@@ -1441,47 +1420,6 @@ GraphLang.Utils.setTunnelColorByWire = function(canvas){
 }
 
 /**
- *  @method showLoopsExecutionOrder
- *  @param {draw2d.Canvas} canvas
- *  @description Place label with loop execution order into its middle
- */
-GraphLang.Utils.showLoopsExecutionOrder = function(canvas){
-  var allNodes = canvas.getFigures();
-  var allLoops = new draw2d.util.ArrayList();
-
-  allNodes.each(function(nodeIndex, nodeObj){
-    if (nodeObj.NAME.toLowerCase().search("loop") >= 0){
-      allLoops.push(nodeObj);
-    }
-  });
-
-  allLoops.each(function(loopIndex, loopObj){
-    //alert(loopObj.userData.executionOrder);
-    loopObj.add(
-      new draw2d.shape.basic.Label({
-        text:new String(loopObj.userData.executionOrder),
-        stroke:1, color:"#FF0000", fontColor:"#0d0d0d", bgColor: "#FF0000",
-        userData: {datatype: "executionOrder"}
-      }),
-      new draw2d.layout.locator.CenterLocator(loopObj)
-    );
-  });
-}
-
-/**
- *  @method getDirectChildrenOfSelectedNode
- *  @param {draw2d.Canvas} canvas
- *  @description Change background of nodes to be red for direct children of selected node. This function is here mostly for debug
- *  to see red nodes which should be children of loop if loop is selected, just to see how it's visible in javascript inside editor..
- */
-GraphLang.Utils.getDirectChildrenOfSelectedNode = function(canvas){
-  var selectedFigures = canvas.getSelection().getAll();
-  GraphLang.Utils.getDirectChildrenWithoutTunnels(canvas, selectedFigures.get(0)).each(function(childrenIndex, childrenObj){
-    childrenObj.setBackgroundColor(new GraphLang.Utils.Color("#FF0000"));
-  });
-}
-
-/**
  *  @method rewriteIDtoNumbers
  *  @param {draw2d.Canvas} canvas
  *  @description Rewrite in output code all IDs to normal numbers to make output code more readible
@@ -1559,21 +1497,6 @@ GraphLang.Utils.correctWiresAfterLoad = function(canvas){
     }
   });
   alert("Wire correction after load DONE.");
-}
-
-/**
- *  @method selectedLoopShowAboardFigures
- *  @param {draw2d.Canvas} canvas
- *  @description Show message with list of selected loop children. Used for debugging why multilayered nodes are not moving when are part of some loop.
- */
-GraphLang.Utils.selectedLoopShowAboardFigures = function(canvas){
-  //alert("selectedLoopShowAboardFigures");
-  var element = canvas.getSelection().getAll().first();
-  var msg = "";
-  element.getAboardFigures(true).each(function(figureIndex, figureObj){
-    msg += figureObj.NAME + "\n";
-  });
-  alert(msg);
 }
 
 /**
@@ -1743,7 +1666,7 @@ GraphLang.Utils.showUserData = function(canvas) {
     var htmlStr = $('logitem2').html();
     htmlStr += JSON.stringify(selectionObj.getUserData()) + '\n';
     $('logitem2').html(htmlStr);
-    alert(selectionObj.getUserData());
+    alert(JSON.stringify(selectionObj.getUserData()));
   });
 }
 
@@ -1765,84 +1688,6 @@ GraphLang.Utils.getVisibleLoopsAndMultilayered = function(canvas) {
 
 	return loopList;
 }
-
-/**
- *  @method highlightVisibleLoopsAndMultilayered
- *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Change border or somehow highlight top visible loops, this is mostly for debugging during development function.
- */
-GraphLang.Utils.highlightVisibleLoopsAndMultilayered = function(canvas) {
-    let loopList = GraphLang.Utils.getVisibleLoopsAndMultilayered(canvas) 
-
-	str = "";
-	loopList.each(function(loopIndex, loopObj){
-	  loopObj.setDashArray("-");
-	  str += (loopObj.NAME + "\n");
-	});
-	alert(str);
-}
-
-/**
- *  @method highlightVisibleConnections
- *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Highlight all currently visible connections.
- */
-GraphLang.Utils.highlightVisibleConnections = function(canvas) {
-  let loopList = new draw2d.util.ArrayList();
-  let connectionList = new draw2d.util.ArrayList();
-
-  canvas.getFigures().each(function(figureIndex, figureObj){
-    if (figureObj.NAME.search("GraphLang.Shapes.Basic.Loop") > -1 &&
-        figureObj.getComposite() == null){
-
-      let nestedLayeredList = figureObj.getVisibleLoopAndMultilayered();
-      if (!nestedLayeredList.isEmpty()) loopList.addAll(nestedLayeredList);  //add ArrayList to current just in case it's not empty otherwise there will be undefined object and make harm in following code
-    }
-  });
-
-  //getting all visible connections
-  loopList.each(function(loopIndex, loopObj){
-    connectionList.addAll(loopObj.getVisibleConnections());
-  });
-
-  connectionList.each(function(connectionIndex, connectionObj){
-    connectionObj.setColor(new draw2d.util.Color("#FF0000"));
-  });
-}
-
-/**
- *  @method getCurrentLayerChildren
- *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Show alert window with ids of current selected multilayered structure layers
- */
-GraphLang.Utils.getCurrentLayerChildren = function(canvas){
-  canvas.getSelection().each(function(objIndex, obj){
-    //alert(obj.NAME.toLowerCase())
-    if (obj.NAME.toLowerCase().indexOf("multilayered") > -1){
-      obj.getAllLayers().each(function(layerIndex, layerObj){
-        layerObj.getAssignedFigures().each(function(childIndex, childObj){
-          alert( layerObj.getId() + "\n" + childObj.NAME);
-        });
-      });
-    }
-  });
-}
-
-/**
- *  @method getSelectionPorts
- *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Show alert window with ids of selection input ports
- */
-GraphLang.Utils.getSelectionPorts = function(canvas){
-  canvas.getSelection().each(function(objIndex, obj){
-	portList = ""
-    obj.getInputPorts().each(function(portIndex, portObj){
-    	portList += portObj.getId() + "\n";
-    });
-    alert(portList);
-  });
-}
-
 
 /**
  * @method translateCanvasToCppCode

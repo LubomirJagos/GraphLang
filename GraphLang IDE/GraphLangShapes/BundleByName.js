@@ -52,6 +52,42 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       this.updateBasicContextMenu();
     },
 
+    getConnectedCluster: function(){
+        let connections = this.portClusterType.getConnections();
+        let clusterObj = null;
+        let thisId = this.getId();
+
+        if (connections.getSize() > 0){
+          let connectedNode = connections.first().getSource().getParent();
+          let clusterName = null;
+
+          /*
+           *    There are two options:
+           *        - there is cluster connected to cluster input or some tunnel which has function getDatatype()
+           *          and this function should have just nodes which represent some datatype or tunnels
+           *        - it's connected to some Unbundle, UnbundleByName which output is cluster
+           */
+          if (connectedNode.getDatatype){
+            clusterName = connectedNode.getDatatype();
+          }else if (connectedNode.getConnectedClusterDatatype){
+            clusterName = connectedNode.getConnectedClusterDatatype();          
+          }
+          
+          if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
+              this.getCanvas().getFigures().each(function(figureIndex, figureObj){
+                  if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
+                      clusterObj = figureObj;
+                  }
+              }); 
+          }
+        }
+        return clusterObj;    
+    },
+    
+    getConnectedClusterDatatype: function(){
+        return this.getConnectedCluster().getDatatype();
+    },
+
     getContextMenu: function(){
       /*
        *    Adding connected cluster items labels into context menu which appears
@@ -59,17 +95,8 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
        */
       let connections = this.portClusterType.getConnections();
       let contextMenu = {};
-      if (connections.getSize() > 0){
-        let clusterObj;
-        let clusterName = connections.first().getSource().getParent().getDatatype();
-                
-        if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
-            this.getCanvas().getFigures().each(function(figureIndex, figureObj){
-                if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
-                    clusterObj = figureObj;
-                } 
-            }); 
-        }
+      let clusterObj = this.getConnectedCluster();
+      if (clusterObj){
         clusterObj.getAllItemsLabels().each(function(itemIndex, itemObj){
             contextMenu[itemObj] = {name: itemObj};
         });
@@ -117,7 +144,17 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
                         emitter.getParent().getParent().removeEntity(itemObj);	//POSSIBLE TO ADD INDEX AFTER WHICH IT HAS TO ADD ITEM
                         break;
                    default:
-                       emitter.setText(key);
+                      let itemObj = emitter.getParent().getParent().getConnectedCluster().getItemByLabel(key);
+                      if (itemObj){
+                        var colorObj = new GraphLang.Utils.Color();
+                        emitter.setText(key);
+                        portObj = emitter.getInputPort(0)
+                        portObj.userData.datatype = itemObj.getDatatype();
+                        portObj.useGradient = false;
+                        portObj.setBackgroundColor(colorObj.getByName(itemObj.getDatatype()));
+                      }else{
+                        emitter.setText("not found");
+                      }
                        break;
                    }
 
