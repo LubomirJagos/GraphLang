@@ -264,6 +264,7 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
     translateToCppCodeDeclaration:function(){
       cCode = "";
       var inDefault = this.getInputPort(1);
+      
       var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
       cCode += feedbackDatatype + " feedBackNode_" + this.getId() + ";\n";
 

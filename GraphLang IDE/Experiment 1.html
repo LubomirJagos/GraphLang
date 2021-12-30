@@ -99,6 +99,7 @@
       <script src="./ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/MarkerStateBFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="./ArduinoLib/Node/Add.js"></script>
+      <script src="./ArduinoLib/Node/Not.js"></script>
       <script src="./ArduinoLib/Node/Subtract.js"></script>
       <script src="./ArduinoLib/Node/Multiply.js"></script>
       <script src="./ArduinoLib/Node/Divide.js"></script>
@@ -417,6 +418,7 @@ function displayJSON(canvas){
             <img src="GraphLangSymbols/Arduino_waitUntilNextMs.png" />
             Arduino waitUntilNextMs
           </div>
+          <div data-shape="GraphLang.ArduinoLib.Node.Not" data-label="GraphLang Arduino Not" class="palette_node_element draw2d_droppable">Arduino Not</div>
           <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="GraphLang Arduino Math Abs" class="palette_node_element draw2d_droppable">
             <img src="GraphLangSymbols/Arduino_Math_Abs.png" />
             Arduino Math.Abs
@@ -480,14 +482,6 @@ function displayJSON(canvas){
         </div>
 
   </div>
-
-   <!--
-    Status bar and logs, display set to none!
-   -->
-   <div style="/*display: none;*/ position: absolute; right: 20px; bottom: 20px; width: 320px; height: 120px; border: 1px solid black; background: none;">
-     Dropped obj: <div id="logitem1"></div>
-     Msg: <div id="logitem2"></div>
-   </div>
 
    <!-- window with JSON representation of schematic -->
    <div id="json" style="display: none; overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>

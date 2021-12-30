@@ -194,6 +194,12 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     this.getOutputPort(0).userData.datatype = this.userData.datatype;   //set output port ID same as cluster when loading from file, MUST BE HERE
   },
 
+  getVariableName: function(){
+      let variableName = "const_" + this.getId();
+      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+      return variableName   
+  },
+
   /**
    *  @method translateToCppCode
    *  @description SThis function translates block into C/C++ code. here is defined template which get wires names connected to inputs and outputs,
@@ -202,9 +208,9 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   translateToCppCode:function(){
     cCode = "";
 
-    var constantId = this.getId();
+    var variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "wire_" + connectionObj.getId() + " = const_" + constantId + ";\n";
+      cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
     });
 
     return cCode;
@@ -220,9 +226,9 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     var constDatatype = this.getOutputPort(0).userData.datatype;
     
     if (constDatatype.toLowerCase().search("string") > -1){
-      cCode += constDatatype + " const_" + this.getId() + " = \"" + this.getText() + "\";\n";
+      cCode += constDatatype + " " + this.getVaribleName() + " = \"" + this.getText() + "\";\n";
     }else{
-      cCode += constDatatype + " const_" + this.getId() + " = " + this.getText() + ";\n";
+      cCode += constDatatype + " " + this.getVariableName() + " = " + this.getText() + ";\n";
     }
     return cCode;
   },
@@ -234,9 +240,9 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     
     //create param definition using also default value, if there is string use quotes
     if (this.getDatatype().toLowerCase().search("string") == -1){ 
-        cCode += constDatatype + " const_" + this.getId() + ' = ' + this.getText();
+        cCode += constDatatype + " " + this.getVariableName() + ' = ' + this.getText();
     }else{
-        cCode += constDatatype + " const_" + this.getId() + ' = "' + this.getText() + '"';
+        cCode += constDatatype + " " + this.getVariableName() + ' = "' + this.getText() + '"';
     }
 
     return cCode;

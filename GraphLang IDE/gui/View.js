@@ -47,26 +47,26 @@ example.View = draw2d.Canvas.extend({
 				 *	This look for node html tag attribute and based on it put newly generate figure on canvas
 				 */
         var type = $(droppedDomNode).data("shape");
-    		var label = $(droppedDomNode).data("label");
-    		var width = $(droppedDomNode).data("width");
-    		var height = $(droppedDomNode).data("height");
-    
-    		//experiment if defined this data, they are used in object constructor
-    		//now this is for vertical bus
-    		var figure;
-    
-    		//extracting attributes and putting them into json string for node constructor
-    		var attributes = "";
-    		if (width){attributes += "width: " + width + ",";}
-    		if (height){attributes += "height: " + height + ",";}
-    		if (label){attributes += "text: \"" + label + "\",";}
-    		attributes = "{" + attributes.substring(0,attributes.length-1) + "}";
-    
-    		if (label || width || height){
-    			figure = eval("new "+type+"(" + attributes + ");");
-    		}else{
-    			figure = eval("new "+type+"();");
-    		}
+  		var label = $(droppedDomNode).data("label");
+  		var width = $(droppedDomNode).data("width");
+  		var height = $(droppedDomNode).data("height");
+  
+  		//experiment if defined this data, they are used in object constructor
+  		//now this is for vertical bus
+  		var figure;
+  
+  		//extracting attributes and putting them into json string for node constructor
+  		var attributes = "";
+  		if (width){attributes += "width: " + width + ",";}
+  		if (height){attributes += "height: " + height + ",";}
+  		if (label){attributes += "text: \"" + label + "\",";}
+  		attributes = "{" + attributes.substring(0,attributes.length-1) + "}";
+  
+  		if (label || width || height){
+  			figure = eval("new "+type+"(" + attributes + ");");
+  		}else{
+  			figure = eval("new "+type+"();");
+  		}
     
         // create a command for the undo/redo support
         var command = new draw2d.command.CommandAdd(this, figure, x, y);
@@ -87,6 +87,14 @@ example.View = draw2d.Canvas.extend({
   		});
   		if (parentFigure !== null){
   			parentFigure.getActiveLayer().assignFigure(figure);
+
+            /*
+             *  If node is dropped into cluster then function to add indexes and labels is called.
+             */
+    		if (parentFigure.NAME.toLowerCase().search("cluster") >= 0){
+                parentFigure.addItemsIndexes();
+    			parentFigure.addItemsLabels();
+    		}
   		}
   
   		// LuboJ
@@ -100,7 +108,9 @@ example.View = draw2d.Canvas.extend({
   			figure.switchActiveLayer();
   		}
   
-  		$("#logitem1").html("Obj type: " + type);
+  		if (type.toLowerCase().search("array") > -1){
+  			figure.addItem();
+  		}
   
   		/*
   		 *	Adding anchor policy for connection when drop new node.

@@ -37,7 +37,7 @@ GraphLang.Shapes.Basic.Return = draw2d.shape.basic.Label.extend({
 
     this.setColor(new draw2d.util.Color("#0000FF"));
     this.setFontColor(new draw2d.util.Color("#FFFFFF"));
-    this.setBackgroundColor(new draw2d.util.Color("#0000FF"));
+    this.setBackgroundColor(new draw2d.util.Color("#AAAAAA"));
     this.getInputPort(0).userData.datatype = "int";
     this.setText("return");
   },

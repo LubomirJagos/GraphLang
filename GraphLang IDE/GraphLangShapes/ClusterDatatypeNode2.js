@@ -83,9 +83,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       labelText = labelText.replaceAll(" ","_"); 
       nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
       nodeEmitter.text = labelText;                                                   //this will not fire another event!
-
-      if (!nodeEmitter.getOutputPort(0).userData) nodeEmitter.getOutputPort(0).userData = {};
-      nodeEmitter.getOutputPort(0).userData.datatype = nodeEmitter.getDatatype();
+      nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
     });
     
     //this.add(this.nodeLabel, new draw2d.layout.locator.TopLocator());
@@ -173,7 +171,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   },
 
   getDatatype: function(){
-    return "clusterDatatype_" + this.nodeLabel.getText()  
+    return "clusterDatatype_" + this.nodeLabel.getText() + "&";
   },
 
   /*
@@ -231,7 +229,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   /*
    *  This displays item indexes on left of figures inside cluster which are gonna be translated into C/C++ code.
    */
-  addItemsIndexes: function(){
+  addItemsIndexes: function(showIndexes = true){
     this.getAssignedFigures(true);                                                  //first recalculate all nodes inside cluster
 
     clusterObj = this;
@@ -240,7 +238,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
       if (figureObj.clusterItemIndex != undefined){
         figureObj.clusterItemIndex.text = figureObj.userData.clusterItemIndex.toString();
-        figureObj.clusterItemIndex.setVisible(true);
+        figureObj.clusterItemIndex.setVisible(showIndexes);
       }else{
         if (figureObj.userData.clusterItemIndex != null) labelText = figureObj.userData.clusterItemIndex;
         else labelText = (figureIndex + 1).toString();
@@ -274,7 +272,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   /*
    *  This displays item indexes on left of figures inside cluster which are gonna be translated into C/C++ code.
    */
-  addItemsLabels: function(){
+  addItemsLabels: function(showLabels = true){
     this.getAssignedFigures(true);                                                  //first recalculate all nodes inside cluster
 
     clusterObj = this;
@@ -283,7 +281,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
       if (figureObj.nodeLabel != undefined){
         figureObj.nodeLabel.text = figureObj.userData.nodeLabel;
-        figureObj.nodeLabel.setVisible(true);
+        figureObj.nodeLabel.setVisible(showLabels);
       }else if (figureObj.NAME.toLowerCase().search("clusterdatatype") > -1){
         // for now do nothing
       }else{
@@ -373,7 +371,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     });
 
     let outputPort = this.getOutputPort(0);
-    outputPort.userData.datatype = "clusterDatatype_" + this.getId();  //set output port ID same as cluster when loading from file, MUST BE HERE
+    outputPort.userData.datatype = this.getDatatype();  //output port datatype is reference to cluster
     outputPort.setName("clusterOutput");
   },
   
@@ -399,7 +397,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   		});
 	  });
     }
-    
+
     //alert("cluster catched figure\n" + this.originalWidth + " " + this.originalHeight + "\n" +this.getWidth() + " " + this.getHeight());    
   },  
 
@@ -443,9 +441,11 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
         }
     });
     
-    cCode += "struct " + this.getDatatype()+ " {\n";
+    cCode += "struct " + this.getDatatype().replaceAll('&', '') + " {\n";
     allFigures.each(function(figureIndex, figureObj){
-      if (figureObj.getDatatype){
+      if (figureObj.translateToCppCodeDeclaration){
+        cCode += figureObj.translateToCppCodeDeclaration();
+      }else if (figureObj.getDatatype){
         cCode += figureObj.getDatatype() + " " + figureObj.userData.nodeLabel + ";\n";
       }
     });
@@ -464,7 +464,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
     clusterId = this.getId();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-        cCode += 'wire_' + connectionObj.getId() + ' = ' + 'cluster_' + clusterId + ";\n";    
+        cCode += 'wire_' + connectionObj.getId() + ' = ' + '&cluster_' + clusterId + ";\n";     //writing reference to this cluster to wire    
     });
 
     return cCode;

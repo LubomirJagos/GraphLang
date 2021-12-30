@@ -105,42 +105,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       emitter.changeDatatypeAllItems(key);
                       break;
                   case "add item":
-                      var arrayItemDatatype = emitter.getOutputPort(0).userData.datatype;
-                        
-                      //HERE SHOULD BE CREATING SOME NumericConstant or something MORE SPECIFIC
-                      //NOW HERE IS JUST CREATED LABEL AND PUSHED INTO ARRAY VERTICAL LAYOUT NEED TO IMPROVE (to be based on datatype of items)!!!
-                      graphLangColors = new GraphLang.Utils.Color();
-                      var arrayItem = new draw2d.shape.basic.Label({
-                          resizeable:true,
-                          bgColor:graphLangColors.getByNameBackgroundColor(arrayItemDatatype),
-                          fontColor:graphLangColors.getByNameFontColor(arrayItemDatatype),
-                          userData: {datatype: arrayItemDatatype}
-                      });
-
-                      if (arrayItemDatatype == "clusterDatatype"){
-                        arrayItem.text = "null";
-                        emitter.getChildren().each(function(childIndex, childObj){
-                            if (childObj.userData && childObj.userData.datatype && childObj.userData.datatype.toLowerCase().search('cluster') > -1){
-                                arrayItem.text = childObj.text;
-                            }
-                        });
-                        arrayItem.userData.datatype = "clusterDatatype";
-                        
-                        arrayItem.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
-                      }else if(arrayItemDatatype.toLowerCase().search("bool") > -1){
-                        arrayItem.setText('false')
-                        arrayItem.on('click', function(emitter){
-                            emitter.setText(emitter.text == 'false' ? 'true' : 'false');
-                        });
-                      }else{
-                        arrayItem.text = "0";
-                        arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
-                      }
-
-                      //emitter.getCanvas().add(arrayItem);                     //DON'T ADD array items to canvas obj, because then they will be saved as separate objects
-                      emitter.addRow(arrayItem);
-                      //emitter.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
-
+                      emitter.addItem();
                       break;
                  case "setTerminal":
                      emitter.setStroke(3);
@@ -194,6 +159,45 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     this.height = 300;
   },
   */
+  
+  addItem: function(){
+    var arrayItemDatatype = this.getOutputPort(0).userData.datatype;
+      
+    //HERE SHOULD BE CREATING SOME NumericConstant or something MORE SPECIFIC
+    //NOW HERE IS JUST CREATED LABEL AND PUSHED INTO ARRAY VERTICAL LAYOUT NEED TO IMPROVE (to be based on datatype of items)!!!
+    graphLangColors = new GraphLang.Utils.Color();
+    var arrayItem = new draw2d.shape.basic.Label({
+        resizeable:true,
+        bgColor:graphLangColors.getByNameBackgroundColor(arrayItemDatatype),
+        fontColor:graphLangColors.getByNameFontColor(arrayItemDatatype),
+        userData: {datatype: arrayItemDatatype}
+    });
+    
+    if (arrayItemDatatype == "clusterDatatype"){
+      arrayItem.text = "null";
+      this.getChildren().each(function(childIndex, childObj){
+          if (childObj.userData && childObj.userData.datatype && childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+              arrayItem.text = childObj.text;
+          }
+      });
+      arrayItem.userData.datatype = "clusterDatatype";
+      
+      arrayItem.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
+    }else if(arrayItemDatatype.toLowerCase().search("bool") > -1){
+      arrayItem.setText('false')
+      arrayItem.on('click', function(emitter){
+          emitter.setText(emitter.text == 'false' ? 'true' : 'false');
+      });
+    }else{
+      arrayItem.text = "0";
+      arrayItem.installEditor(new draw2d.ui.LabelInplaceEditor());
+    }
+    
+    //this.getCanvas().add(arrayItem);                     //DON'T ADD array items to canvas obj, because then they will be saved as separate objects
+    this.addRow(arrayItem);
+    //this.changeDatatypeAllItems(arrayItemDatatype);      //update datatypes of all items to match and also output port
+  },
+  
   getDatatype: function(){
     cCode = "";
     arrayDatatype = this.getOutputPort(0).userData.datatype;
@@ -225,43 +229,44 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
         var newColor = new GraphLang.Utils.Color();
         
         this.getChildren().each(function(childIndex, childObj){
-          childObj.setColor(newColor.getByName(newDatatype));
-          childObj.setFontColor(newColor.getByNameFontColor(newDatatype));
-          childObj.setBackgroundColor(newColor.getByNameBackgroundColor(newDatatype));
-
-          //uninstall all previous editors
-          childObj.off('click');    //uninstall changing value for boolean, THIS IS UNIVERSAL THERE IS NO OTHER EDITOR USING CLICK EVENT
-          childObj.installEditor(null);   //uninstall editor
-          
-
-          if (childObj.userData.datatype.toLowerCase().search("executionorder") == -1){
+          if (childObj.userData && childObj.userData.datatype){
+            childObj.setColor(newColor.getByName(newDatatype));
+            childObj.setFontColor(newColor.getByNameFontColor(newDatatype));
+            childObj.setBackgroundColor(newColor.getByNameBackgroundColor(newDatatype));
+  
+            //uninstall all previous editors
+            childObj.off('click');    //uninstall changing value for boolean, THIS IS UNIVERSAL THERE IS NO OTHER EDITOR USING CLICK EVENT
+            childObj.installEditor(null);   //uninstall editor
+  
+            if (childObj.userData.datatype.toLowerCase().search("executionorder") == -1){
+              childObj.userData.datatype = newDatatype;
+            }
+              
+            /*
+             *    For cluster there will be editor with available cluster datatypes to change.
+             *    For normal number there will be in place editor.
+             */
+            if (newDatatype.toLowerCase().search("cluster") > -1){
+              childObj.setText("null");
+              childObj.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
+            }else if(newDatatype.toLowerCase().search("bool") > -1){
+              childObj.setText("false");
+              childObj.on('click', function(emitter){
+                  emitter.setText(emitter.text == 'false' ? 'true' : 'false');
+              });
+            }else{
+              childObj.setText("0");
+              childObj.installEditor(new draw2d.ui.LabelInplaceEditor());
+            }
+  
+            if (childObj.userData == undefined) childObj.userData = {};
             childObj.userData.datatype = newDatatype;
           }
-            
-          /*
-           *    For cluster there will be editor with available cluster datatypes to change.
-           *    For normal number there will be in place editor.
-           */
-          if (newDatatype.toLowerCase().search("cluster") > -1){
-            childObj.setText("null");
-            childObj.installEditor(new GraphLang.Utils.ArrayClusterInPlaceEditor());
-          }else if(newDatatype.toLowerCase().search("bool") > -1){
-            childObj.setText("false");
-            childObj.on('click', function(emitter){
-                emitter.setText(emitter.text == 'false' ? 'true' : 'false');
-            });
-          }else{
-            childObj.setText("0");
-            childObj.installEditor(new draw2d.ui.LabelInplaceEditor());
-          }
-
-          if (childObj.userData == undefined) childObj.userData = {};
-          childObj.userData.datatype = newDatatype;
         });
         
         this.getOutputPort(0).userData.datatype = newDatatype;
         //this.fireEvent("resize");
-  },
+    },
   
     /**
    * @method getPersistentAttributes
@@ -310,6 +315,12 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
       },this));
   },
 
+  getVariableName: function(){
+      let variableName = "array_" + this.getId();
+      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+      return variableName   
+  },
+
   /**
    *  @name translateToCppCode
    *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
@@ -318,27 +329,35 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
       cCode = "";
       arrayDatatype = this.getOutputPort(0).userData.datatype;    
 
+      variableName = this.getVariableName();
+
       if (arrayDatatype.toLowerCase().search('cluster') > -1){
-        cCode = arrayDatatype + " array_" + this.getId() + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
+        cCode = arrayDatatype + ' ' + variableName + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
       }else{
-        cCode = arrayDatatype + " array_" + this.getId() + "[] = {";             //translate as ie. "int array_5[];"
+        cCode = arrayDatatype + " " + this.getVariableName() + "[] = {";             //translate as ie. "int array_5[];"
         this.getChildren().each(function(childIndex, childObj){
-          if (childObj.userData.datatype.toLowerCase().search('string') > -1){
-            cCode += "'" + childObj.getText() + "',";
-          }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
-            /*
-             *    THIS IS IMPROVISATION, there is cluster datatype label, so it has not translateToCpp() and instead there is placed datatype name
-             */
-            if (childObj.translateToCppCode){
-                cCode += childObj.translateToCppCode() + ",";
+          /*
+           *    Translation of each array item.
+           *    Translate just datatype children (no cluster indexes or node labels)
+           */
+          if (childObj.userData && childObj.userData.datatype){
+            if (childObj.userData.datatype.toLowerCase().search('string') > -1){
+              cCode += "'" + childObj.getText() + "',";
+            }else if (childObj.userData.datatype.toLowerCase().search('cluster') > -1){
+              /*
+               *    THIS IS IMPROVISATION, there is cluster datatype label, so it has not translateToCpp() and instead there is placed datatype name
+               */
+              if (childObj.translateToCppCode){
+                  cCode += childObj.translateToCppCode() + ",";
+              }else{
+                  cCode += childObj.getText() + ",";
+              }
+            }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
+                  cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
             }else{
-                cCode += childObj.getText() + ",";
-            }
-          }else if (childObj.userData.datatype.toLowerCase().search('executionorder') > -1){
-                cCode += "";      //PROTECTION TO NOT WRITE CONTENT OF EXECUTION ORDER LABEL
-          }else{
-            if (childObj.getText){
-                cCode += childObj.getText() + ",";
+              if (childObj.getText){
+                  cCode += childObj.getText() + ",";
+              }
             }
           }
         });
@@ -352,9 +371,11 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
 
   translateToCppCode: function(){
     cCode = "";
-    var id = this.getId();
+    variableName = " array_" + this.getId();
+    if (this.userata.nodeLabel) variableName = this.userata.nodeLabel; 
+
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "wire_" + connectionObj.getId() + " = array_" + id + ";\n";
+      cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
     });
     return cCode;
   }

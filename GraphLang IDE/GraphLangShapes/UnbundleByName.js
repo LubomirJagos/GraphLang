@@ -308,15 +308,17 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
      return inputPorts;
    },
 
-
-
-
-
-
-
     translateToCppCode: function(){
-     cCode = "";
-     cCode += "/* Unbundle by name */";
-     return cCode;
+      cCode = "";
+      cCode += "/*UnbundleByName*/\n";
+      
+      let inputWire = this.portClusterType.getConnections().first();
+      this.items.getChildren().each(function(itemIndex, itemObj){
+        itemObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+            cCode +=  'wire_' + connectionObj.getId() + ' = wire_' + inputWire.getId() + '.' + itemObj.getText() + ";\n";
+        });
+      });        
+
+      return cCode;
     }
 });

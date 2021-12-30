@@ -614,17 +614,15 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
       nodeObj.getUserData().wasTranslatedToCppCode = false;
     }
 
-    // //THIS DOESN'T HELP that execution order is somehow changed after first recalculation
-    // //add ports from ItemsNode
-    // if (nodeObj.NAME.toLowerCase().search("itemsnode") >= 0){
-    //   nodeObj.getChildren().each(function(childIndex, childObj){
-    //     if (childIndex > 0){
-    //       childObj.getPorts().each(function(portIndex, portObj){
-    //         allPorts.push(portObj);
-    //       });
-    //     }
-    //   });
-    // }
+    /*
+     *  SPECIAL FO FEEDBACK
+     */
+    if (nodeObj.NAME.toLowerCase().search("feedback") > -1){
+        nodeObj.getPorts().each(function(portIndex, portObj){
+            port.userData.executionOrder = 1;
+        });
+    }
+
   });
 
   /*
@@ -1630,20 +1628,6 @@ GraphLang.Utils.saveSchematic = function(canvas, filename, type) {
             window.URL.revokeObjectURL(url);
         }, 0);
     }
-}
-
-/**
- *  @method showUserData
- *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
- *  @description Show userData of current selected object.
- */
-GraphLang.Utils.showUserData = function(canvas) {
-  canvas.getSelection().each(function(selectionIndex, selectionObj){
-    var htmlStr = $('logitem2').html();
-    htmlStr += JSON.stringify(selectionObj.getUserData()) + '\n';
-    $('logitem2').html(htmlStr);
-    alert(JSON.stringify(selectionObj.getUserData()));
-  });
 }
 
 /**

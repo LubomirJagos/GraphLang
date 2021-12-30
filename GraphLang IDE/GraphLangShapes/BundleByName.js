@@ -27,7 +27,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100.7, 50));
       port.setConnectionDirection(1);
       port.setBackgroundColor(colorObj.getByName("cluster"));
-      port.setName("clusterInput");
+      port.setName("clusterOutput");
       port.setMaxFanOut(20);
       port.userData = {datatype: "cluster"};
 
@@ -50,6 +50,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
 
       this.updateAllItemsOncontext();
       this.updateBasicContextMenu();
+
     },
 
     getConnectedCluster: function(){
@@ -106,10 +107,23 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
       /*
        *    Default context menu items to add and delete item.
        */
+      contextMenu["update ports"] = {name: "Update ports"};
       contextMenu["add after this"] = {name: "Add After This"};
       contextMenu["delete"] = {name: "Delete This Item"};
       
       return contextMenu;
+    },
+
+    /*\
+     *  Update datatypes of cluster ports.
+     */
+    updateClusterPorts: function(){
+      //update cluster type port and output port datatypes
+      let datatype = this.getConnectedClusterDatatype();
+      if (datatype){
+        this.portClusterType.userData.datatype = datatype;
+        this.getOutputPort('clusterOutput').userData.datatype = datatype;
+      }
     },
 
     /*
@@ -143,6 +157,9 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
                    case "delete":
                         emitter.getParent().getParent().removeEntity(itemObj);	//POSSIBLE TO ADD INDEX AFTER WHICH IT HAS TO ADD ITEM
                         break;
+                   case "update ports":
+                        emitter.getParent().getParent().updateClusterPorts();
+                        break;
                    default:
                       let itemObj = emitter.getParent().getParent().getConnectedCluster().getItemByLabel(key);
                       if (itemObj){
@@ -165,6 +182,7 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
             });
         });
       });
+      
     },
 
     updateBasicContextMenu: function(){
@@ -340,10 +358,23 @@ GraphLang.Shapes.Basic.BundleByName = draw2d.shape.layout.FlexGridLayout.extend(
      return inputPorts;
    },
 
-   translateToCppCode: function(){
-     cCode = "";
-     cCode += "/*BundleByName*/";
-     return cCode;
-   }
+  translateToCppCode: function(){
+    cCode = "";
+    cCode += "/*BundleByName*/\n";
+    
+    bundleObj = this;
+    this.getOutputPort('clusterOutput').getConnections().each(function(outConnectionIndex, outConnectionObj){
+        inputCluster = bundleObj.portClusterType.getConnections().first();
+
+        bundleObj.items.getChildren().each(function(itemIndex, itemObj){
+            wireInput = itemObj.getInputPort(0).getConnections().first();
+            if (wireInput) cCode +=  'wire_' + inputCluster.getId() + '.' + itemObj.getText() + ' = wire_' + wireInput.getId() + ";\n";
+        });        
+        if (inputCluster) cCode += 'wire_' + outConnectionObj.getId() + ' = wire_' + inputCluster.getId() + ";\n";     //writing reference to this cluster to wire    
+    });
+    
+    
+    return cCode;
+  }
 
 });

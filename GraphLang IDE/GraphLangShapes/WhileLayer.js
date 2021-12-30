@@ -43,6 +43,8 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
      */
     cCode += "/*code inside WHILE LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
+
       if (figObj.translateToCppCode){
         cCode += figObj.translateToCppCode() + "\n"
       }else if (figObj.translateToCppCode2){

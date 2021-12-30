@@ -40,6 +40,8 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
      */
     cCode += "/*code inside FOR LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
+
       if (figObj.translateToCppCode){
         cCode += figObj.translateToCppCode() + "\n"
       }else if (figObj.translateToCppCode2){
