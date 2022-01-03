@@ -200,6 +200,17 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
       return variableName   
   },
 
+  getDatatype: function(){
+    let cCode = "";
+    //cCode += this.getOutputPort(0).userData.datatype;     //datatype from port
+    cCode += this.userData.datatype;                        //from node userData
+    return cCode;    
+  },
+  
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ functions
+   *****************************************************************************************************************************************************/ 
+
   /**
    *  @method translateToCppCode
    *  @description SThis function translates block into C/C++ code. here is defined template which get wires names connected to inputs and outputs,
@@ -226,7 +237,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     var constDatatype = this.getOutputPort(0).userData.datatype;
     
     if (constDatatype.toLowerCase().search("string") > -1){
-      cCode += constDatatype + " " + this.getVaribleName() + " = \"" + this.getText() + "\";\n";
+      cCode += constDatatype + " " + this.getVariableName() + " = \"" + this.getText() + "\";\n";
     }else{
       cCode += constDatatype + " " + this.getVariableName() + " = " + this.getText() + ";\n";
     }
@@ -248,11 +259,44 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     return cCode;
   },
 
-  getDatatype: function(){
-    let cCode = "";
-    //cCode += this.getOutputPort(0).userData.datatype;     //datatype from port
-    cCode += this.userData.datatype;                        //from node userData
-    return cCode;    
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO Python functions
+   *****************************************************************************************************************************************************/ 
+
+  translateToPythonCode:function(){
+    pythonCode = "";
+
+    var variableName = this.getVariableName();
+    this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+      pythonCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
+    });
+
+    return pythonCode;
+  },
+  
+  translateToPythonCodeDeclaration:function(){
+    pythonCode = "";
+    var constDatatype = this.getOutputPort(0).userData.datatype;
+
+    if (constDatatype.toLowerCase().search("string") > -1){
+      pythonCode += this.getVariableName() + " = \"" + this.getText() + "\";\n";
+    }else{
+      pythonCode += this.getVariableName() + " = " + this.getText() + ";\n";
+    }
+    return pythonCode;
+  },
+
+  translateToPythonCodeAsParam:function(){
+    pythonCode = "";
+    //create param definition using also default value, if there is string use quotes
+    if (this.getDatatype().toLowerCase().search("string") == -1){ 
+        pythonCode += this.getVariableName() + ' = ' + this.getText();
+    }else{
+        pythonCode += this.getVariableName() + ' = "' + this.getText() + '"';
+    }
+
+    return pythonCode;
   }
+  
     
 });

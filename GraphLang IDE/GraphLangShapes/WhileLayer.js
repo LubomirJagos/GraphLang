@@ -21,59 +21,6 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     this.persistPorts=false;  /*??what's this??*/
   },
 
-  translateToCppCode: function(){
-    var cCode = "";
-    this.getUserData().wasTranslatedToCppCode = true;
-    var stopTerminal = this.getInputPort("stopTerminal");
-    var wireStop = stopTerminal.getConnections().first();
-    if (wireStop != undefined){
-      cCode += wireStop.getSource().userData.datatype + " wire_" + wireStop.getId() + ";\n";
-    }
-
-    cCode += this.getTunnelsDeclarationCppCode();
-
-    cCode += "do{\n";
-
-    cCode += this.getWiresInsideLoopDeclarationCppCode();
-    cCode += this.getLeftTunnelsWiresAssignementCppCode()
-
-    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *          RECURSION CALL
-     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     */
-    cCode += "/*code inside WHILE LOOP */\n";
-    this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
-
-      if (figObj.translateToCppCode){
-        cCode += figObj.translateToCppCode() + "\n"
-      }else if (figObj.translateToCppCode2){
-        cCode += figObj.translateToCppCode2() + "\n"
-      }
-      
-     /* in case of post C/C++ code run it */
-     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
-
-    });
-    cCode += this.translateToCppCodePost();
-
-    return cCode;
-  },
-
-  translateToCppCodePost: function(){
-    var cCode = "";
-    var endCondition = "";
-    var stopTerminal = this.getInputPort("stopTerminal");
-    if (stopTerminal.getConnections().getSize() > 0){
-      endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
-    }
-
-    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
-    cCode += this.getRightTunnelsAssignementOutputCppCode();
-
-    return cCode;
-  },
-
   /**
    * @method getPersistentAttributes
    * @description Return an objects with all important attributes for XML or JSON serialization.
@@ -161,6 +108,64 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
       port = this._super(name); //THIS IS NOT RUNNING, TESTED
       return port;
     }
-  }
+  },
+
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ functions
+   *****************************************************************************************************************************************************/ 
   
+  translateToCppCode: function(){
+    var cCode = "";
+    this.getUserData().wasTranslatedToCppCode = true;
+    var stopTerminal = this.getInputPort("stopTerminal");
+    var wireStop = stopTerminal.getConnections().first();
+    if (wireStop != undefined){
+      cCode += wireStop.getSource().userData.datatype + " wire_" + wireStop.getId() + ";\n";
+    }
+
+    cCode += this.getTunnelsDeclarationCppCode();
+
+    cCode += "do{\n";
+
+    cCode += this.getWiresInsideLoopDeclarationCppCode();
+    cCode += this.getLeftTunnelsWiresAssignementCppCode()
+
+    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     *          RECURSION CALL
+     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    cCode += "/*code inside WHILE LOOP */\n";
+    this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
+
+      if (figObj.translateToCppCode){
+        cCode += figObj.translateToCppCode() + "\n"
+      }else if (figObj.translateToCppCode2){
+        cCode += figObj.translateToCppCode2() + "\n"
+      }
+      
+     /* in case of post C/C++ code run it */
+     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+
+    });
+    cCode += this.translateToCppCodePost();
+
+    return cCode;
+  },
+
+  translateToCppCodePost: function(){
+    var cCode = "";
+    var endCondition = "";
+    var stopTerminal = this.getInputPort("stopTerminal");
+    if (stopTerminal.getConnections().getSize() > 0){
+      endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
+    }
+
+    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
+    cCode += this.getRightTunnelsAssignementOutputCppCode();
+
+    return cCode;
+  }
+
+
 });

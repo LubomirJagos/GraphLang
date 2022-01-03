@@ -119,6 +119,20 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                      emitter.setDashArray("");
                      emitter.userData.isTerminal = false;
                      break;
+                 case "showNodeLabel":
+                      if (emitter.userData.nodeLabel != null) labelText = emitter.userData.nodeLabel;
+                      else labelText = 'nodeLabel';
+  
+                      emitter.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
+                      emitter.add(emitter.nodeLabel, new draw2d.layout.locator.TopLocator());
+                      emitter.nodeLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
+                      emitter.nodeLabel.on('change:text', function(nodeEmitter, event){
+                        labelText = nodeEmitter.getText();
+                        labelText = labelText.replaceAll(" ","_"); 
+                        nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
+                        nodeEmitter.text = labelText;                                                   //this will not fire another event!
+                      });
+                      break;
                   default:
                       alert(JSON.stringify(emitter))
                       emitter.setColor(new draw2d.util.Color("#979595"));
@@ -142,7 +156,9 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                   "add item": {name: "Add Item"},
                   "separator2":   "---------",
                   "setTerminal": {name: "Set as terminal"},
-                  "unsetTerminal": {name: "Unset terminal"}
+                  "unsetTerminal": {name: "Unset terminal"},
+                  "separator3":   "---------",
+                  "showNodeLabel": {name: "Show node label"}
               }
           });
       });
@@ -372,7 +388,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   translateToCppCode: function(){
     cCode = "";
     variableName = " array_" + this.getId();
-    if (this.userata.nodeLabel) variableName = this.userata.nodeLabel; 
+    if (this.userData.nodeLabel) variableName = this.userData.nodeLabel; 
 
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
       cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";

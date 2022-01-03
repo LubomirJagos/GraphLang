@@ -14,6 +14,10 @@
   margin: 10px 10px 10px 10px;
 }
 
+#navigation{
+ font-size: 10px;
+}
+
 /*
  *  This is here because this should take efect on IDE look but now it seems it's not possible to change height, don't know why
  */

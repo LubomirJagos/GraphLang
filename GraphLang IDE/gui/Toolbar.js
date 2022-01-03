@@ -192,6 +192,15 @@ example.Toolbar = Class.extend({
 		this.html.append(this.getCppCode3Button);
 
 		/**
+		*	getPythonCode Button
+		*/
+		this.getPythonCodeButton  = $("<button id=\"getPythonCodeButton\">getPythonCode</button>");
+		this.getPythonCodeButton.button().click($.proxy(function(){
+			GraphLang.Utils.getPythonCode(appCanvas);
+		}));
+		this.html.append(this.getPythonCodeButton);
+
+		/**
 		*	exportCanvasAsPNG Button
 		*/
 		this.exportCanvasAsPNGButton  = $("<button id=\"exportCanvasAsPNGButton\">exportCanvasAsPNG</button>");
