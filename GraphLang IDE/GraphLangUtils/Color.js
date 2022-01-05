@@ -24,6 +24,12 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
    *  @returns {String} Hexadecimal color representation ie. #FFFFFF for bool
    */
   getByName: function(colorName){
+  
+    /*
+     *  Use just lower case letters
+     */
+    colorName = colorName.toLowerCase();
+  
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";
     else if (colorName == "blue") return "#0000FF";
@@ -47,6 +53,8 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "cluster" || colorName == "clusterDatatype" || colorName.toLowerCase().search("clusterdatatype") > -1) return "#7D1A4C";
     else if (colorName == "error") return "#cccc00";
     else if (colorName == "broken") return "#666666";
+    else if (colorName == "qtuiobject") return "#7C2FE3";
+    else if (colorName == "qtuiapplication") return "#70db70";    
     else if (colorName == "undefined" || colorName == "unknown") return "#666666";
 
     else return "#000000";
@@ -60,6 +68,12 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
    *  @returns {String} Hexadecimal color representation ie. #FFFFFF for bool
    */
   getByNameFontColor: function(colorName){
+
+    /*
+     *  Use just lower case letters
+     */
+    colorName = colorName.toLowerCase();
+
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";
     else if (colorName == "blue") return "#0000FF";
@@ -83,6 +97,8 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "cluster" || colorName == "clusterDatatype") return "#000000";
     else if (colorName == "error") return "#000000";
     else if (colorName == "broken") return "#666666";
+    else if (colorName == "qtuiobject") return "#7C2FE3";
+    else if (colorName == "qtuiapplication") return "#000000";    
     else if (colorName == "undefined" || colorName == "unknown") return "#666666";
 
     else return "#000000";
@@ -96,6 +112,12 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
    *  @returns {String} Hexadecimal color representation ie. #009900 for bool
    */
   getByNameBackgroundColor: function(colorName){
+
+    /*
+     *  Use just lower case letters
+     */
+    colorName = colorName.toLowerCase();
+
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";
     else if (colorName == "blue") return "#0000FF";
@@ -118,6 +140,8 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     else if (colorName == "cluster" || colorName == "clusterDatatype") return "#7D1A4C";
     else if (colorName == "error") return "#cccc00";
     else if (colorName == "broken") return "#666666";
+    else if (colorName == "qtuiobject") return "#FFFFFF";
+    else if (colorName == "qtuiapplication") return "#FFFFFF";    
     else if (colorName == "undefined" || colorName == "unknown") return "#666666";
 
     else return "#000000";

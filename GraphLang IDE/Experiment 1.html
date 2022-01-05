@@ -45,6 +45,8 @@
 
       GraphLang.UserDefinedSymbol = {};
       GraphLang.UserDefinedNode = {};
+
+      GraphLang.PythonQtGuiLib = {};
     </script>
 
     <script src="./gui/Application.js"></script>
@@ -152,6 +154,13 @@
       -->
       <script src="./UserDefinedNode/UserDefined2.js"></script>
       <script src="./UserDefinedNode/UserDefined3.js"></script>
+
+      <!--
+        PythonQtGuiLib
+      -->
+      <script src="./PythonQtGuiLib/UiLoad.js"></script>
+      <script src="./PythonQtGuiLib/UiShow.js"></script>
+      <script src="./PythonQtGuiLib/UiExec.js"></script>
 
     <!-- End of GraphLang shapes-->
 
@@ -480,6 +489,16 @@ function displayJSON(canvas){
             UserDefined3
           </div>
 
+          <div data-shape="GraphLang.PythonQtGuiLib.UiLoad" data-label="Qt Ui Load" class="palette_node_element draw2d_droppable">
+            Qt Ui Load
+          </div>
+          <div data-shape="GraphLang.PythonQtGuiLib.UiShow" data-label="Qt Ui Show" class="palette_node_element draw2d_droppable">
+            Qt Ui Show
+          </div>
+          <div data-shape="GraphLang.PythonQtGuiLib.UiExec" data-label="Qt Ui Show" class="palette_node_element draw2d_droppable">
+            Qt Ui Exec
+          </div>
+          
         </div>
 
   </div>

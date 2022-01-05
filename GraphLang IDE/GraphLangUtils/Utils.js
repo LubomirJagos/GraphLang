@@ -3,11 +3,12 @@
  */
 
 //auxiliary ArrayList store declaration of some variables or something during translation process
-translateToCppCodeDeclarationArray =  new draw2d.util.ArrayList();
-translateToCppCodeFunctionsArray =  new draw2d.util.ArrayList();
+translateToCppCodeDeclarationArray = new draw2d.util.ArrayList();
+translateToCppCodeFunctionsArray = new draw2d.util.ArrayList();
 
-translateToPythonCodeFunctionsArray =  new draw2d.util.ArrayList();
-translateToPythonCodeDeclarationArray =  new draw2d.util.ArrayList();
+translateToPythonCodeFunctionsArray = new draw2d.util.ArrayList();
+translateToPythonCodeImportArray = new draw2d.util.ArrayList();
+translateToPythonCodeDeclarationArray = new draw2d.util.ArrayList();
 
 lastCreatedConnection = null;
 
@@ -1906,6 +1907,7 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
 GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminalsDeclaration = true){
   let pythonCode = "";
   translateToPythonCodeDeclarationArray.clear();
+  translateToPythonCodeImportArray.clear();
   
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
@@ -1951,6 +1953,15 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
            *    Translate node schematic into separate function
            */
           if (nodeObj.jsonDocument) GraphLang.Utils.translateToPythonCodeSubNode(nodeObj);
+
+          /*
+           *    Push python import lines into global array
+           */
+          if (nodeObj.translateToPythonCodeImport){
+            let importItems = nodeObj.translateToPythonCodeImport()
+            if ((typeof importItems).toLowerCase().search() > -1) translateToPythonCodeImportArray.addAll(importItems);
+            else translateToPythonCodeImportArray.add(importItems);
+          }
       }
     });
   }
@@ -2016,15 +2027,22 @@ GraphLang.Utils.translateToPythonCodeSubNode = function(nodeObj){
  * @description Copy diagram as Python code into clipboard.
  */
 GraphLang.Utils.getPythonCode = function(canvas, showCode = true){
-        //translateToPythonCodeFunctionsArray.clear();
+        translateToPythonCodeFunctionsArray.clear();
         let pythonCode = GraphLang.Utils.translateCanvasToPythonCode(canvas, translateTerminalsDeclaration = true);
 
         /******************************************************************************
          * LuboJ my template for ???
          *******************************************************************************/
         var template_pythonCode = "";
-        template_pythonCode += "# SOME HEADER\n";
-        template_pythonCode += "#\n";
+        template_pythonCode += "#GrahpLang Python generated code\n";
+        template_pythonCode += "\n";
+
+        translateToPythonCodeImportArray.unique();  //removes duplicates
+        translateToPythonCodeImportArray.each(function(functionIndex, functionStr){
+            template_pythonCode += functionStr + "\n";
+        });
+
+        template_pythonCode += "\n";
         template_pythonCode += pythonCode;
         template_pythonCode += "#\n";
         

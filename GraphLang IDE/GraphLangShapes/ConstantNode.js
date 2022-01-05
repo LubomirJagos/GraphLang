@@ -268,7 +268,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
 
     var variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      pythonCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
+      pythonCode += "wire_" + connectionObj.getId() + " = " + variableName + "\n";
     });
 
     return pythonCode;
@@ -279,9 +279,9 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     var constDatatype = this.getOutputPort(0).userData.datatype;
 
     if (constDatatype.toLowerCase().search("string") > -1){
-      pythonCode += this.getVariableName() + " = \"" + this.getText() + "\";\n";
+      pythonCode += this.getVariableName() + " = \"" + this.getText() + "\"\n";
     }else{
-      pythonCode += this.getVariableName() + " = " + this.getText() + ";\n";
+      pythonCode += this.getVariableName() + " = " + this.getText() + "\n";
     }
     return pythonCode;
   },
