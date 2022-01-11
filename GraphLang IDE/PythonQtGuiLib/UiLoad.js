@@ -262,9 +262,19 @@ GraphLang.PythonQtGuiLib.UiLoad = draw2d.SetFigure.extend({
     let windowVariable = "guiWindow_" + this.getId();
     let appVariable = "guiApp_" + this.getId();
 
+    let in0_connections = this.getInputPort(0).getConnections();
+    let in0WireId = null;
+    if (in0_connections.getSize() > 0){
+        in0WireId = in0_connections.first().getId();
+    }
+
     pythonCode += appVariable + " = QApplication(sys.argv)" + "\n";
     pythonCode += "currDir = os.path.dirname(os.path.abspath(__file__))" + "\n";
-    pythonCode += 'ui_file_name = currDir + "\\\\" + ' + 'wire_' + this.getInputPort(0).getConnections().first().getId() + "\n";
+    if (in0WireId){
+        pythonCode += 'ui_file_name = currDir + "\\\\" + ' + 'wire_' + in0WireId + "\n";
+    }else{
+        pythonCode += 'ui_file_name = currDir + "\\\\" + ' + "/* WIRE NOT CONNECTED */\n";
+    }
     pythonCode += "ui_file = QFile(ui_file_name)" + "\n";
     pythonCode += "if not ui_file.open(QIODevice.ReadOnly):" + "\n";
     pythonCode += "\tprint(f\"Cannot open {ui_file_name}: {ui_file.errorString()}\")" + "\n";

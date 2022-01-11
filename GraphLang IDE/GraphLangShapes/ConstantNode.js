@@ -280,6 +280,8 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
 
     if (constDatatype.toLowerCase().search("string") > -1){
       pythonCode += this.getVariableName() + " = \"" + this.getText() + "\"\n";
+    }else if (constDatatype.toLowerCase().search("bool") > -1){
+      pythonCode += this.getVariableName() + " = " + (this.getText() == 'true' ? 'True' : 'False') + "\n";
     }else{
       pythonCode += this.getVariableName() + " = " + this.getText() + "\n";
     }

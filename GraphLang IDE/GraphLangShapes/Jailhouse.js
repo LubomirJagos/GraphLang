@@ -75,7 +75,6 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
       }
     });
 
-
   	allConnections.each(function(connectionindex, connectionObj){
   		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
   	});
@@ -143,6 +142,66 @@ GraphLang.Shapes.Basic.Jailhouse = draw2d.shape.composite.Jailhouse.extend({
     return cCode;
   },
   
+  translateToPythonCode: function(){
+    pythonCode = "";
+
+    /*
+     *  Going through all nodes and wires inside Jailhouse and translate them into C/C++ code or call appropriate translate function
+     */
+    layerFigures = this.getAssignedFigures();
+    layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
+
+    //2nd get declaration for wires going from tunnels to figures inside
+    leftTunnelsWires = this.getCanvas().getFigure(this.userData.owner).getLeftTunnelsLayerWires();
+    leftTunnelsWires.each(function(connectionIndex, connectionObj){
+      wireTargetFigure = connectionObj.getTarget().getParent()            
+      //getting parent() until it's nullso that's node which is part of canvas
+      //here must be while() because port can be part fo label which is part of vertical layout which is part of BundleByName
+      while(wireTargetFigure.getParent() != null){
+        wireTargetFigure = wireTargetFigure.getParent();
+      }
+    
+      if (layerFigures.contains(wireTargetFigure)){
+        pythonCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";  //to get tunnel ID first I got port from wire source and its parent is tunnel
+      }
+    });
+
+    //3rd translate figures inside layer
+    layerFigures.each(function(figureIndex, figureObj){
+      //if there is some declaration translate it
+      if (figureObj.translateToCppCodeDeclaration) pythonCode += figureObj.translateToCppCodeDeclaration() + "\n";
+
+      if (figureObj.NAME.toLowerCase().search("loop") > -1 &&
+          figureObj.NAME.toLowerCase().search("multilayered") == -1){
+        pythonCode += figureObj.translateToPythonCode() + "\n";
+      }else if (figureObj.NAME.toLowerCase().search("connection") == -1){
+        pythonCode += figureObj.translateToPythonCode() + "\n";                       //translation of normal nodes except wires
+      }else if (figureObj.translateToCppCode){
+        pythonCode += figureObj.translateToPythonCode() + "\n";                       //translation of normal nodes except wires        
+      }
+    });
+
+    //4th translate wires going OUTSIDE FIGURE THROUGH TUNNELS
+    layerFigures = this.getAssignedFigures();
+    cCode += '/* RIGHT TUNNELS output assignment */' + "\n";
+    this.getCanvas().getFigure(this.userData.owner).getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search('righttunnel') > -1){
+        childObj.getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+          wireSourceFigure = connectionObj.getSource().getParent()
+          if (wireSourceFigure.NAME.toLowerCase().search('tunnel') > -1) wireSourceFigure = wireSourceFigure.getParent();
+          if (layerFigures.contains(wireSourceFigure)){
+            childObj.getOutputPort(0).getConnections().each(function(outputWireIndex, outputWireObj){
+                pythonCode +=  "wire_" + outputWireObj.getId() + " = wire_" + connectionObj.getId() + ";\n";
+            });
+          }
+        });
+      }
+    });
+    pythonCode += '/* END RIGHT TUNNELS output assignment */' + "\n";
+    
+    return pythonCode;
+  },
+
   /*
    *    This event is called when figure is dropped on layer.
    */

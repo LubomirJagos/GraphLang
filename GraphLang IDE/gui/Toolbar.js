@@ -87,7 +87,7 @@ example.Toolbar = Class.extend({
 		*/
 		this.detectTunnelsButton  = $("<button id=\"detectTunnelsButton\">Detect Tunnels</button>");
 		this.detectTunnelsButton.button().click($.proxy(function(){
-			GraphLang.Utils.detectTunnels(appCanvas);
+			GraphLang.Utils.detectTunnels2(appCanvas);
 		}));
 		this.html.append(this.detectTunnelsButton);
 

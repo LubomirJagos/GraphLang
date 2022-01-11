@@ -222,14 +222,20 @@ GraphLang.Shapes.Basic.Loop2.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend
   switchActiveLayer: function(){
     this.activeLayer++;
     if (this.activeLayer >= this.layers.getSize()) this.activeLayer = 0;
-    //var layerObjects = this.layers.get(this.activeLayer).getChildren();
+
     var activeLayer = this.layers.get(this.activeLayer);
     activeLayer.toFront();
-/*
-    activeLayer.getChildren().each(function(childIndex, childObj){
-      childObj.toFront();
+
+    //brings tunnels on nodes which has that function to front,. just for active layer
+    activeLayer.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+      if (assignedFigureObj.bringsAllTunnelsToFront){
+        assignedFigureObj.bringsAllTunnelsToFront();
+      }
+      if (assignedFigureObj.updateNode){
+        assignedFigureObj.updateNode();
+      }
     });
-*/
+
     this.bringsAllTunnelsToFront();
 
     this.layerChooser.setText(this.layers.get(this.activeLayer).userData.layerText);
@@ -438,40 +444,6 @@ GraphLang.Shapes.Basic.Loop2.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend
       },this));
   },
 
-
-  /********************************************************************************************************************
-   *  Functions below are implemented by me (LuboJ)
-   ********************************************************************************************************************/
-
-  translateToCppCode: function(){
-    /*
-     *  Going thorugh all layers and ask them to translate into C/C++ code
-     */
-    cCode = "";
-
-    cCode += this.getTunnelsDeclarationCppCode();
-
-    selectorPortWires = this.selectorPort.getConnections();
-    if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
-      cCode += "switch(wire_" + selectorPortWires.first().getId() + "){\n";
-    }else{
-      cCode += "switch(/* selectorPort not connected*/){\n";
-    }
-
-    this.getAllLayers().each(function(layerIndex, layerObj){
-        //cCode += "case " + layerObj.getId() + ":\n";
-        cCode += "case " + layerObj.userData.layerText + ":\n";
-        cCode += layerObj.translateToCppCode();
-        cCode += "break;\n"
-    });
-    cCode += "} //end of generated switch \n";
-
-    //multilayered structure output ports assignments
-    cCode += this.translateToCppCodePost();
-        
-    return cCode;
-  },
-
   /**
   * @method addLayer
   * @description Add new layer at the end of all layers.
@@ -642,5 +614,71 @@ GraphLang.Shapes.Basic.Loop2.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend
       });
     }
     return port;
+  },
+  
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ functions
+   *****************************************************************************************************************************************************/ 
+
+  translateToCppCode: function(){
+    /*
+     *  Going thorugh all layers and ask them to translate into C/C++ code
+     */
+    cCode = "";
+
+    cCode += this.getTunnelsDeclarationCppCode();
+
+    selectorPortWires = this.selectorPort.getConnections();
+    if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
+      cCode += "switch(wire_" + selectorPortWires.first().getId() + "){\n";
+    }else{
+      cCode += "switch(/* selectorPort not connected*/){\n";
+    }
+
+    this.getAllLayers().each(function(layerIndex, layerObj){
+        //cCode += "case " + layerObj.getId() + ":\n";
+        cCode += "case " + layerObj.userData.layerText + ":\n";
+        cCode += layerObj.translateToCppCode();
+        cCode += "break;\n"
+    });
+    cCode += "} //end of generated switch \n";
+
+    //multilayered structure output ports assignments
+    cCode += this.translateToCppCodePost();
+        
+    return cCode;
+  },
+
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO Python functions
+   *****************************************************************************************************************************************************/ 
+
+  translateToPythonCode: function(){
+    let pythonCode = "";
+    pythonCode += this.getTunnelsDeclarationPythonCode();
+
+    selectorPortWires = this.selectorPort.getConnections();
+    selectorWireName = "/* selectorPort not connected*/";
+    let selectorDatatype = "undefined";
+    if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
+      selectorWireName = "wire_" + selectorPortWires.first().getId();
+      selectorDatatype = selectorPortWires.first().getSource().userData.datatype;
+    }
+    
+    this.getAllLayers().each(function(layerIndex, layerObj){
+        layerTextValue = layerObj.userData.layerText
+        if (selectorDatatype == "String") layerTextValue = '"' + layerTextValue + '"'; 
+
+        if (layerIndex == 0) pythonCode += "if " + selectorWireName + " == " + layerTextValue + ":\n";
+        else  pythonCode += "elif " + selectorWireName + " == " + layerTextValue + ":\n";
+        pythonCode += "\t" + layerObj.translateToPythonCode().replaceAll("\n", "\n\t");
+        pythonCode += "\n";     //this \n is needed to be added to not have indent next line generated from next node
+    });
+
+    //multilayered structure output ports assignments
+    pythonCode += this.getRightTunnelsAssignementOutputPythonCode();
+        
+    return pythonCode;
   }
+  
 });

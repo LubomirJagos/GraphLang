@@ -1549,13 +1549,31 @@ GraphLang.Utils.displayContents = function(contents){
   //here are composite object repaired, they are assigned back to their ownership
   var allFigures = appCanvas.getFigures();
   allFigures.each(function(figureIndex, figureObj){
-    //if (figureObj.getComposite)
+
+    /*
+     *  Repairs multilayered figure, after load, top multilayered nodes has assigned just layers,
+     *  all others objects which are placed on layers are just assigned to each layer so here is
+     *  needed to just go through layers and again assigned them to their owner.
+     */
     if (figureObj.NAME.toLowerCase().search('multilayered') != -1){
       figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
         figureObj.layers.push(assignedFigureObj); //THIS ADD EACH LAYER TO PARENT JAILHOUSE COMPOSITE OBJECT, this is needed to be here
       });
       figureObj.renewLayerChooser();
       figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
+      
+      figureObj.switchActiveLayer();    //TO REWRITE TUNNELS IF THERE ARE SOME ON LOOPS
+    }
+
+    /*
+     *  Repairs sequence frames, top node owns just frames, all other nodes are part of each frame,
+     *  so here is needed just to reassign frames
+     */
+    if (figureObj.NAME.toLowerCase().search('sequence') > -1){
+      figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+        figureObj.frames.push(assignedFigureObj);
+        figureObj.updateFrames();
+      });
     }
   });
 
@@ -1754,6 +1772,11 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
            *    Translate node schematic into separate function
            */
           if (nodeObj.jsonDocument) GraphLang.Utils.translateToCppCodeSubNode(nodeObj);
+
+          /*
+           *    Translate POST code, like ending while or for loop
+           */
+          if (nodeObj.translateToCppCodePost) cCode += nodeObj.translateToCppCodePost();            
       }
     });
   }
@@ -2044,7 +2067,7 @@ GraphLang.Utils.getPythonCode = function(canvas, showCode = true){
 
         template_pythonCode += "\n";
         template_pythonCode += pythonCode;
-        template_pythonCode += "#\n";
+        template_pythonCode += "\n";
         
         pythonCode = template_pythonCode;
         /******************************************************************************

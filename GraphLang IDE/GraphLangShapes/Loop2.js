@@ -80,117 +80,6 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     this.getUserData().wasTranslatedToCppCode = false;
   },
 
-  /*
-   *  TRANSLATE TO C/C++ CODE
-   *    This is just dummy function to have here something, translate for specific loop structure (WhileLoop, ForLoop) is done in their methods.
-   */
-  translateToCppCode: function(){
-    this.getUserData().wasTranslatedToCppCode = true;
-
-    //CASE STATEMENT GENERATION
-    var cCode = "";
-    cCode += "switch(" + "/* ..selector wire.. */" + "){\n";
-    cCode += "\t\tcase " + "/* ..something 1.. */" + ":{\n";
-    cCode += "\t\t}break;";
-    return cCode;
-  },
-
-  /*
-   *  ASSIGNMENTS VALUES FROM RIGHT TUNNELS TO CONNECTED WIRES
-   */
-  translateToCppCodePost: function(){
-    cCode = '';
-    this.getChildren().each(function(childIndex, childObj){
-        if (childObj.NAME.toLowerCase().search('righttunnel') > -1){
-            childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-                cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";
-            });
-        }
-    });
-    return cCode;
-  },
-
-  /*
-   *  TUNNELS DECLARATION
-   */
-  getTunnelsDeclarationCppCode:function(){
-    cCode = "";
-    cCode += "/* LEFT TUNNELs declarations */\n";
-    cCode += "//tunnel declaration, if connected to wire also assignement\n";
-    this.getChildren().each(function(childIndex, childObj){
-      /*
-       *    LEFT TUNNEL declaration
-       */
-      if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
-        /*
-         * if tunnel connected on its input its datatype is based on first connection with index 0
-         */
-        if (childObj.getInputPort(0).getConnections().getSize() > 0){
-          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
-        }else{
-          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
-        }
-      }
-
-      /*
-       *    RIGHT TUNNEL declaration
-       *    These tunnels create just declaration and their values are assigned inside each layers where wire is going out of structure.
-       *    
-       *    THIS IS NOT NEEDED because wires going out of tunnel are declared and wries going into tunnel are declared, so in the end of each loop
-       *    there is assignment to output wires from input wires and tunnel variable is NOT NEEDED!
-       */
-      //cCode += "/* RIGHT TUNNELs declarations */\n";
-      //if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
-      //    cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
-      //}
-
-    });
-    cCode += "/* END LEFT TUNNELs declarations */\n";
-
-    return cCode;
-  },
-
-  /*
-   *  WIRES INSIDE LOOP DECLARATION
-   */
- getWiresInsideLoopDeclarationCppCode:function(){
-    cCode = "";
-    cCode += "//inside loop wires declaration\n";
-
-    /*
-     *  THIS HERE WAS FIRST DEVELOPED FOR Jailhouse.js, copied here
-     */
-    layerFigures = this.getAssignedFigures();
-    layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
-
-  	allConnections = new draw2d.util.ArrayList();
-  	thisId = this.getComposite();
-      layerFigures.each(function(figureIndex, figureObj){
-  	  if (figureObj.getPorts){
-    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
-    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
-    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
-    			});
-    		}else{
-    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
-    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
-    				figureObj.getChildren().each(function(childIndex, childObj){
-    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
-    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
-    					}
-    				});
-    			}
-    		}
-  	  }
-    });
-
-  	allConnections.each(function(connectionindex, connectionObj){
-  		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
-  	});
-
-    return cCode;
- },
-
  /*
   * WIRES FROM LEFT TUNNELS IN LAYER, returns all wires from left tunnels regardless which layer
   *   This is for Multilayer figure, to get wires list for some layer.
@@ -208,23 +97,6 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     });
     return leftTunnelsWires;
   },
- /*
-  * LEFT TUNNEL LOOP WIRES INPUT ASSIGNEMENTS
-  */
-  getLeftTunnelsWiresAssignementCppCode:function(){
-    cCode = "";
-    this.getChildren().each(function(childIndex, childObj){
-     if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
-       if (childObj.getOutputPort(0).getConnections().getSize() > 0){
-         childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-           cCode += "wire_" + connectionObj.getId() + " = tunnel_" + childObj.getId() + ";\n";
-         });
-       }
-     }
-    });
-    return cCode;
-  },
-
 
   getRightTunnelsLayerWires:function(){
     let rightTunnelsWires = new draw2d.util.ArrayList();
@@ -238,23 +110,6 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
      }
     });
     return rightTunnelsWires;
-  },
-
-  /*
-   * RIGHT TUNNEL ASSIGNEMENTS OUTPUT
-   *  copy value of wire at left side to the wire at right side
-   *  ERROR this is WRONG for multilayered structure when there is more than one input into output tunnel
-   */
-  getRightTunnelsAssignementOutputCppCode:function(){
-    cCode = "";
-    this.getChildren().each(function(childIndex, childObj){
-      if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
-        if (childObj.getOutputPort(0).getConnections().getSize() > 0){
-          cCode += "wire_" + childObj.getOutputPort(0).getConnections().get(0).getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
-        }
-      }
-    });
-    return cCode;
   },
 
 /*******************************************
@@ -389,8 +244,177 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
       this._super(droppedFigure, x, y, shiftKey, ctrlKey);
     }
-  }    
+  },
+ 
+
+
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ functions
+   *****************************************************************************************************************************************************/ 
+
+  translateToCppCode: function(){
+    this.getUserData().wasTranslatedToCppCode = true;
+
+    var cCode = "";
+    cCode += "/*********** LOOP C/C++ code ***********/\n";
+    return cCode;
+  },
+
+  /*
+   *  ASSIGNMENTS VALUES FROM RIGHT TUNNELS TO CONNECTED WIRES
+   */
+  translateToCppCodePost: function(){
+    cCode = '';
+    this.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search('righttunnel') > -1){
+            childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+                cCode += "wire_" + connectionObj.getId() + " = tunnel_" + connectionObj.getSource().getParent().getId() + ";\n";
+            });
+        }
+    });
+    return cCode;
+  },
+
+  /*
+   *  TUNNELS DECLARATION
+   */
+  getTunnelsDeclarationCppCode:function(){
+    cCode = "";
+    cCode += "/* LEFT TUNNELs declarations */\n";
+    cCode += "//tunnel declaration, if connected to wire also assignement\n";
+    this.getChildren().each(function(childIndex, childObj){
+      /*
+       *    LEFT TUNNEL declaration
+       */
+      if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+        /*
+         * if tunnel connected on its input its datatype is based on first connection with index 0
+         */
+        if (childObj.getInputPort(0).getConnections().getSize() > 0){
+          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }else{
+          cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
+        }
+      }
+
+      /*
+       *    RIGHT TUNNEL declaration
+       *    These tunnels create just declaration and their values are assigned inside each layers where wire is going out of structure.
+       *    
+       *    THIS IS NOT NEEDED because wires going out of tunnel are declared and wries going into tunnel are declared, so in the end of each loop
+       *    there is assignment to output wires from input wires and tunnel variable is NOT NEEDED!
+       */
+      //cCode += "/* RIGHT TUNNELs declarations */\n";
+      //if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+      //    cCode += childObj.getDatatype() + " tunnel_" + childObj.getId() + ";\n";
+      //}
+
+    });
+    cCode += "/* END LEFT TUNNELs declarations */\n";
+
+    return cCode;
+  },
+
+  /*
+   *  WIRES INSIDE LOOP DECLARATION
+   */
+ getWiresInsideLoopDeclarationCppCode:function(){
+    cCode = "";
+    cCode += "//inside loop wires declaration\n";
+
+    /*
+     *  THIS HERE WAS FIRST DEVELOPED FOR Jailhouse.js, copied here
+     */
+    layerFigures = this.getAssignedFigures();
+    layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
+
+  	allConnections = new draw2d.util.ArrayList();
+  	thisId = this.getComposite();
+      layerFigures.each(function(figureIndex, figureObj){
+  	  if (figureObj.getPorts){
+    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+    			});
+    		}else{
+    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
+    				figureObj.getChildren().each(function(childIndex, childObj){
+    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
+    					}
+    				});
+    			}
+    		}
+  	  }
+    });
+
+  	allConnections.each(function(connectionindex, connectionObj){
+  		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
+  	});
+
+    return cCode;
+ },
+    
+   /*
+    * LEFT TUNNEL LOOP WIRES INPUT ASSIGNEMENTS
+    */
+  getLeftTunnelsWiresAssignementCppCode:function(){
+    cCode = "";
+    this.getChildren().each(function(childIndex, childObj){
+     if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+       if (childObj.getOutputPort(0).getConnections().getSize() > 0){
+         childObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
+           cCode += "wire_" + connectionObj.getId() + " = tunnel_" + childObj.getId() + ";\n";
+         });
+       }
+     }
+    });
+    return cCode;
+  },
+
+  /*
+   * RIGHT TUNNEL ASSIGNEMENTS OUTPUT
+   *  copy value of wire at left side to the wire at right side
+   *  ERROR this is WRONG for multilayered structure when there is more than one input into output tunnel
+   */
+  getRightTunnelsAssignementOutputCppCode:function(){
+    cCode = "";
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+        if (childObj.getOutputPort(0).getConnections().getSize() > 0){
+          cCode += "wire_" + childObj.getOutputPort(0).getConnections().get(0).getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }
+      }
+    });
+    return cCode;
+  },
   
-     
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO Python functions
+   *****************************************************************************************************************************************************/ 
+
+  getRightTunnelsAssignementOutputPythonCode:function(){
+    return this.getRightTunnelsAssignementOutputCppCode().replaceAll(";\n", "\n");
+  },
+
+  getLeftTunnelsWiresAssignementPythonCode:function(){
+    return this.getLeftTunnelsWiresAssignementCppCode();
+  },
+
+  getTunnelsDeclarationPythonCode:function(){
+    cCode = "";
+    this.getChildren().each(function(childIndex, childObj){
+      if (childObj.NAME.toLowerCase().search("lefttunnel") > -1){
+        //generates code just for tunnel which has connected input
+        if (childObj.getInputPort(0).getConnections().getSize() > 0){
+          cCode += "tunnel_" + childObj.getId() + " = wire_" + childObj.getInputPort(0).getConnections().get(0).getId() + ";\n";
+        }
+      }
+    });
+
+    return cCode;
+  }
+
 
 });

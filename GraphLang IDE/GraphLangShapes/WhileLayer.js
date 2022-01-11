@@ -127,28 +127,24 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
 
     cCode += "do{\n";
 
-    cCode += this.getWiresInsideLoopDeclarationCppCode();
-    cCode += this.getLeftTunnelsWiresAssignementCppCode()
+    cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t");
+    cCode += "\n";
+    cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t");
+    cCode += "\n";
 
-    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *          RECURSION CALL
-     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     */
-    cCode += "/*code inside WHILE LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
+      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
 
       if (figObj.translateToCppCode){
-        cCode += figObj.translateToCppCode() + "\n"
+        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n"
       }else if (figObj.translateToCppCode2){
-        cCode += figObj.translateToCppCode2() + "\n"
+        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n"
       }
       
      /* in case of post C/C++ code run it */
-     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+     if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
 
     });
-    cCode += this.translateToCppCodePost();
 
     return cCode;
   },
@@ -165,7 +161,46 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     cCode += this.getRightTunnelsAssignementOutputCppCode();
 
     return cCode;
+  },
+
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO Python functions
+   *****************************************************************************************************************************************************/ 
+  
+  translateToPythonCode: function(){
+    var pythonCode = "";
+    this.getUserData().wasTranslatedToPythonCode = true;
+
+    pythonCode += this.getTunnelsDeclarationPythonCode();
+    pythonCode += "while True:\n";
+    pythonCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
+
+    this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToPythonCodeDeclaration) pythonCode += "\t" + figObj.translateToPythonCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToPythonCode) pythonCode += "\t" + figObj.translateToPythonCode().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToPythonCodePost) cCode += "\t" + figObj.translateToPythonCodePost().replaceAll("\n", "\n\t") + "\n";
+
+    });
+    pythonCode += this.translateToPythonCodePost();
+
+    return pythonCode;
+  },
+
+  translateToPythonCodePost: function(){
+    var pythonCode = "";
+    var endCondition = "";
+    var stopTerminal = this.getInputPort("stopTerminal");
+
+    if (stopTerminal.getConnections().getSize() > 0){
+      endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
+    }
+
+    //pay attention to indentation
+    pythonCode += "\tif " + endCondition + ":\n";
+    pythonCode +="\t\tbreak"
+    pythonCode += this.getRightTunnelsAssignementOutputPythonCode();
+
+    return pythonCode;
   }
-
-
+  
 });
