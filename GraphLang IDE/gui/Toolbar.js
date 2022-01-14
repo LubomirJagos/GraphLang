@@ -292,6 +292,27 @@ example.Toolbar = Class.extend({
             appCanvas.setZoom(1.0, true);
 		}));
 		this.html.append(this.zoomNormalButton);
+
+		/**
+		*	loadSchematic2 Button
+		*/
+		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
+		//
+		this.loadSchematic2Button  = $('<input type="file" id="file-input2" />');
+        this.loadSchematic2Button.button().click($.proxy(function(){
+			GraphLang.Utils.loadSchematic2(appCanvas);
+		}));
+		this.html.append(this.loadSchematic2Button);
+		document.getElementById('file-input2').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
+
+		/**
+		*	saveSchematic2 Button
+		*/
+		this.saveSchematic2Button  = $("<button id=\"saveSchematic2Button\">saveSchematic2</button>");
+		this.saveSchematic2Button.button().click($.proxy(function(){
+			GraphLang.Utils.saveSchematic2(appCanvas, 'GraphLang_Schematic', 'text/javascript');
+		}));
+		this.html.append(this.saveSchematic2Button);
 	},
 
 	/**

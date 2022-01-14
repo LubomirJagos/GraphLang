@@ -1302,6 +1302,179 @@ GraphLang.Utils.getCanvasJson = function(canvas){
 }
 
 /**
+ * @method getCanvasAsObjectString
+ * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
+ * @returns {String}  string containing whole class definition
+ * @description Creates class definition for GraphLang to load.
+ */
+GraphLang.Utils.getCanvasAsObjectString = function(canvas){
+  var writer = new draw2d.io.json.Writer();
+  var schematicAsObjectStr = '';
+  writer.marshal(canvas,function(json){
+      var clearedJson = [];
+      var wrongJson = [];
+      for (var k = 0; k < json.length; k++){
+        if (json[k].type != undefined && json[k].type.toLowerCase().search("multilayered") > -1){
+          var multilayeredJson = canvas.getFigure(json[k].id);
+          var multilayerChooser = multilayeredJson.getChildren().get(0);
+
+          var chooserObj =  new draw2d.shape.basic.Label(multilayerChooser);
+          //clearedJson.push(chooserObj);
+          clearedJson.push(json[k]);
+          // alert(multilayerChooser.text);
+        }else if (json[k].type != undefined && json[k].type.toLowerCase().search("connection") > -1){
+          //alert("connection");
+          clearedJson.push(json[k]);
+        }else if (json[k].type != undefined && json[k].type.toLowerCase().search("tunnel") == -1){
+          clearedJson.push(json[k]);
+        }else{
+          wrongJson.push(json[k]);
+        }
+      }
+
+      var jsonCanvasStr = JSON.stringify(clearedJson, null, 2);
+      var objectDefaultName = 'GraphLang.UserDefinedNode.UserDefinedExample';
+      
+      schematicAsObjectStr += objectDefaultName + ' = GraphLang.UserDefinedNode.extend({' + "\n";            
+      schematicAsObjectStr += 'NAME: "' + objectDefaultName + '",' + "\n";
+      schematicAsObjectStr += 'createShapeElement : function()' + "\n";
+      schematicAsObjectStr += '{' + "\n";
+      schematicAsObjectStr += 'var shape = this._super();' + "\n";
+      schematicAsObjectStr += '  this.originalWidth = 153.60000000000008;' + "\n";
+      schematicAsObjectStr += '  this.originalHeight= 87;' + "\n";
+      schematicAsObjectStr += '  return shape;' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'createSet: function()' + "\n";
+      schematicAsObjectStr += '{' + "\n";
+      schematicAsObjectStr += '    this.canvas.paper.setStart();' + "\n";
+      schematicAsObjectStr += '    // BoundingBox' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M0,0 L153.60000000000008,0 L153.60000000000008,87 L0,87");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","BoundingBox");' + "\n";    
+      schematicAsObjectStr += '    // Rectangle' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M33.44544999999988 0L127.44544999999988 0L127.44544999999988 87L33.44544999999988 87Z");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Rectangle");' + "\n";    
+      schematicAsObjectStr += '    // Line_shadow' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M33.5 20.5L0.5,20.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line_shadow");' + "\n";
+      schematicAsObjectStr += '    // Line' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M33.5 20.5L0.5,20.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line");' + "\n";    
+      schematicAsObjectStr += '    // Line_shadow' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M32.5 50.5L16.5,40.5L1.5,40.5L1.5,40.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line_shadow");' + "\n";
+      schematicAsObjectStr += '    // Line' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M32.5 50.5L16.5,40.5L1.5,40.5L1.5,40.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line");' + "\n";
+      schematicAsObjectStr += '    // Line_shadow' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M32.5 63.5L22.5,74.5L5.5,74.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line_shadow");' + "\n";
+      schematicAsObjectStr += '    // Line' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M32.5 63.5L22.5,74.5L5.5,74.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line");' + "\n";
+      schematicAsObjectStr += '    // Line_shadow' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M127.5 42.5L153.5,42.5L153.5,42.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line_shadow");' + "\n";
+      schematicAsObjectStr += '    // Line' + "\n";
+      schematicAsObjectStr += '    shape = this.canvas.paper.path("M127.5 42.5L153.5,42.5L153.5,42.5");' + "\n";
+      schematicAsObjectStr += '    shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});' + "\n";
+      schematicAsObjectStr += '    shape.data("name","Line");' + "\n";
+      schematicAsObjectStr += '    return this.canvas.paper.setFinish();' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'applyAlpha: function(){},' + "\n";
+      schematicAsObjectStr += 'layerGet: function(name, attributes){' + "\n";
+      schematicAsObjectStr += '  if(this.svgNodes===null) return null;' + "\n";
+      schematicAsObjectStr += '  var result=null;' + "\n";
+      schematicAsObjectStr += '  this.svgNodes.some(function(shape){' + "\n";
+      schematicAsObjectStr += '     if(shape.data("name")===name){' + "\n";
+      schematicAsObjectStr += '        result=shape;' + "\n";
+      schematicAsObjectStr += '     }' + "\n";
+      schematicAsObjectStr += '     return result!==null;' + "\n";
+      schematicAsObjectStr += '  });' + "\n";
+      schematicAsObjectStr += '  return result;' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'layerAttr: function(name, attributes){' + "\n";
+      schematicAsObjectStr += ' if(this.svgNodes===null) return;' + "\n";
+      schematicAsObjectStr += ' this.svgNodes.forEach(function(shape){' + "\n";
+      schematicAsObjectStr += '         if(shape.data("name")===name){' + "\n";
+      schematicAsObjectStr += '              shape.attr(attributes);' + "\n";
+      schematicAsObjectStr += '         }' + "\n";
+      schematicAsObjectStr += ' });' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'layerShow: function(name, flag, duration){' + "\n";
+      schematicAsObjectStr += '  if(this.svgNodes===null) return;' + "\n";
+      schematicAsObjectStr += '  if(duration){' + "\n";
+      schematicAsObjectStr += '    this.svgNodes.forEach(function(node){' + "\n";
+      schematicAsObjectStr += '        if(node.data("name")===name){' + "\n";
+      schematicAsObjectStr += '            if(flag){' + "\n";
+      schematicAsObjectStr += '                node.attr({ opacity : 0 }).show().animate({ opacity : 1 }, duration);' + "\n";
+      schematicAsObjectStr += '            }' + "\n";
+      schematicAsObjectStr += '            else{' + "\n";
+      schematicAsObjectStr += '                node.animate({ opacity : 0 }, duration, function () { this.hide() });' + "\n";
+      schematicAsObjectStr += '            }' + "\n";
+      schematicAsObjectStr += '        }' + "\n";
+      schematicAsObjectStr += '    });' + "\n";
+      schematicAsObjectStr += '  }' + "\n";
+      schematicAsObjectStr += '  else{' + "\n";
+      schematicAsObjectStr += '      this.svgNodes.forEach(function(node){' + "\n";
+      schematicAsObjectStr += '          if(node.data("name")===name){' + "\n";
+      schematicAsObjectStr += '               if(flag){node.show();}' + "\n";
+      schematicAsObjectStr += '               else{node.hide();}' + "\n";
+      schematicAsObjectStr += '           }' + "\n";
+      schematicAsObjectStr += '       });' + "\n";
+      schematicAsObjectStr += '  }' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'getParameterSettings: function(){' + "\n";
+      schematicAsObjectStr += '    return [];' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'addPort: function(port, locator){' + "\n";
+      schematicAsObjectStr += '    this._super(port, locator);' + "\n";
+      schematicAsObjectStr += '    return port;' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'getPersistentAttributes : function(){' + "\n";
+      schematicAsObjectStr += '    var memento = this._super();' + "\n";
+      schematicAsObjectStr += '    memento.labels = [];' + "\n";
+      schematicAsObjectStr += '    this.children.each(function(i,e){' + "\n";
+      schematicAsObjectStr += '        var labelJSON = e.figure.getPersistentAttributes();' + "\n";
+      schematicAsObjectStr += '        labelJSON.locator=e.locator.NAME;' + "\n";
+      schematicAsObjectStr += '        memento.labels.push(labelJSON);' + "\n";
+      schematicAsObjectStr += '    });' + "\n";
+      schematicAsObjectStr += '    return memento;' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += 'setPersistentAttributes : function(memento){' + "\n";
+      schematicAsObjectStr += '    this._super(memento);' + "\n";
+      schematicAsObjectStr += '    this.resetChildren();' + "\n";
+      schematicAsObjectStr += '    $.each(memento.labels, $.proxy(function(i,json){' + "\n";
+      schematicAsObjectStr += '        var figure =  eval("new "+json.type+"()");' + "\n";
+      schematicAsObjectStr += '        figure.attr(json);' + "\n";
+      schematicAsObjectStr += '        var locator =  eval("new "+json.locator+"()");' + "\n";
+      schematicAsObjectStr += '        this.add(figure, locator);' + "\n";
+      schematicAsObjectStr += '    },this));' + "\n";
+      schematicAsObjectStr += '},' + "\n";
+      schematicAsObjectStr += "jsonDocument: " + jsonCanvasStr + "\n";
+      schematicAsObjectStr += "});\n";
+
+      var copyElement = document.createElement('textarea');
+      copyElement.innerHTML = schematicAsObjectStr;
+      jsonCanvasStr = copyElement.innerHTML;
+      copyElement = document.body.appendChild(copyElement);
+      copyElement.select();
+      document.execCommand('copy');
+      copyElement.remove();
+  });
+
+  return schematicAsObjectStr;
+}
+
+/**
  * @method getCanvasAsPNG
  * @param {draw2d.Canvas} canvas - schematic which will be exported as PNG base64 encoded.
  * @description Copy diagram as PNG image.
@@ -1516,7 +1689,24 @@ GraphLang.Utils.readSingleFile = function(e){
   reader.onload = function(e) {
     var contents = e.target.result;             //result is read
     GraphLang.Utils.displayContents(contents);  //display as alert
-    //GraphLang.Utils.correctWiresAfterLoad(appCanvas)
+  };
+  reader.readAsText(file);  //this will put result into internal variable named result
+}
+
+/**
+ *  @method readSingleFile
+ *  @param {HTMLInputFileTag} e Javascript object for input file tag placed somewhere in toolbar or else.
+ *  @description Registered on some file input, at it change it will read chosen file and display its content.
+ */
+GraphLang.Utils.readSingleFile2 = function(e){
+  var file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var contents = e.target.result;             //result is read
+    GraphLang.Utils.displayContentsFromClass(contents);  //display as alert
   };
   reader.readAsText(file);  //this will put result into internal variable named result
 }
@@ -1545,6 +1735,100 @@ GraphLang.Utils.displayContents = function(contents){
 
   reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
   //just for now, uncomment in future //this.initAllPortToDefault();  //this must be here, without this canvas behave non/standard, it's not possible to remove wires etc.
+
+  //here are composite object repaired, they are assigned back to their ownership
+  var allFigures = appCanvas.getFigures();
+  allFigures.each(function(figureIndex, figureObj){
+
+    /*
+     *  Repairs multilayered figure, after load, top multilayered nodes has assigned just layers,
+     *  all others objects which are placed on layers are just assigned to each layer so here is
+     *  needed to just go through layers and again assigned them to their owner.
+     */
+    if (figureObj.NAME.toLowerCase().search('multilayered') != -1){
+      figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+        figureObj.layers.push(assignedFigureObj); //THIS ADD EACH LAYER TO PARENT JAILHOUSE COMPOSITE OBJECT, this is needed to be here
+      });
+      figureObj.renewLayerChooser();
+      figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
+      
+      figureObj.switchActiveLayer();    //TO REWRITE TUNNELS IF THERE ARE SOME ON LOOPS
+    }
+
+    /*
+     *  Repairs sequence frames, top node owns just frames, all other nodes are part of each frame,
+     *  so here is needed just to reassign frames
+     */
+    if (figureObj.NAME.toLowerCase().search('sequence') > -1){
+      figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+        figureObj.frames.push(assignedFigureObj);
+        figureObj.updateFrames();
+      });
+    }
+  });
+
+}
+
+/**
+ *  @method displayContents2
+ *  @param {String} content String content to display
+ *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
+ */
+GraphLang.Utils.displayContentsFromClass = function(contents){
+/*
+  var element = document.getElementById('file-content');
+  element.textContent = contents;
+*/
+  var element = document.getElementById('file-input2');
+  var fileName = element.value.split("\\").pop();
+  var schematicName = fileName.split(".")[0];  //no extension
+
+  //regular expression match over multiple lines also using groups
+  let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend\(\{/gm);
+  let matchPattern = regExp.exec(contents);
+
+  var newObjectName = '';
+  if (matchPattern){
+    /*
+        matchPattern[0] - whole match
+        matchPattern[1] - group 1 - new object name (it's nested object in other object tree)
+        matchPattern[2] - group 2 - parent object
+
+        matchPattern.forEach(function(element){
+          alert(element)
+        });
+    */
+
+    objectTree = "";
+    newObjectName = matchPattern[1];
+    matchPattern[1].split('.').forEach(function(element, index){
+        if (index > 0) objectTree += '.';
+        objectTree += element;
+
+        var expression = 'return ' + objectTree;
+        var result = new Function(expression)();
+
+        if (result == undefined){
+            //alert(objectTree + ' is undefined')
+            eval(objectTree + ' = {}');             //creates object
+        }
+    });
+  }
+  
+  if (!newObjectName){
+    alert("Schematic file is not corrupted. Loaded process canceled.");
+    return;
+  }
+
+  //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
+  eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
+  appCanvas.clear();
+  var reader = new draw2d.io.json.Reader();
+
+  //here is object creation and after getting its jsonDocument property where it's inside schematic is stored
+  var newObject = eval('new ' + newObjectName + '()');
+  var jsonDocument = newObject.jsonDocument;
+  if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
 
   //here are composite object repaired, they are assigned back to their ownership
   var allFigures = appCanvas.getFigures();
@@ -1612,17 +1896,37 @@ GraphLang.Utils.displayContents2 = function(jsonDocument, canvasObj){
       figureObj.renewLayerChooser();
       figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
     }
+
+    /*
+     *  Repairs sequence frames, top node owns just frames, all other nodes are part of each frame,
+     *  so here is needed just to reassign frames
+     */
+    if (figureObj.NAME.toLowerCase().search('sequence') > -1){
+      figureObj.getAssignedFigures().each(function(assignedFigureIndex, assignedFigureObj){
+        figureObj.frames.push(assignedFigureObj);
+        figureObj.updateFrames();
+      });
+    }
   });
 
 }
 
 
 /**
- *  @method hematic
+ *  @method loadSchematic
  *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
  *  @description This function run directly after click on button "choose file"
  */
 GraphLang.Utils.loadSchematic = function(schematicCanvas){
+  //DO NOTHING this is triggered after click on "Coose File"
+}
+
+/**
+ *  @method loadSchematic2
+ *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
+ *  @description This function run directly after click on button "choose file"
+ */
+GraphLang.Utils.loadSchematic2 = function(schematicCanvas){
   //DO NOTHING this is triggered after click on "Coose File"
 }
 
@@ -1641,7 +1945,34 @@ GraphLang.Utils.saveSchematic = function(canvas, filename, type) {
         window.navigator.msSaveOrOpenBlob(file, filename);
     else { // Others
         var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
+        url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
+/**
+ *  @method saveSchematic2
+ *  @param {draw2d.canvas} canvas - Canvas where schematic is located.
+ *  @param {String} filename
+ *  @param {String} type
+ *  @description Download current schematic as txt file with provided name.
+ */
+GraphLang.Utils.saveSchematic2 = function(canvas, filename, type) {
+    data = GraphLang.Utils.getCanvasAsObjectString(canvas);
+
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else {
+        var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
         a.href = url;
         a.download = filename;
         document.body.appendChild(a);
