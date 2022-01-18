@@ -29,27 +29,29 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
       iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go
     }
 
+    var forLoopIteratorVariable = 'forLoopIterator_' + this.getId(); 
+
     cCode += this.getTunnelsDeclarationCppCode();
-    cCode += "for (var hardwiredForLoopIterator = 0; hardwiredForLoopIterator < " + iterationCount + "; hardwiredForLoopIterator++){\n";
-    cCode += this.getWiresInsideLoopDeclarationCppCode();
-    cCode += this.getLeftTunnelsWiresAssignementCppCode()
+    cCode += "for (var " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
+    cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t") + "\n";
+    cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
 
     /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += "/*code inside FOR LOOP */\n";
+    cCode += "\t/*code inside FOR LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += figObj.translateToCppCodeDeclaration() + "\n";
+      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
 
       if (figObj.translateToCppCode){
-        cCode += figObj.translateToCppCode() + "\n"
+        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n";
       }else if (figObj.translateToCppCode2){
-        cCode += figObj.translateToCppCode2() + "\n"
+        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n";
       }
 
      /* in case of post C/C++ code run it */
-     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost() + "\n"; //if there is defined to put somethin after let's do it
+     if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
 
     });
 

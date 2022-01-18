@@ -1009,7 +1009,7 @@ shape_designer.Toolbar = Class.extend({
         this.exportGraphLangButton  = $('<button  data-toggle="tooltip" title="Export JavaScript code</span>" class=\"btn btn-default\" ><img src="./assets/images/toolbar_export_js.png"></button>');
         buttonGroup.append(this.exportGraphLangButton);
         this.exportGraphLangButton.on("click",$.proxy(function(){
-            new shape_designer.dialog.FigureCodeExport().show();
+            new shape_designer.dialog.GraphLangFigureCodeExport().show();
         },this));
 
         /************************************************************************************************************************************************************
@@ -1148,7 +1148,7 @@ shape_designer.dialog.FigureTest = Class.extend(
 		var _this = this;
 		this.animationFrameFunc = $.proxy(this._calculate,this);
 
-		var writer = new shape_designer.FigureWriter();
+        var writer = new shape_designer.GraphLangFigureWriter();
 		
 		writer.marshal(app.view, "testShape",function(js){
 			try{
@@ -1503,9 +1503,7 @@ Therefore, the output is always 0 except when all the inputs are 1.
     }
 });
 
-shape_designer.dialog.FigureCodeExport = Class.extend(
-{
-
+shape_designer.dialog.FigureCodeExport = Class.extend({
     init:function(){
 	},
 
@@ -1565,10 +1563,9 @@ shape_designer.dialog.FigureCodeExport = Class.extend(
 			});
 		});
 
-	}
-
-      
+	}      
 });  
+
 shape_designer.dialog.FigureCodeEdit = Class.extend(
 {
     init:function(){
@@ -5685,6 +5682,193 @@ shape_designer.readSingleFile = function(e, appCanvas){
   reader.readAsText(file);  //this will put result into internal variable named result
 }
 
+shape_designer.dialog.GraphLangFigureCodeExport = Class.extend({
+    init:function(){
+	},
+
+	show:function(){
+
+		var writer = new shape_designer.GraphLangFigureWriter();
+		
+		writer.marshal(app.view,"GraphLangTestShape",function(js){
+
+	        var splash = $(
+	                '<div class="overlay-scale"><pre id="export_overlay" class="prettyprint">'+
+                    js+
+	                '</pre>'+
+					' <div title="Close" id="export_close"><i class="icon ion-ios-close-outline"></i></div>'+
+			        ' <div title="Copy to Clipboard" id="export_clipboard"><i class="icon ion-clipboard"></i></div></div>'
+	                );
+	        $("body").append(splash);
+
+	         var removeDialog = function(){
+				 splash.removeClass("open");
+				 setTimeout(function(){splash.remove();},400);
+             };
+             
+	         $("#export_close").on("click",removeDialog);
+	         prettyPrint();
+	         
+	         setTimeout(function(){splash.addClass("open");},100);
+
+			$("#export_clipboard").off("click").on("click",function(ev){
+
+				var copyElement = document.createElement('textarea');
+				copyElement.innerHTML=js;
+				copyElement = document.body.appendChild(copyElement);
+				copyElement.select();
+				document.execCommand('copy');
+				copyElement.remove();
+
+				toastr.options = {
+					"closeButton": false,
+					"debug": false,
+					"newestOnTop": false,
+					"progressBar": false,
+					"positionClass": "toast-top-right",
+					"preventDuplicates": true,
+					"onclick": null,
+					"showDuration": "3000",
+					"hideDuration": "2000",
+					"timeOut": "500",
+					"extendedTimeOut": "2000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut"
+				};
+
+				toastr.info("Code copied to clipboard");
+			});
+		});
+
+	}      
+});  
+
+shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
+    
+    init:function(){
+        this._super();
+    },
+   
+    /**
+     * @method
+     * Export the content to the implemented data format. Inherit class implements
+     * content specific writer.
+     * <br>
+     * <br>
+     * 
+     * Method signature has been changed from version 2.10.1 to version 3.0.0.<br>
+     * The parameter <b>resultCallback</b> is required and new. The method calls
+     * the callback instead of return the result.
+     * 
+     * @param {draw2d.Canvas} canvas
+     * @parma {String} className
+     * @param {Function} resultCallback the method to call on success. The first argument is the result object, the second the base64 representation of the file content
+     */
+    marshal: function(canvas, className, resultCallback){
+        var baseClass  = app.getConfiguration("baseClass");
+        var customCode = app.getConfiguration("code");
+        var figures = canvas.getExtFigures();
+        var b = canvas.getBoundingBox();
+
+        var x = b.x;
+        var y = b.y;
+        
+        var ports  = [];
+        var shapes = [];
+        
+        shapes.push({constructor: 'this.canvas.paper.path("M0,0 L'+(b.w)+',0 L'+(b.w)+','+(b.h)+' L0,'+(b.h)+ '")',
+                     attr       : '{"stroke":"none","stroke-width":0,"fill":"none"}',
+                     name       : "BoundingBox"
+                    });
+        
+        figures.each(function(i,figure){
+            figure.uninstallEditPolicy("draw2d.policy.figure.RegionEditPolicy");
+            var attr = {};
+            figure.svgPathString=null;
+            figure.translate(-x,-y);
+            // paint the element and fill the "attr" object with the current
+            // settings
+            figure.repaint(attr);
+            delete attr.path;
+            delete attr.x;
+            delete attr.y;
+            if((figure instanceof shape_designer.figure.ExtPolygon)){
+                shapes.push({
+                    constructor:"this.canvas.paper.path('"+figure.svgPathString+"')", 
+                    attr:JSON.stringify(attr) ,
+                    extra:figure.getBlur()===0?"": "shape.blur("+figure.getBlur()+");\n",
+                    name: figure.getUserData().name
+                    });
+            } else if((figure instanceof shape_designer.figure.PolyCircle)){
+                shapes.push({
+                    constructor:"this.canvas.paper.ellipse()", 
+                    attr:JSON.stringify(attr) ,
+                    extra:figure.getBlur()===0?"": "shape.blur("+figure.getBlur()+");\n",
+                    name: figure.getUserData().name
+                    });
+            }else if((figure instanceof shape_designer.figure.ExtLine)){
+                // drop shadow
+                shapes.push({
+                    constructor:"this.canvas.paper.path('"+figure.svgPathString+"')", 
+                    attr:JSON.stringify($.extend({},attr,{"stroke-width": attr["stroke-width"]+figure.getOutlineStroke(), "stroke": figure.getOutlineColor().hash()})),
+                    extra:figure.getBlur()===0?"": "shape.blur("+figure.getBlur()+");\n",
+                    name: figure.getUserData().name+"_shadow"
+                    });
+                
+                // the line itself
+                shapes.push({
+                    constructor:"this.canvas.paper.path('"+figure.svgPathString+"')", 
+                    attr:JSON.stringify(attr) ,
+                    extra:figure.getBlur()===0?"": "shape.blur("+figure.getBlur()+");\n",
+                    name: figure.getUserData().name
+                    });
+            }else if(figure instanceof shape_designer.figure.ExtLabel){
+                attr = figure.svgNodes[0].attr();
+                attr.x = attr.x+figure.getAbsoluteX();
+                attr.y = attr.y+figure.getAbsoluteY();
+                delete attr.transform;
+                shapes.push({
+                    constructor:"this.canvas.paper.text(0,0,'"+figure.getText()+"')", 
+                    attr:JSON.stringify(attr) ,
+                    extra :"",
+                    name: figure.getUserData().name
+                    });
+            }else if(figure instanceof shape_designer.figure.ExtPort){
+                ports.push({
+                    type:figure.getInputType()==="Input"?"new DecoratedInputPort()":'"'+figure.getInputType().toLowerCase()+'"',
+                    method:figure.getInputType()==="Input"?"addPort":'createPort',
+                    direction:figure.getConnectionDirection(),
+                    x    : 100/b.w*figure.getCenter().x,
+                    y    : 100/b.h*figure.getCenter().y,
+                    color: figure.getBackgroundColor().hash(),
+                    name : figure.getUserData().name,
+                    fanout: figure.getMaxFanOut()
+                    });
+            }
+            figure.translate(x,y);
+        });
+        
+        var template =$("#shape-base-template").text().trim();
+
+        var compiled = Hogan.compile(template);
+        var output = compiled.render({
+            className: className,
+            baseClass: baseClass,
+            figures: shapes,
+            ports: ports,
+            width: b.w,
+            height: b.h
+        });
+
+        //LuboJ, remove shape instance creation
+        //output = output +"\n\n"+customCode;
+        
+        resultCallback(output,  draw2d.util.Base64.encode(output));
+    }
+});
+
 shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
   var canvas = appCanvas;
 
@@ -5777,17 +5961,9 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
   });
   */
 
-  //newObject.setCanvas(canvas);                         //paper must be set
-
-  //alert(newObject.createSet);
-
+  /*
   var dx = 0, dy = 0;
-  var vertex;
-  var vertexArray = new draw2d.util.ArrayList();
-  var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
-
-  ////example how to add path created from lines
-  vertexArray = [];  
+  var vertexArray = [];  
   dx = 1.5; dy = 116.5;
   vertexArray.push({x:dx,y:dy});
   dx = 0.5; dy = 2.5;
@@ -5800,14 +5976,15 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
   vertexArray.push({x:dx,y:dy});
   dx = 30.5; dy = 111.5;
   vertexArray.push({x:dx,y:dy});
+  var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
   lineFigure.setVertices(vertexArray);
   
   var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
   canvas.getCommandStack().execute(command);
   canvas.setCurrentSelection(lineFigure);
-
-  return;
+  */
   
+  newObject.setCanvas(canvas);                         //paper must be set
   var shape = newObject.createSet();                     //calling method returning Raphael set
   shape.forEach(function(element, index){
     var infoStr = "";
@@ -5828,13 +6005,34 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
               stroke-width
         */
 
+        /*
+        //print element attributes for debugging
         infoStr = element.data("name") + "\n";
         propertiesStr = "";
         element = element.attrs;
         Object.keys(element).forEach(prop => propertiesStr += prop + " = " + element[prop] + "\n")
         infoStr += propertiesStr;
         alert(infoStr)
+        */
         
+        let pathStr = element.attrs.path;
+        //alert(pathStr);
+        let regExp = new RegExp('M[L,0-9,\.]*');
+        let matchPattern = regExp.exec(pathStr);
+        matchPattern = matchPattern[0].slice(1);
+        //alert(matchPattern);
+        let vertexArray = [];  
+        matchPattern.split('L').forEach(function(coordsStr){        
+          let coordsXY = coordsStr.split(',');
+          vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
+        });
+        
+        var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
+        lineFigure.setVertices(vertexArray);
+        var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
+        canvas.getCommandStack().execute(command);
+        canvas.setCurrentSelection(lineFigure);
+
         /*
         var lineFigure = new shape_designer.figure.ExtLine(element.attrs);
         lineFigure.setStartPoint(10, 70);
@@ -5851,6 +6049,4 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
     }
 
   });
-
-
 }
