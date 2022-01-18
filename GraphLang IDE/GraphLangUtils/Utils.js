@@ -1694,7 +1694,7 @@ GraphLang.Utils.readSingleFile = function(e){
 }
 
 /**
- *  @method readSingleFile
+ *  @method readSingleFile2
  *  @param {HTMLInputFileTag} e Javascript object for input file tag placed somewhere in toolbar or else.
  *  @description Registered on some file input, at it change it will read chosen file and display its content.
  */
@@ -1909,25 +1909,6 @@ GraphLang.Utils.displayContents2 = function(jsonDocument, canvasObj){
     }
   });
 
-}
-
-
-/**
- *  @method loadSchematic
- *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
- *  @description This function run directly after click on button "choose file"
- */
-GraphLang.Utils.loadSchematic = function(schematicCanvas){
-  //DO NOTHING this is triggered after click on "Coose File"
-}
-
-/**
- *  @method loadSchematic2
- *  @param {draw2d.Canvas} schematicCanvas  Canvas where is schematic placed
- *  @description This function run directly after click on button "choose file"
- */
-GraphLang.Utils.loadSchematic2 = function(schematicCanvas){
-  //DO NOTHING this is triggered after click on "Coose File"
 }
 
 /**

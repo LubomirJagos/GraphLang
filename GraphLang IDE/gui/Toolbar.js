@@ -242,9 +242,6 @@ example.Toolbar = Class.extend({
 		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
 		//
 		this.loadSchematicButton  = $('<input type="file" id="file-input" />');
-		this.loadSchematicButton.button().click($.proxy(function(){
-			GraphLang.Utils.loadSchematic(appCanvas);
-		}));
 		this.html.append(this.loadSchematicButton);
 		document.getElementById('file-input').addEventListener('change', GraphLang.Utils.readSingleFile, false);
 
@@ -296,12 +293,7 @@ example.Toolbar = Class.extend({
 		/**
 		*	loadSchematic2 Button
 		*/
-		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
-		//
 		this.loadSchematic2Button  = $('<input type="file" id="file-input2" />');
-        this.loadSchematic2Button.button().click($.proxy(function(){
-			GraphLang.Utils.loadSchematic2(appCanvas);
-		}));
 		this.html.append(this.loadSchematic2Button);
 		document.getElementById('file-input2').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
 
@@ -316,7 +308,7 @@ example.Toolbar = Class.extend({
 	},
 
 	/**
-	 * @method
+y * ??  hod
 	 * Called if the selection in the cnavas has been changed. You must register this
 	 * class on the canvas to receive this event.
 	 *

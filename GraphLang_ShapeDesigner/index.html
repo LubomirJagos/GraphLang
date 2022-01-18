@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
    
-   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
-
     <link type="text/css" rel="stylesheet" href="./lib/jquery-ui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="./lib/ionicons/css/ionicons.min.css" />
@@ -14,13 +12,117 @@
     <link type="text/css" rel="stylesheet" href="./assets/stylesheets/application.css" />
     <link type="text/css" rel="stylesheet" href="./assets/stylesheets/main.css" />
 
+    <!--
+        LuboJ added
+        
+        draw2d MUST BE INCLUDED before .js file of this shape designer, otherwise there is some issue with edit mode,
+        ie. when line is created it also creates rectangles and so, so including here is ok, after probably shape
+        application rewrite some definitions.
+    -->
+    <script src="../draw2d_hardCopy/draw2d.js"></script>
+    <script type="text/javascript">
+      var GraphLang = {};
+
+      GraphLang.Shapes = {};
+      GraphLang.Shapes.Basic = {};
+      GraphLang.Shapes.Basic.Constant = {};
+      GraphLang.Shapes.ItemsNode = {};
+
+      GraphLang.UserDefinedSymbol = {};
+      GraphLang.UserDefinedNode = {};
+
+      GraphLang.PythonQtGuiLib = {};
+
+    </script>
 
 
     <SCRIPT src="./assets/javascript/dependencies.js"></SCRIPT>
-    <SCRIPT src="./assets/javascript/app.js"></SCRIPT>
+
+    <!-- <SCRIPT src="./assets/javascript/app.js"></SCRIPT> -->
+    <SCRIPT src="./assets/javascript/app_GraphLang.js"></SCRIPT>
+
     <script src="./lib/prettify/src/prettify.js"></script>
     <script src="./lib/jscolor/jscolor.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js"></script>
+
+    <!--
+        This folloing loading scripts combine functionality of GraphLang IDE and ShapeDesigner
+    -->
+    <script src="../GraphLang IDE/GraphLangUtils/Utils.js"></script>
+    <script src="../GraphLang IDE/gui/HoverConnection.js"></script>
+
+    <!-- These are mine shapes added. LuboJ. -->
+      <script src="../GraphLang IDE/GraphLangShapes/__initEnv.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Port.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/InputPort.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/OutputPort.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Shapes.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
+      <script src="../GraphLang IDE/GraphLangShapes/Loop2.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Jailhouse.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Tunnel.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/LeftTunnel.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/RightTunnel.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/WireConnection.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Multilayered3.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/WhileLayer.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/ForLoop.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Sequence.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/FeedbackNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/UnbundleByName.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/BundleByName.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Unbundle.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Bundle.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/ConstantNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/ArrayNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/ClusterDatatypeNode2.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/SliderNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/Return.js"></script>
+      <script src="../GraphLang IDE/GraphLangShapes/UserDefinedNode.js"></script>
+
+      <!--
+        EXPERIMENTAL, not needed in core
+      -->
+      <script src="../GraphLang IDE/GraphLangExperimental/UserCodeBlock.js"></script>
+      <script src="../GraphLang IDE/GraphLangExperimental/PropertyNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangExperimental/InvokeNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangExperimental/ExternalOutputPortNode.js"></script>
+      <script src="../GraphLang IDE/GraphLangExperimental/ExternalInputPortNode.js"></script>
+    <!-- End of GraphLang shapes-->
+
+    <!-- These are mine arduino shapes added. LuboJ. -->
+      <script src="../GraphLang IDE/ArduinoLib/__initEnv.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/ArduinoLib.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/__initEnv.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/DecoratedInputPort.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/MarkerFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="../GraphLang IDE/ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="../GraphLang IDE/ArduinoLib/Node/MarkerStateBFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
+      <script src="../GraphLang IDE/ArduinoLib/Node/Add.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Not.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Subtract.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Multiply.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Divide.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/digitalWrite.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/digitalRead.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/analogRead.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/analogWrite.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/waitUntilNextMs.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Math.Abs.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/pinMode.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/Serial.begin.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/toStr.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/ternarOperator.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/LJ42.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/Node/ArduinoNano.js"></script>
+
+      <script src="../GraphLang IDE/ArduinoLib/String/__initEnv.js"></script>
+      <script src="../GraphLang IDE/ArduinoLib/String/replace.js"></script>
+
+
+    <script src="../GraphLang IDE/GraphLangShapes/UserDefinedNode.js"></script>
+    <script src="../GraphLang IDE/UserDefinedNode/UserDefined2.js"></script>
+    <script src="../GraphLang IDE/UserDefinedSymbol/UserDefined3.js"></script>
+
 
     <script type="text/javascript">
 
@@ -28,6 +130,13 @@
 	$( window ).load(function() {
        try{
 	       app  = new shape_designer.Application(true);
+
+           /****************************************************************************************
+            * LuboJ
+            ****************************************************************************************/            
+            /*
+            */
+
 	   }
 	   catch(e){
 	       alert(e);
