@@ -154,6 +154,10 @@ shape_designer.Application = Class.extend(
         this.filter      = new shape_designer.FilterPane(this, "filter_actions", this.view );
         this.breadcrumb  = new shape_designer.Breadcrumb(this,"breadcrumb" );
 
+        //LuboJ
+        this.view.auxView = new shape_designer.View2(this, "canvas2");
+
+
         this.view.installEditPolicy(new shape_designer.policy.SelectionToolPolicy());
 
 
@@ -321,7 +325,18 @@ shape_designer.Application = Class.extend(
     }
 });
 
-
+shape_designer.View2 = draw2d.Canvas.extend({
+	
+	init:function(app, id){
+        var _this = this;
+		this._super(id, 400, 400);
+        this.reset();
+    },
+	reset: function()
+    {
+        this.clear();
+	}
+});
 
 shape_designer.View = draw2d.Canvas.extend({
 	
@@ -1003,7 +1018,7 @@ shape_designer.Toolbar = Class.extend({
         //this.loadNodeButton.button().click($.proxy(function(){}));
 		//document.getElementById('node-file-input').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
         this.loadNodeButton.on("change",$.proxy(function(e){
-            shape_designer.readSingleFile(e, this.view)
+            shape_designer.readSingleFile(e, this.view, this.view.auxView)
         },this));
 
         this.exportGraphLangButton  = $('<button  data-toggle="tooltip" title="Export JavaScript code</span>" class=\"btn btn-default\" ><img src="./assets/images/toolbar_export_js.png"></button>');
@@ -5669,7 +5684,7 @@ shape_designer.policy.LineToolPolicy = shape_designer.policy.AbstractToolPolicy.
  *  @param {HTMLInputFileTag} e Javascript object for input file tag placed somewhere in toolbar or else.
  *  @description Registered on some file input, at it change it will read chosen file and display its content.
  */
-shape_designer.readSingleFile = function(e, appCanvas){
+shape_designer.readSingleFile = function(e, appCanvas, appCanvas2){
   var file = e.target.files[0];
   if (!file) {
     return;
@@ -5677,7 +5692,7 @@ shape_designer.readSingleFile = function(e, appCanvas){
   var reader = new FileReader();
   reader.onload = function(e) {
     var contents = e.target.result;             //result is read
-    shape_designer.loadSymbolFromGraphLangClass(contents, appCanvas);  //display as alert
+    shape_designer.loadSymbolFromGraphLangClass(contents, appCanvas, appCanvas2);  //display as alert
   };
   reader.readAsText(file);  //this will put result into internal variable named result
 }
@@ -5869,8 +5884,9 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
     }
 });
 
-shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
+shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appCanvas2){
   var canvas = appCanvas;
+  var canvas2 = appCanvas2;     //auxiliar canvas which is hidden
 
   //regular expression match over multiple lines also using groups
   let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend\(\{/gm);
@@ -5891,12 +5907,17 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
     objectTree = "";
     newObjectName = matchPattern[1];
     matchPattern[1].split('.').forEach(function(element, index){
-        if (index > 0) objectTree += '.';
+        if (index > 0){
+            objectTree += '.';        
+        }else{
+            //if most top variable is not defined create one here
+            eval('if (typeof ' + element + ' === "undefined") ' + element + ' = {}');
+        }
         objectTree += element;
 
+        //here if subsequent variables are not defined then they are created
         var expression = 'return ' + objectTree;
         var result = new Function(expression)();
-
         if (result == undefined){
             //alert(objectTree + ' is undefined')
             eval(objectTree + ' = {}');             //creates object
@@ -5919,72 +5940,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
   var jsonDocument = newObject.jsonDocument;
   //if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
 
-  
-  /*
-  lineFigure = new shape_designer.figure.ExtLine();
-  lineFigure.setStartPoint(10, 10);
-  lineFigure.setEndPoint(15, 70);
-  
-  var command = new draw2d.command.CommandAdd(canvas, lineFigure, 200, 130);
-  canvas.getCommandStack().execute(command);
-  canvas.setCurrentSelection(lineFigure);
-  
-  lineFigure = new shape_designer.figure.ExtLine();
-  lineFigure.setStartPoint(10, 70);
-  lineFigure.setEndPoint(15, 10);
-  
-  var command = new draw2d.command.CommandAdd(canvas, lineFigure, 200, 130);
-  canvas.getCommandStack().execute(command);
-  canvas.setCurrentSelection(lineFigure);
-  
-  var command = new draw2d.command.CommandAdd(canvas, new shape_designer.figure.ExtPort(), 220, 130);
-  canvas.getCommandStack().execute(command);
-  canvas.setCurrentSelection(command.figure);
-  */
-
-  /*
-   *  EXAMPLE, create some user defined node shape and show all of its elements
-   *  
-   *  There is property 'type' which can be:
-   *      - path    - line
-   *      - ellipse - this value is used also for circle
-   *      - text
-   */
-  /*
-  var myNode = new GraphLang.UserDefinedNode.UserDefined2();
-  myNode.setCanvas(canvas);                         //paper must be set
-  var shape = myNode.createSet();                     //calling method returning Raphael set
-  shape.forEach(function(element, index){
-    propertiesStr = "";
-    Object.keys(element).forEach(prop => propertiesStr += prop + " = " + element[prop] + "\n")
-    alert(propertiesStr)
-  });
-  */
-
-  /*
-  var dx = 0, dy = 0;
-  var vertexArray = [];  
-  dx = 1.5; dy = 116.5;
-  vertexArray.push({x:dx,y:dy});
-  dx = 0.5; dy = 2.5;
-  vertexArray.push({x:dx,y:dy});
-  dx = 30.5; dy = 44.5;
-  vertexArray.push({x:dx,y:dy});
-  dx = 52.5; dy = 0.5;
-  vertexArray.push({x:dx,y:dy});
-  dx = 54.5; dy = 112.5;
-  vertexArray.push({x:dx,y:dy});
-  dx = 30.5; dy = 111.5;
-  vertexArray.push({x:dx,y:dy});
-  var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
-  lineFigure.setVertices(vertexArray);
-  
-  var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
-  canvas.getCommandStack().execute(command);
-  canvas.setCurrentSelection(lineFigure);
-  */
-  
-  newObject.setCanvas(canvas);                         //paper must be set
+  newObject.setCanvas(canvas2);                          //paper must be set, this is auxiliar paper, drawing will be put there and then we are reading parameters from elements
   var shape = newObject.createSet();                     //calling method returning Raphael set
   shape.forEach(function(element, index){
     var infoStr = "";
@@ -6015,38 +5971,114 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas){
         alert(infoStr)
         */
         
-        let pathStr = element.attrs.path;
-        //alert(pathStr);
-        let regExp = new RegExp('M[L,0-9,\.]*');
-        let matchPattern = regExp.exec(pathStr);
-        matchPattern = matchPattern[0].slice(1);
-        //alert(matchPattern);
-        let vertexArray = [];  
-        matchPattern.split('L').forEach(function(coordsStr){        
-          let coordsXY = coordsStr.split(',');
-          vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
-        });
-        
-        var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
-        lineFigure.setVertices(vertexArray);
-        var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
-        canvas.getCommandStack().execute(command);
-        canvas.setCurrentSelection(lineFigure);
-
         /*
-        var lineFigure = new shape_designer.figure.ExtLine(element.attrs);
-        lineFigure.setStartPoint(10, 70);
-        lineFigure.setEndPoint(15, 10);
-        
-        var command = new draw2d.command.CommandAdd(canvas, lineFigure);
-        canvas.getCommandStack().execute(command);
-        canvas.setCurrentSelection(lineFigure);
-        */
+         *  Create open lines elements
+         */
+        if (element.data("name").toLowerCase().search("_shadow") == -1 &&
+            element.data("name").toLowerCase().search("boundingbox") == -1 &&
+            element.attrs.path[element.attrs.path.length - 1] != "Z" &&
+            element.attrs.path[element.attrs.path.length - 1] != "z"
+        ){
+          let pathStr = element.attrs.path;
+          //alert(pathStr);
+          let regExp = new RegExp('M[L,0-9,\.]*');
+          let matchPattern = regExp.exec(pathStr);
+          matchPattern = matchPattern[0].slice(1);
+          //alert(matchPattern);
+          let vertexArray = [];  
+          matchPattern.split('L').forEach(function(coordsStr){        
+            let coordsXY = coordsStr.split(',');
+            vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
+          });
+          
+          var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
+          lineFigure.setUserData({name: element.data("name")});
+          lineFigure.setVertices(vertexArray);
+          var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
+          canvas.getCommandStack().execute(command);
+          canvas.setCurrentSelection(lineFigure);
+
+          //var command = new draw2d.command.CommandMoveLine(lineFigure);
+          //command.setTranslation(200,300);
+
+          command = new draw2d.command.CommandMove(lineFigure);
+          command.setPosition(300,600);
+          canvas.getCommandStack().execute(command);
+          
+        }else if (
+            element.attrs.path[element.attrs.path.length - 1] == "Z" ||
+            element.attrs.path[element.attrs.path.length - 1] == "z" 
+        ){
+          let pathStr = element.attrs.path;
+          let regExp = new RegExp('M[L,0-9,\.]*');
+          let matchPattern = regExp.exec(pathStr);
+          matchPattern = matchPattern[0].slice(1);
+
+          var polygonFigure = new shape_designer.figure.ExtPolygon(); //extended draw2d.shape.basic.PolyLine
+          polygonFigure.setUserData({name: element.data("name")});
+          let vertexArray = [];  
+          matchPattern.split('L').forEach(function(coordsStr){        
+            let coordsXY = coordsStr.split(',');
+            vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
+            polygonFigure.addVertex(parseFloat(coordsXY[0]), parseFloat(coordsXY[1]));
+          });
+
+          //by default there are 3 vertices created so here we removed them, they are created
+          //becasue there is some width height calculation and it must be done
+          polygonFigure.removeVertexAt(0);
+          polygonFigure.removeVertexAt(0);
+          polygonFigure.removeVertexAt(0);
+
+          var command = new draw2d.command.CommandAdd(canvas, polygonFigure, vertexArray[0].x, vertexArray[0].y);
+          canvas.getCommandStack().execute(command);
+          canvas.setCurrentSelection(polygonFigure);
+        }
     }else if (element.type == 'ellipse'){
-        alert('ellipse');
+        var circleFigure = new shape_designer.figure.PolyCircle(new draw2d.geo.Point(0,0), element.attrs.rx);
+        circleFigure.setUserData({name: element.data("name")});
+        var command = new draw2d.command.CommandAdd(canvas, circleFigure, element.attrs.cx, element.attrs.cy);
+        canvas.getCommandStack().execute(command);
+        canvas.setCurrentSelection(circleFigure);
+    }else if (element.type == 'text'){
+        /*
+        infoStr = element.data("name") + "\n";
+        propertiesStr = "";
+        e = element.attrs;
+        Object.keys(e).forEach(prop => propertiesStr += prop + " = " + e[prop] + "\n")
+        infoStr += propertiesStr;
+        alert(infoStr);
+        */
+        
+        var textFigure = new shape_designer.figure.ExtLabel();
+        textFigure.setUserData({name: element.data("name")});
+        textFigure.setText(element.attrs.text);
+
+        var command = new draw2d.command.CommandAdd(canvas, textFigure, element.attrs.x, element.attrs.y);
+        canvas.getCommandStack().execute(command);
+        canvas.setCurrentSelection(textFigure);
     }else{
-        alert('something');
+        //do nothing
+    }    
+  });
+
+  newObject.getPorts().each(function(portIndex, portObj){
+    let posX = portObj.getLocator().x * newObject.originalWidth / 100;
+    let posY = portObj.getLocator().y * newObject.originalHeight / 100;
+
+    var portFigure = new shape_designer.figure.ExtPort();
+    portFigure.setUserData({name: portObj.getName()});
+
+    //set in/out
+    let portObjTypeStr = portObj.NAME;
+    if (portObjTypeStr.toLowerCase().search("input") > -1){
+        portFigure.setInputType("Input");
+    }else if (portObjTypeStr.toLowerCase().search("output") > -1){
+        portFigure.setInputType("Output");
     }
 
+    var command = new draw2d.command.CommandAdd(canvas, portFigure, posX, posY);
+    canvas.getCommandStack().execute(command);
+    canvas.setCurrentSelection(portFigure);
   });
+
 }
