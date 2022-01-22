@@ -11,7 +11,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
 
    init:function(attr, setter, getter)
    {
-    this._super( $.extend({stroke:0, bgColor:null, width:153.60000000000008,height:87},attr), setter, getter);
+    this._super( $.extend({stroke:0, bgColor:null, width: 42, height: 42},attr), setter, getter);
     this.persistPorts=false;
 
     if (this.jsonDocument) this.createPortsFromJson(this.jsonDocument);    
@@ -77,6 +77,17 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
         }
         return;
    },
+
+  getObjectAsString: function(){
+    var objStr = "";
+      
+    objStr += "init: " + this.init + ",\n\n";
+    objStr += "createSet: " + this.createSet + ",\n\n";
+    objStr += "createShapeElement: " + this.createShapeElement + ",\n\n";
+    objStr += "jsonDocument: " + this.jsonDocument + "\n\n";
+      
+    return objStr; 
+  },
 
   /*****************************************************************************************************************
    *    THESE FUNCTIONS BELOW ARE SPECIFIC TO TRANSLATE NODE TO C/C++ CODE

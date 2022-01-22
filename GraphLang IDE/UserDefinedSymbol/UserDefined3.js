@@ -199,5 +199,5 @@ GraphLang.UserDefinedSymbol.UserDefined3 = GraphLang.UserDefinedNode.extend({
             var locator =  eval("new "+json.locator+"()");
             this.add(figure, locator);
         },this));
-    }
+    }    
 });

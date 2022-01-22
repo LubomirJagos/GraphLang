@@ -129,7 +129,7 @@ shape_designer.Application = Class.extend(
         var _this = this;
 
         this.documentConfigurationTempl = {
-            baseClass:"draw2d.SetFigure",
+            baseClass:"GraphLang.UserDefinedNode",
             code :$("#shape-edit-template").text().trim()
         };
 
@@ -5867,6 +5867,11 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
         
         var template =$("#shape-base-template").text().trim();
 
+        //LuboJ
+        jsonDocument = "[]";
+        if (shape_designer.loadedObjectJsonDocument) jsonDocument = shape_designer.loadedObjectJsonDocument;
+
+
         var compiled = Hogan.compile(template);
         var output = compiled.render({
             className: className,
@@ -5874,7 +5879,8 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
             figures: shapes,
             ports: ports,
             width: b.w,
-            height: b.h
+            height: b.h,
+            jsonDocument: jsonDocument
         });
 
         //LuboJ, remove shape instance creation
@@ -6131,4 +6137,17 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     canvas.setCurrentSelection(portFigure);
   });
 
+  shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument);
+  /*
+  var js = "";
+  js = newObject.getObjectAsString();
+  alert(js);
+  var copyElement = document.createElement('textarea');
+  copyElement.innerHTML=js;
+  copyElement = document.body.appendChild(copyElement);
+  copyElement.select();
+  document.execCommand('copy');
+  copyElement.remove();
+  */
+  
 }
