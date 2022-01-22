@@ -37,9 +37,9 @@ jQuery.fn.reverse = [].reverse;
 
         // ich liebe Regexpr.... :-)
         //
-        //              1 YYYY                2 MM       3 DD           4 HH    5 mm       6 ss        7 msec        8 Z 9 ¬±    10 tzHH    11 tzmm
+        //              1 YYYY                2 MM       3 DD           4 HH    5 mm       6 ss        7 msec        8 Z 9 ±    10 tzHH    11 tzmm
         if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(date))) {
-            // avoid NaN timestamps caused by ‚Äúundefined‚Äù values being passed to Date.UTC
+            // avoid NaN timestamps caused by ìundefinedî values being passed to Date.UTC
             for (var i = 0, k; (k = numericKeys[i]); ++i) {
                 struct[k] = +struct[k] || 0;
             }
@@ -1181,7 +1181,7 @@ shape_designer.dialog.FigureTest = Class.extend(
 				    ' <div title="Close" id="test_close" class="icon ion-ios-close-outline"></div>'+
 				'<div>');
 
-	        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einf√ºgen
+	        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einf¸gen
 	        // wenn das canvas nicht sichtbar ist. In diesen Fall mach ich das Canvas "leicht" sichtbar und raphael ist
 	        // zufrieden.
 	        $("body").append(splash);
@@ -1346,7 +1346,7 @@ Therefore, the output is always 0 except when all the inputs are 1.
             ' <div title="Close" id="test_close" class="icon ion-ios-close-outline"></div>'+
             '<div>');
 
-        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einf√ºgen
+        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einf¸gen
         // wenn das canvas nicht sichtbar ist. In diesen Fall mach ich das Canvas "leicht" sichtbar und raphael ist
         // zufrieden.
         $("body").append(splash);
@@ -5940,18 +5940,22 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
   var jsonDocument = newObject.jsonDocument;
   //if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
 
+  /*
+   *    Loading shape drawing, lines, circles, ...
+   */
+
   newObject.setCanvas(canvas2);                          //paper must be set, this is auxiliar paper, drawing will be put there and then we are reading parameters from elements
   var shape = newObject.createSet();                     //calling method returning Raphael set
+  let moveToX = 0;                                     //addtional X translation 
+  let moveToY = 0;                                      //additional Y translation
+  
+  moveToX = $("#canvas").innerWidth()/2 - newObject.getWidth()/2;
+  moveToY = $("#canvas").innerHeight()/2 - newObject.getHeight()/2;
+  
   shape.forEach(function(element, index){
     var infoStr = "";
     var propertiesStr = "";
 
-    /*
-        propertiesStr = "";
-        Object.keys(element).forEach(prop => propertiesStr += prop + " = " + element[prop] + "\n")
-        alert(propertiesStr)
-    */
-    
     if (element.type == 'path'){
         /*
             attrs
@@ -5959,16 +5963,6 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
               stroke
               path
               stroke-width
-        */
-
-        /*
-        //print element attributes for debugging
-        infoStr = element.data("name") + "\n";
-        propertiesStr = "";
-        element = element.attrs;
-        Object.keys(element).forEach(prop => propertiesStr += prop + " = " + element[prop] + "\n")
-        infoStr += propertiesStr;
-        alert(infoStr)
         */
         
         /*
@@ -5979,32 +5973,44 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
             element.attrs.path[element.attrs.path.length - 1] != "Z" &&
             element.attrs.path[element.attrs.path.length - 1] != "z"
         ){
+
+          //print element attributes for debugging
+          /*
+          infoStr = element.data("name") + "\n";
+          propertiesStr = "";
+          e = element.attrs;
+          Object.keys(e).forEach(prop => propertiesStr += prop + " = " + e[prop] + "\n")
+          infoStr += propertiesStr;
+          alert(infoStr)
+          */
+
+
           let pathStr = element.attrs.path;
-          //alert(pathStr);
-          let regExp = new RegExp('M[L,0-9,\.]*');
+          let regExp = new RegExp('M[L,Q,0-9,\.]*');
           let matchPattern = regExp.exec(pathStr);
           matchPattern = matchPattern[0].slice(1);
-          //alert(matchPattern);
           let vertexArray = [];  
-          matchPattern.split('L').forEach(function(coordsStr){        
+          /*
+           *    Split string using 'L', 'Q'
+           *    'Q' defines curvet line, it's there when curved corners are used, need to figure out how to get radius for now UNSUPPORTED
+           */
+          matchPattern.split(/[LQ]+/).forEach(function(coordsStr){        
             let coordsXY = coordsStr.split(',');
-            vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
+            vertexArray.push({x:moveToX + parseFloat(coordsXY[0]),y: moveToY + parseFloat(coordsXY[1])});
           });
           
           var lineFigure = new shape_designer.figure.ExtLine(); //extended draw2d.shape.basic.PolyLine
           lineFigure.setUserData({name: element.data("name")});
           lineFigure.setVertices(vertexArray);
+
+          lineFigure.setAlpha(element.attrs.opacity);
+          lineFigure.setStroke(element.attrs["stroke-width"]);
+          lineFigure.setColor(element.attrs.stroke);
+          //lineFigure.setRadius(element.attrs.stroke);
+
           var command = new draw2d.command.CommandAdd(canvas, lineFigure, 0);
           canvas.getCommandStack().execute(command);
           canvas.setCurrentSelection(lineFigure);
-
-          //var command = new draw2d.command.CommandMoveLine(lineFigure);
-          //command.setTranslation(200,300);
-
-          command = new draw2d.command.CommandMove(lineFigure);
-          command.setPosition(300,600);
-          canvas.getCommandStack().execute(command);
-          
         }else if (
             element.attrs.path[element.attrs.path.length - 1] == "Z" ||
             element.attrs.path[element.attrs.path.length - 1] == "z" 
@@ -6016,10 +6022,18 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
 
           var polygonFigure = new shape_designer.figure.ExtPolygon(); //extended draw2d.shape.basic.PolyLine
           polygonFigure.setUserData({name: element.data("name")});
-          let vertexArray = [];  
+          let vertexArray = [];
+          let smallestX = 1e6;
+          let smallestY = 1e6;  
           matchPattern.split('L').forEach(function(coordsStr){        
             let coordsXY = coordsStr.split(',');
-            vertexArray.push({x:parseFloat(coordsXY[0]),y:parseFloat(coordsXY[1])});
+
+            let coordX = parseFloat(coordsXY[0]);
+            let coordY = parseFloat(coordsXY[1]);
+            if (coordX < smallestX) smallestX = coordX;
+            if (coordY < smallestY) smallestY = coordY;
+
+            vertexArray.push({x: coordX,y: coordY});
             polygonFigure.addVertex(parseFloat(coordsXY[0]), parseFloat(coordsXY[1]));
           });
 
@@ -6029,14 +6043,47 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
           polygonFigure.removeVertexAt(0);
           polygonFigure.removeVertexAt(0);
 
-          var command = new draw2d.command.CommandAdd(canvas, polygonFigure, vertexArray[0].x, vertexArray[0].y);
+          //polygonFigure.setWidth(element.attrs.rx*2);
+          //polygonFigure.setHeight(element.attrs.ry*2);
+          polygonFigure.setAlpha(element.attrs.opacity);
+          polygonFigure.setBackgroundColor(element.attrs.fill);
+          polygonFigure.setStroke(element.attrs["stroke-width"]);
+          polygonFigure.setColor(element.attrs.stroke);
+
+
+          let posX = moveToX + smallestX;
+          let posY = moveToY + smallestY;
+          var command = new draw2d.command.CommandAdd(canvas, polygonFigure, posX, posY);
           canvas.getCommandStack().execute(command);
           canvas.setCurrentSelection(polygonFigure);
         }
     }else if (element.type == 'ellipse'){
+
+        /*
+        infoStr = element.data("name") + "\n";
+        propertiesStr = "";
+        e = element.attrs;
+        Object.keys(e).forEach(prop => propertiesStr += prop + " = " + e[prop] + "\n")
+            infoStr += propertiesStr;
+        alert(infoStr);
+        */
+        
         var circleFigure = new shape_designer.figure.PolyCircle(new draw2d.geo.Point(0,0), element.attrs.rx);
-        circleFigure.setUserData({name: element.data("name")});
-        var command = new draw2d.command.CommandAdd(canvas, circleFigure, element.attrs.cx, element.attrs.cy);
+        circleFigure.setWidth(element.attrs.rx*2);
+        circleFigure.setHeight(element.attrs.ry*2);
+        circleFigure.setUserData({name: element.data("name")});       
+        circleFigure.setAlpha(element.attrs.opacity);
+        circleFigure.setBackgroundColor(element.attrs.fill);
+        circleFigure.setStroke(element.attrs["stroke-width"]);
+        circleFigure.setColor(element.attrs.stroke);
+        
+        //alert(moveToX + element.attrs.cx + " - " + moveToY + element.attrs.cy)
+        let radiusX = element.attrs.rx;
+        let radiusY = element.attrs.ry;
+        let posX = moveToX + element.attrs.cx - radiusX;
+        let posY = moveToY + element.attrs.cy - radiusY;
+                
+        var command = new draw2d.command.CommandAdd(canvas, circleFigure, posX, posY);
         canvas.getCommandStack().execute(command);
         canvas.setCurrentSelection(circleFigure);
     }else if (element.type == 'text'){
@@ -6045,7 +6092,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
         propertiesStr = "";
         e = element.attrs;
         Object.keys(e).forEach(prop => propertiesStr += prop + " = " + e[prop] + "\n")
-        infoStr += propertiesStr;
+            infoStr += propertiesStr;
         alert(infoStr);
         */
         
@@ -6053,7 +6100,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
         textFigure.setUserData({name: element.data("name")});
         textFigure.setText(element.attrs.text);
 
-        var command = new draw2d.command.CommandAdd(canvas, textFigure, element.attrs.x, element.attrs.y);
+        var command = new draw2d.command.CommandAdd(canvas, textFigure, moveToX + element.attrs.x, moveToY + element.attrs.y);
         canvas.getCommandStack().execute(command);
         canvas.setCurrentSelection(textFigure);
     }else{
@@ -6061,6 +6108,9 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     }    
   });
 
+  /*
+   *    Loading shape ports
+   */
   newObject.getPorts().each(function(portIndex, portObj){
     let posX = portObj.getLocator().x * newObject.originalWidth / 100;
     let posY = portObj.getLocator().y * newObject.originalHeight / 100;
@@ -6076,7 +6126,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
         portFigure.setInputType("Output");
     }
 
-    var command = new draw2d.command.CommandAdd(canvas, portFigure, posX, posY);
+    var command = new draw2d.command.CommandAdd(canvas, portFigure, moveToX + posX - portObj.getWidth()/2, moveToY + posY - portObj.getHeight()/2);
     canvas.getCommandStack().execute(command);
     canvas.setCurrentSelection(portFigure);
   });
