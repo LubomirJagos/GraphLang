@@ -119,9 +119,10 @@
       <script src="../GraphLang IDE/ArduinoLib/String/replace.js"></script>
 
 
-    <script src="../GraphLang IDE/GraphLangShapes/UserDefinedNode.js"></script>
-    <script src="../GraphLang IDE/UserDefinedNode/UserDefined2.js"></script>
-    <script src="../GraphLang IDE/UserDefinedSymbol/UserDefined3.js"></script>
+    <!--
+        User defined shape example
+    -->
+    <script src="../GraphLang IDE/UserDefinedNode/GraphLangTestShape.js"></script>
 
 
     <script type="text/javascript">
@@ -448,7 +449,7 @@ testShape = testShape.extend({
 
    init:function(attr, setter, getter)
    {
-     this._super( $.extend({stroke:0, bgColor:null, width:{{width}},height:{{height}}},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:{{width}}, height:{{height}}, flagAutoCreatePorts: false},attr), setter, getter);
      var port;
      {{#ports}}
      // {{{name}}}

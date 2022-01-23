@@ -14,7 +14,10 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
     this._super( $.extend({stroke:0, bgColor:null, width: 42, height: 42},attr), setter, getter);
     this.persistPorts=false;
 
-    if (this.jsonDocument) this.createPortsFromJson(this.jsonDocument);    
+    //alert(JSON.stringify(attr));
+    
+    //flagAutoCreatePorts indicate if flags should be created from JSON schematic
+    if (this.jsonDocument && ("flagAutoCreatePorts" in attr) && attr.flagAutoCreatePorts) this.createPortsFromJson(this.jsonDocument);    
    },
 
    /*
@@ -80,14 +83,84 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
 
   getObjectAsString: function(){
     var objStr = "";
-      
-    objStr += "init: " + this.init + ",\n\n";
+
+    //generate init()
+    objStr += "init: function(attr,setter,getter){\n";
+    objStr += "\tthis._super( $.extend({stroke:0, bgColor:null, width:" + this.width + ", height:" + this.height + ", flagAutoCreatePorts: false},attr), setter, getter);\n";
+    objStr += "\tvar port;\n";
+
+    this.getInputPorts().each(function(portIndex, portObj){
+        objStr += '\tport = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(' + portObj.getLocator().x + ', ' + portObj.getLocator().y + '));' + "\n";
+        objStr += '\tport.setConnectionDirection(' + portObj.getConnectionDirection() + ');' + "\n";
+        objStr += '\tport.setBackgroundColor("' + portObj.getBackgroundColor().hash() + '");' + "\n";
+        objStr += '\tport.setName("' + portObj.getName() + '");' + "\n";
+        objStr += '\tport.setMaxFanOut(' + portObj.getMaxFanOut() + ');' + "\n";
+        objStr += "\n";        
+    });
+    this.getOutputPorts().each(function(portIndex, portObj){
+        objStr += '\tport = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(' + portObj.getLocator().x + ', ' + portObj.getLocator().y + '));' + "\n";
+        objStr += '\tport.setConnectionDirection(' + portObj.getConnectionDirection() + ');' + "\n";
+        objStr += '\tport.setBackgroundColor("' + portObj.getBackgroundColor().hash() + '");' + "\n";
+        objStr += '\tport.setName("' + portObj.getName() + '");' + "\n";
+        objStr += '\tport.setMaxFanOut(' + portObj.getMaxFanOut() + ');' + "\n";
+        objStr += "\n";        
+    });
+
+    objStr += "\tthis.persistPorts=false;\n";
+    objStr += "},\n";
+
+    //generate createShapeElement()
+    objStr += "createShapeElement: function(){\n";
+    objStr += "\tvar shape = this._super();\n";
+    objStr += "\tthis.originalWidth = " + this.width + ";\n";
+    objStr += "\tthis.originalHeight = " + this.height + ";\n";
+    objStr += "\treturn shape;\n";
+    objStr += "},\n";
+    objStr += "\n";
+
+    //this is running OK
     objStr += "createSet: " + this.createSet + ",\n\n";
-    objStr += "createShapeElement: " + this.createShapeElement + ",\n\n";
-    objStr += "jsonDocument: " + this.jsonDocument + "\n\n";
+    
+    //json schematic is not included, because is taken from canvas
+    //objStr += "jsonDocument: " + JSON.stringify(this.jsonDocument) + ",\n\n";
       
     return objStr; 
   },
+
+  /*****************************************************************************************************************
+   *    Default node shape, width, height and rectangle shape is defined
+   *****************************************************************************************************************/
+
+   createShapeElement : function()
+   {
+      var shape = this._super();
+      this.originalWidth = this.width;
+      this.originalHeight= this.height;
+      return shape;
+   },
+
+   createSet: function()
+   {
+       this.canvas.paper.setStart();
+
+        // BoundingBox
+        shape = this.canvas.paper.path("M0,0 L"+this.width+",0 L"+this.width+","+this.height+" L0,"+this.height);
+        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
+        shape.data("name","BoundingBox");
+        
+        // Rectangle
+        shape = this.canvas.paper.path("M0,0 L"+this.width+",0 L"+this.width+","+this.height+" L0,"+this.height+"Z");
+        shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});
+        shape.data("name","Rectangle");
+
+        return this.canvas.paper.setFinish();
+   },
+
+  /*****************************************************************************************************************
+   *    JSON schematic, by default empty
+   *****************************************************************************************************************/
+
+  jsonDocument: [],
 
   /*****************************************************************************************************************
    *    THESE FUNCTIONS BELOW ARE SPECIFIC TO TRANSLATE NODE TO C/C++ CODE

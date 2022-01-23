@@ -1333,36 +1333,27 @@ GraphLang.Utils.getCanvasAsObjectString = function(canvas){
       }
 
       var jsonCanvasStr = JSON.stringify(clearedJson, null, 2);
-      var objectDefaultName = 'GraphLang.UserDefinedNode.UserDefinedExample';
+      var objectDefaultName = 'GraphLangTestShape';
       
       schematicAsObjectStr += objectDefaultName + ' = GraphLang.UserDefinedNode.extend({' + "\n";            
       schematicAsObjectStr += 'NAME: "' + objectDefaultName + '",' + "\n";
-      schematicAsObjectStr += 'init: function()' + "\n";
-      schematicAsObjectStr += '{' + "\n";
-      schematicAsObjectStr += '    this._super({width: 42, height: 42});' + "\n";
-      schematicAsObjectStr += '},' + "\n";
-      schematicAsObjectStr += 'createShapeElement : function()' + "\n";
-      schematicAsObjectStr += '{' + "\n";
-      schematicAsObjectStr += '  var shape = this._super();' + "\n";
-      schematicAsObjectStr += '  this.originalWidth = this.width;' + "\n";
-      schematicAsObjectStr += '  this.originalHeight= this.height;' + "\n";
-      schematicAsObjectStr += '  return shape;' + "\n";
-      schematicAsObjectStr += '},' + "\n";
-      schematicAsObjectStr += 'createSet: function()' + "\n";
-      schematicAsObjectStr += '{' + "\n";
-      schematicAsObjectStr += '    this.canvas.paper.setStart();' + "\n";
-      schematicAsObjectStr += '    var width =  this.width;' + "\n";
-      schematicAsObjectStr += '    var height = this.height;' + "\n";
-      schematicAsObjectStr += '    // BoundingBox' + "\n";
-      schematicAsObjectStr += '    shape = this.canvas.paper.path("M0,0 L" + width + ",0 L" + width + "," + height + " L0," + height);' + "\n";
-      schematicAsObjectStr += '    shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});' + "\n";
-      schematicAsObjectStr += '    shape.data("name","BoundingBox");' + "\n";    
-      schematicAsObjectStr += '    // Rectangle' + "\n";
-      schematicAsObjectStr += '    shape = this.canvas.paper.path("M0,0 L" + width + ",0 L" + width + "," + height + " L0," + height + "Z");' + "\n";
-      schematicAsObjectStr += '    shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});' + "\n";
-      schematicAsObjectStr += '    shape.data("name","Rectangle");' + "\n";    
-      schematicAsObjectStr += '    return this.canvas.paper.setFinish();' + "\n";
-      schematicAsObjectStr += '},' + "\n";
+
+      /*
+       *    If object was loaded from some file ie. means that it can have some symbol defined, 
+       *    then init function and shape functions are taken original ones.
+       */
+      if (GraphLang.Utils.loadedNodeShapeAndSchematicStr !== null){
+        schematicAsObjectStr += '/******************************************* STORED FROM PREVIOUS NODE **********************************/' + "\n";
+        schematicAsObjectStr += GraphLang.Utils.loadedNodeShapeAndSchematicStr + "\n";
+        schematicAsObjectStr += '/********************************************************************************************************/' + "\n";
+      }else{
+        schematicAsObjectStr += 'init: function(attr)' + "\n";
+        schematicAsObjectStr += '{' + "\n";
+        schematicAsObjectStr += '    this._super($.extend({width: 42, height: 42, flagAutoCreatePorts: true}, attr));' + "\n";
+        schematicAsObjectStr += '},' + "\n";
+      }
+      schematicAsObjectStr += "jsonDocument: " + jsonCanvasStr + ",\n";     //json schematic is saved new one
+
       schematicAsObjectStr += 'applyAlpha: function(){},' + "\n";
       schematicAsObjectStr += 'layerGet: function(name, attributes){' + "\n";
       schematicAsObjectStr += '  if(this.svgNodes===null) return null;' + "\n";
@@ -1432,8 +1423,7 @@ GraphLang.Utils.getCanvasAsObjectString = function(canvas){
       schematicAsObjectStr += '        var locator =  eval("new "+json.locator+"()");' + "\n";
       schematicAsObjectStr += '        this.add(figure, locator);' + "\n";
       schematicAsObjectStr += '    },this));' + "\n";
-      schematicAsObjectStr += '},' + "\n";
-      schematicAsObjectStr += "jsonDocument: " + jsonCanvasStr + "\n";
+      schematicAsObjectStr += '}' + "\n";
       schematicAsObjectStr += "});\n";
 
       var copyElement = document.createElement('textarea');
@@ -1744,6 +1734,11 @@ GraphLang.Utils.displayContents = function(contents){
 }
 
 /**
+ *  This variable store shape function and schematic when object s loaded into schematic editor.
+ */
+GraphLang.Utils.loadedNodeShapeAndSchematicStr = null;
+
+/**
  *  @method displayContents2
  *  @param {String} content String content to display
  *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
@@ -1803,6 +1798,12 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   var newObject = eval('new ' + newObjectName + '()');
   var jsonDocument = newObject.jsonDocument;
   if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+  
+  /*
+   *    If object has method getObjectAsString() its content is stored into loaded function string, becuase object is
+   *    user defined an potentionaly can have some shape generated in Shape Designer
+   */
+  if (newObject.getObjectAsString) GraphLang.Utils.loadedNodeShapeAndSchematicStr = newObject.getObjectAsString();
 
   //here are composite object repaired, they are assigned back to their ownership
   var allFigures = appCanvas.getFigures();

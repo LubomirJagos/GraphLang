@@ -5852,8 +5852,8 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
                     });
             }else if(figure instanceof shape_designer.figure.ExtPort){
                 ports.push({
-                    type:figure.getInputType()==="Input"?"new DecoratedInputPort()":'"'+figure.getInputType().toLowerCase()+'"',
-                    method:figure.getInputType()==="Input"?"addPort":'createPort',
+                    type:figure.getInputType()==="Input"? '"input"': '"output"',
+                    method: 'createPort',
                     direction:figure.getConnectionDirection(),
                     x    : 100/b.w*figure.getCenter().x,
                     y    : 100/b.h*figure.getCenter().y,
@@ -6118,8 +6118,8 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
    *    Loading shape ports
    */
   newObject.getPorts().each(function(portIndex, portObj){
-    let posX = portObj.getLocator().x * newObject.originalWidth / 100;
-    let posY = portObj.getLocator().y * newObject.originalHeight / 100;
+    let posX = portObj.getLocator().x * newObject.width / 100;
+    let posY = portObj.getLocator().y * newObject.height / 100;
 
     var portFigure = new shape_designer.figure.ExtPort();
     portFigure.setUserData({name: portObj.getName()});
@@ -6131,6 +6131,11 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     }else if (portObjTypeStr.toLowerCase().search("output") > -1){
         portFigure.setInputType("Output");
     }
+    portFigure.setColor(portObj.getColor());
+    portFigure.setConnectionDirection(portObj.getConnectionDirection());
+    portFigure.setMaxFanOut(portObj.getMaxFanOut());
+    portFigure.setBackgroundColor(portObj.getBackgroundColor());
+    
 
     var command = new draw2d.command.CommandAdd(canvas, portFigure, moveToX + posX - portObj.getWidth()/2, moveToY + posY - portObj.getHeight()/2);
     canvas.getCommandStack().execute(command);
