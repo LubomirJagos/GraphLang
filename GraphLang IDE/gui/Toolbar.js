@@ -305,6 +305,13 @@ example.Toolbar = Class.extend({
 			GraphLang.Utils.saveSchematic2(appCanvas, 'GraphLang_Schematic', 'text/javascript');
 		}));
 		this.html.append(this.saveSchematic2Button);
+
+		/**
+		*	Schematic name input
+		*/
+		this.schematicNameInput  = $("<div>Schematic name: <input id=\"schematicName\" type=\"input\" value=\"GraphLangTestShape\"/></div>");
+		this.html.append(this.schematicNameInput);
+
 	},
 
 	/**

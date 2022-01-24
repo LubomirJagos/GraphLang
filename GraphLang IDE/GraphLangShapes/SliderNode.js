@@ -89,9 +89,25 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
 
   },
 
+  getVariableName: function(){
+      let variableName = "const_" + this.getId();
+      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+      return variableName   
+  },
+
+  getDatatype: function(){
+    let cCode = "";
+    cCode = this.getOutputPort(0).userData.datatype;
+    return cCode;
+  },
+  
+  /*****************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ functions
+   *****************************************************************************************************************************************************/ 
+
   translateToCppCodeDeclaration: function(){
     var cCode = "";
-    var constDatatype = this.getOutputPort(0).userData.datatype;
+    var constDatatype = this.getDatatype();
     cCode += constDatatype + " const_" + this.getId() + " = " + this.getValue() + ";\n";
 
     return cCode;
@@ -99,17 +115,17 @@ GraphLang.Shapes.Basic.SliderNode = draw2d.shape.widget.Slider.extend({
 
   translateToCppCode:function(){
     var cCode = "";
-    var constantId = this.getId();
+    var variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "wire_" + connectionObj.getId() + " = const_" + constantId + ";\n";
+      cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
     });
 
     return cCode;
   },
   
-  getDatatype: function(){
+  translateToCppCodeAsParam:function(){
     cCode = "";
-    cCode = this.getOutputPort(0).userData.datatype;
+    cCode += this.getDatatype() + " " + this.getVariableName() + ' = ' + this.getValue() ;
     return cCode;
   }
 

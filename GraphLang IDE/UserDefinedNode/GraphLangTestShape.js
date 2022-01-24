@@ -9,37 +9,37 @@ GraphLangTestShape = GraphLang.UserDefinedNode.extend({
 
    init:function(attr, setter, getter)
    {
-     this._super( $.extend({stroke:0, bgColor:null, width:87, height:45.87519999999995, flagAutoCreatePorts: false},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:92.0916318003043, height:45.87519999999995, flagAutoCreatePorts: false},attr), setter, getter);
      var port;
-     // out2
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.6210832183908, 38.47307477678568));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#F30000");
-     port.setName("out2");
-     port.setMaxFanOut(20);
-     // out1
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.6210832183908, 78.33775111607146));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#EBF300");
-     port.setName("out1");
-     port.setMaxFanOut(20);
      // in3
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-4.309951264367921, 16.151646205357185));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.17420492642742122, 18.33147321428576));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#F30000");
      port.setName("in3");
      port.setMaxFanOut(20);
      // in2
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-4.309951264367921, 54.359654017857146));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.17420492642742122, 56.53948102678572));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#08F300");
      port.setName("in2");
      port.setMaxFanOut(20);
      // in1
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-4.309951264367921, 96.5087890625002));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.17420492642742122, 98.68861607142878));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#F0F3F3");
      port.setName("in1");
+     port.setMaxFanOut(20);
+     // out2
+     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100.2484442447664, 40.65290178571425));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#F30000");
+     port.setName("out2");
+     port.setMaxFanOut(20);
+     // out1
+     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100.2484442447664, 80.51757812500003));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#EBF300");
+     port.setName("out1");
      port.setMaxFanOut(20);
      this.persistPorts=false;
    },
@@ -47,7 +47,7 @@ GraphLangTestShape = GraphLang.UserDefinedNode.extend({
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 87;
+      this.originalWidth = 92.0916318003043;
       this.originalHeight= 45.87519999999995;
       return shape;
    },
@@ -57,72 +57,72 @@ GraphLangTestShape = GraphLang.UserDefinedNode.extend({
        this.canvas.paper.setStart();
 
         // BoundingBox
-        shape = this.canvas.paper.path("M0,0 L87,0 L87,45.87519999999995 L0,45.87519999999995");
+        shape = this.canvas.paper.path("M0,0 L92.0916318003043,0 L92.0916318003043,45.87519999999995 L0,45.87519999999995");
         shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
         shape.data("name","BoundingBox");
         
         // Rectangle
-        shape = this.canvas.paper.path('M10.54954239999995 0L61.33994240000004 0L61.33994240000004 45.87519999999995L10.54954239999995 45.87519999999995Z');
+        shape = this.canvas.paper.path('M13.459628159423573 0L64.25002815942366 0L64.25002815942366 45.87519999999995L13.459628159423573 45.87519999999995Z');
         shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});
         shape.data("name","Rectangle");
         
         // Circle
-        shape = this.canvas.paper.path('M34.85103152877127 10.37698692448862L32.89777101471668 9.466166588413216L30.48399051503293 8.819396052816955L27.994570239999916 8.601599999999962L25.50514996496679 8.819396052816955L23.091369465283037 9.46616658841316L20.826570239999796 10.52225981134626L18.779567067533662 11.955586863446285L17.01255710344617 13.722596827533721L15.579230051346144 15.769599999999969L14.523136828413044 18.03439922528321L13.876366292816897 20.44817972496685L13.658570239999904 22.937599999999975L13.876366292816897 25.4270202750331L14.523136828413044 27.84080077471674L15.579230051346144 30.10559999999998L17.01255710344617 32.15260317246623L18.779567067533662 33.919613136553664L20.826570239999796 35.35294018865369L23.091369465283037 36.409033411586734L25.50514996496679 37.055803947182994L27.994570239999916 37.27359999999999L30.483990515033042 37.055803947182994L32.89777101471668 36.409033411586734L35.16257023999981 35.35294018865369L37.20957341246606 33.919613136553664L38.97658337655355 32.15260317246623L40.409910428653575 30.10559999999998L41.466003651586675 27.84080077471674L42.112774187182936 25.4270202750331L42.227259605282256 24.118445958254256L41.67914239999982 24.16640000000001L40.185490234979966 24.03572236830979L38.737221935169714 23.64766004695207L37.37834239999984 23.014004113192186L36.150140496520066 22.154007881932216L35.089934518067594 21.093801903479743L34.229938286807624 19.865599999999972L33.59628235304774 18.50672046483004L33.208220031690075 17.058452165019844L33.07754239999986 15.564799999999991L33.208220031690075 14.071147834980138L33.59628235304774 12.622879535169886L34.229938286807624 11.263999999999953L34.85103152877127 10.37698692448862Z');
+        shape = this.canvas.paper.path('M37.761117288194896 10.37698692448862L35.807856774140305 9.466166588413216L33.39407627445655 8.819396052816955L30.90465599942354 8.601599999999962L28.415235724390413 8.819396052816955L26.00145522470666 9.46616658841316L23.73665599942342 10.52225981134626L21.689652826957285 11.955586863446285L19.922642862869793 13.722596827533721L18.489315810769767 15.769599999999969L17.433222587836667 18.03439922528321L16.78645205224052 20.44817972496685L16.568655999423527 22.937599999999975L16.78645205224052 25.4270202750331L17.433222587836667 27.84080077471674L18.489315810769767 30.10559999999998L19.922642862869793 32.15260317246623L21.689652826957285 33.919613136553664L23.73665599942342 35.35294018865369L26.00145522470666 36.409033411586734L28.415235724390413 37.055803947182994L30.90465599942354 37.27359999999999L33.394076274456665 37.055803947182994L35.807856774140305 36.409033411586734L38.07265599942343 35.35294018865369L40.11965917188968 33.919613136553664L41.88666913597717 32.15260317246623L43.3199961880772 30.10559999999998L44.3760894110103 27.84080077471674L45.02285994660656 25.4270202750331L45.13734536470588 24.118445958254256L44.58922815942344 24.16640000000001L43.09557599440359 24.03572236830979L41.64730769459334 23.64766004695207L40.28842815942346 23.014004113192186L39.06022625594369 22.154007881932216L38.00002027749122 21.093801903479743L37.14002404623125 19.865599999999972L36.506368112471364 18.50672046483004L36.1183057911137 17.058452165019844L35.98762815942348 15.564799999999991L36.1183057911137 14.071147834980138L36.506368112471364 12.622879535169886L37.14002404623125 11.263999999999953L37.761117288194896 10.37698692448862Z');
         shape.attr({"stroke":"none","stroke-width":0,"fill":"#C00F0F","dasharray":null,"opacity":1});
         shape.data("name","Circle");
         
         // Circle
         shape = this.canvas.paper.ellipse();
-        shape.attr({"rx":6.375342080000024,"ry":6.375342080000024,"cx":42.45298944000004,"cy":15.614474239999964,"stroke":"none","stroke-width":0,"fill":"#95C06A","dasharray":null,"opacity":1});
+        shape.attr({"rx":6.375342080000024,"ry":6.375342080000024,"cx":45.363075199423776,"cy":15.614474239999964,"stroke":"none","stroke-width":0,"fill":"#95C06A","dasharray":null,"opacity":1});
         shape.data("name","Circle");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M87.5 34.5L73.5,34.5L62.5,25.5L57.5,25.5');
+        shape = this.canvas.paper.path('M64.5 11.5L79.5,11.5L91.5,18.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M87.5 34.5L73.5,34.5L62.5,25.5L57.5,25.5');
+        shape = this.canvas.paper.path('M64.5 11.5L79.5,11.5L91.5,18.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M62.5 5.5L73.5,5.5L82.5,12.5');
+        shape = this.canvas.paper.path('M92.5 37.5L78.5,37.5L64.5,28.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M62.5 5.5L73.5,5.5L82.5,12.5');
+        shape = this.canvas.paper.path('M92.5 37.5L78.5,37.5L64.5,28.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M11.5 14.5L6.5,13.5L0.5,7.5L0.5,7.5L0.5,7.5');
+        shape = this.canvas.paper.path('M0.5 8.5L12.5,8.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M11.5 14.5L6.5,13.5L0.5,7.5L0.5,7.5L0.5,7.5');
+        shape = this.canvas.paper.path('M0.5 8.5L12.5,8.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M0.5 22.5L6.5,16.5L10.5,16.5');
+        shape = this.canvas.paper.path('M0.5 25.5L8.5,25.5L12.5,21.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M0.5 22.5L6.5,16.5L10.5,16.5');
+        shape = this.canvas.paper.path('M0.5 25.5L8.5,25.5L12.5,21.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M0.5 40.5L10.5,40.5L10.5,40.5');
+        shape = this.canvas.paper.path('M0.5 45.5L7.5,45.5L12.5,38.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M0.5 40.5L10.5,40.5L10.5,40.5');
+        shape = this.canvas.paper.path('M0.5 45.5L7.5,45.5L12.5,38.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         

@@ -809,6 +809,13 @@ shape_designer.Toolbar = Class.extend({
         this.toolbarDiv=$("<div class=\"toolbarGroup pull-right\"></div>");
         this.html.append(this.toolbarDiv);
 
+        /*
+         *  Symbol name input field
+         */
+        var symbolNameGroup=$("<div class='btn-group'  title='Symbol Name'></div>");
+        this.toolbarDiv.append(symbolNameGroup);
+		this.symbolNameInput = $('<div>Symbol Name <input type="input" id="symbol-name-input" style=\"width: 330px;\" class="" value="GraphLangTestShape" /></div>');
+        symbolNameGroup.append(this.symbolNameInput);
 
         // Inject the UNDO Button and the callbacks
         //
@@ -1010,7 +1017,7 @@ shape_designer.Toolbar = Class.extend({
         /************************************************************************************************************************************************************
          *  BEGIN GraphLang buttons
          ************************************************************************************************************************************************************/
-        var buttonGroup=$("<div class='btn-group'  title='File Operations'></div>");
+        buttonGroup=$("<div class='btn-group'  title='File Operations'></div>");
         this.toolbarDiv.append(buttonGroup);
 
 		this.loadNodeButton  = $('<input type="file" id="node-file-input" class="btn btn-default" />');
@@ -5705,7 +5712,7 @@ shape_designer.dialog.GraphLangFigureCodeExport = Class.extend({
 
 		var writer = new shape_designer.GraphLangFigureWriter();
 		
-		writer.marshal(app.view,"GraphLangTestShape",function(js){
+		writer.marshal(app.view,$("#symbol-name-input").val(),function(js){
 
 	        var splash = $(
 	                '<div class="overlay-scale"><pre id="export_overlay" class="prettyprint">'+
@@ -5943,8 +5950,11 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
 
   //here is object creation and after getting its jsonDocument property where it's inside schematic is stored
   var newObject = eval('new ' + newObjectName + '()');
-  var jsonDocument = newObject.jsonDocument;
-  //if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+
+  /*
+   *    Update symbol name input in toolbar
+   */
+  $("#symbol-name-input").val(newObject.NAME);
 
   /*
    *    Loading shape drawing, lines, circles, ...
@@ -6105,8 +6115,16 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
         var textFigure = new shape_designer.figure.ExtLabel();
         textFigure.setUserData({name: element.data("name")});
         textFigure.setText(element.attrs.text);
+        textFigure.setStroke(element.attrs["stroke-width"]);    //this is outline stroke width not rectangle around label
+        textFigure.setColor(element.attrs.stroke);
 
-        var command = new draw2d.command.CommandAdd(canvas, textFigure, moveToX + element.attrs.x, moveToY + element.attrs.y);
+        //this is set by experiment, text anchor point seema to be in left bottom point, so at positioning font height is subtracted
+        //from position of label which is left top point of label bounding box
+        var textFigurePadding = 0;
+        var textFigureWidth = 0;
+        var textFigureHeight = textFigure.getFontSize() + 2*textFigurePadding;
+
+        var command = new draw2d.command.CommandAdd(canvas, textFigure, moveToX + element.attrs.x - textFigureWidth/2, moveToY + element.attrs.y - textFigureHeight/2);
         canvas.getCommandStack().execute(command);
         canvas.setCurrentSelection(textFigure);
     }else{
@@ -6142,7 +6160,12 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     canvas.setCurrentSelection(portFigure);
   });
 
+  /*
+   *    Store into shape_designer structure functions which should be preserved and contained
+   *    in newly generated code for this symbol, these are from loaded file.
+   */
   shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument);
+
   /*
   var js = "";
   js = newObject.getObjectAsString();

@@ -26,9 +26,10 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
   getByName: function(colorName){
   
     /*
-     *  Use just lower case letters
+     *  Use just lower case letters, if colorName object is undefined then replace it with ""
      */
-    colorName = colorName.toLowerCase();
+    if(colorName) colorName = colorName.toLowerCase();
+    else colorName = "";
   
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";
@@ -72,7 +73,8 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     /*
      *  Use just lower case letters
      */
-    colorName = colorName.toLowerCase();
+    if(colorName) colorName = colorName.toLowerCase();
+    else colorName = "";
 
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";
@@ -116,7 +118,8 @@ GraphLang.Utils.Color = draw2d.util.Color.extend({
     /*
      *  Use just lower case letters
      */
-    colorName = colorName.toLowerCase();
+    if(colorName) colorName = colorName.toLowerCase();
+    else colorName = "";
 
     if (colorName == "yellow") return "#FFFF00";
     else if (colorName == "red") return "#FF0000";

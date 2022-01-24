@@ -234,7 +234,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
    */
   translateToCppCodeDeclaration:function(){
     cCode = "";
-    var constDatatype = this.getOutputPort(0).userData.datatype;
+    var constDatatype = this.getDatatype();
     
     if (constDatatype.toLowerCase().search("string") > -1){
       cCode += constDatatype + " " + this.getVariableName() + " = \"" + this.getText() + "\";\n";
@@ -246,9 +246,8 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   
   translateToCppCodeAsParam:function(){
     cCode = "";
-    var constDatatype = this.getOutputPort(0).userData.datatype;
-    //cCode += constDatatype + " const_" + this.getId();              //maybe add default value
-    
+    var constDatatype = this.getDatatype();
+
     //create param definition using also default value, if there is string use quotes
     if (this.getDatatype().toLowerCase().search("string") == -1){ 
         cCode += constDatatype + " " + this.getVariableName() + ' = ' + this.getText();

@@ -1333,7 +1333,7 @@ GraphLang.Utils.getCanvasAsObjectString = function(canvas){
       }
 
       var jsonCanvasStr = JSON.stringify(clearedJson, null, 2);
-      var objectDefaultName = 'GraphLangTestShape';
+      var objectDefaultName = $("#schematicName").val();
       
       schematicAsObjectStr += objectDefaultName + ' = GraphLang.UserDefinedNode.extend({' + "\n";            
       schematicAsObjectStr += 'NAME: "' + objectDefaultName + '",' + "\n";
@@ -1798,6 +1798,11 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   var newObject = eval('new ' + newObjectName + '()');
   var jsonDocument = newObject.jsonDocument;
   if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+
+  /*
+   *    Update schematic name input
+   */
+  $("#schematicName").val(newObject.NAME);
   
   /*
    *    If object has method getObjectAsString() its content is stored into loaded function string, becuase object is
