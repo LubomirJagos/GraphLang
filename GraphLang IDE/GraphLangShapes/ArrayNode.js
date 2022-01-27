@@ -121,7 +121,10 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                      break;
                  case "showNodeLabel":
                       if (emitter.userData.nodeLabel != null) labelText = emitter.userData.nodeLabel;
-                      else labelText = 'nodeLabel';
+                      else{
+                          labelText = GraphLang.Utils.getUniqueNodeLabel(emitter.getCanvas(), 'nodeLabel');
+                          emitter.userData.nodeLabel = labelText;
+                      }
   
                       emitter.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
                       emitter.add(emitter.nodeLabel, new draw2d.layout.locator.TopLocator());
@@ -129,6 +132,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       emitter.nodeLabel.on('change:text', function(nodeEmitter, event){
                         labelText = nodeEmitter.getText();
                         labelText = labelText.replaceAll(" ","_"); 
+                        if (labelText != nodeEmitter.getParent().userData.nodeLabel) labelText = GraphLang.Utils.getUniqueNodeLabel(emitter.getCanvas(), labelText); 
                         nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
                         nodeEmitter.text = labelText;                                                   //this will not fire another event!
                       });

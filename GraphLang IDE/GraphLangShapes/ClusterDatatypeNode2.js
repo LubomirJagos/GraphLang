@@ -82,6 +82,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       labelText = nodeEmitter.getText();
       labelText = labelText.replaceAll(" ","_"); 
       nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
+      labelText = GraphLang.Utils.getUniqueNodeLabel(labelText); 
       nodeEmitter.text = labelText;                                                   //this will not fire another event!
       nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
     });

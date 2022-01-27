@@ -1964,7 +1964,18 @@ GraphLang.Utils.getVisibleLoopsAndMultilayered = function(canvas) {
 	return loopList;
 }
 
-
+GraphLang.Utils.getUniqueNodeLabel = function(canvas, nodeLabel = "nodeLabel"){
+    var nodeLabelList = new draw2d.util.ArrayList();
+    canvas.getFigures().each(function(figureIndex, figureObj){
+        if (figureObj.userData.isTerminal && figureObj.userData.nodeLabel){
+            nodeLabelList.push(figureObj.userData.nodeLabel);
+        }
+    });
+    while(nodeLabelList.contains(nodeLabel)){
+        nodeLabel += "_2";
+    }
+    return nodeLabel;
+}
 
 
 /*****************************************************************************************************************************************************
@@ -1980,6 +1991,7 @@ GraphLang.Utils.getVisibleLoopsAndMultilayered = function(canvas) {
 GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDeclaration = true){
   let cCode = "";
   translateToCppCodeDeclarationArray.clear();
+  var translateToCppCodeSubnodeArray = new draw2d.util.ArrayList();
   
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
@@ -2063,7 +2075,10 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           /*
            *    Translate node schematic into separate function
            */
-          if (nodeObj.jsonDocument) GraphLang.Utils.translateToCppCodeSubNode(nodeObj);
+          if (!translateToCppCodeSubnodeArray.contains(nodeObj.NAME) && nodeObj.jsonDocument){
+            translateToCppCodeSubnodeArray.push(nodeObj.NAME);
+            GraphLang.Utils.translateToCppCodeSubNode(nodeObj);
+          }
 
           /*
            *    Translate POST code, like ending while or for loop
@@ -2088,6 +2103,60 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
   cCode = this.rewriteIDtoNumbers(canvas, cCode);
 
   return cCode;
+},
+
+/**
+ * @method translateToCppCodeSubNode
+ * @param {draw2d.Figure} nodeObj - node object to be translated to CPP code
+ * @returns {String} C/C++ code as string
+ * @description Load node schematic in auxiliary canvas and run translate process for it, result should be function definition for particular node.
+ */
+GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
+    let cCode = "";
+    cCodeParams = "";
+    cCodeReturnDatatype = "";
+
+    GraphLang.Utils.displayContents2(nodeObj.jsonDocument, appCanvas2);
+    paramsCounter = 0;
+    appCanvas2.getFigures().each(function(figureIndex, figureObj){
+      /*
+       *  INPUT TERMINAL TRANSCRIPTION AS PARAMS FOR FUNCTION DECLARATION
+       */
+      if (
+          figureObj.userData &&
+          figureObj.userData.isTerminal &&
+          (figureObj.userData.isTerminal == 1 || figureObj.userData.isTerminal.toLowerCase() == true) &&
+          figureObj.translateToCppCodeAsParam != undefined
+      ){
+          if (paramsCounter > 0) cCodeParams += ', ';
+          cCodeParams += figureObj.translateToCppCodeAsParam();
+          paramsCounter++;
+      }
+
+      /*
+       *  RETURN VALUE
+       *      - if return node is found it asks for it datatype, if nothing is connected then it's undefined
+       *      - in stored files nodes haven't 'NAME' property but have 'type' property
+       *  
+       */
+      if (figureObj.NAME.toLowerCase().search("return") > -1){
+          cCodeReturnDatatype = figureObj.getDatatype();
+      }
+    });
+
+    cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
+    cCode += GraphLang.Utils.translateCanvasToCppCode(appCanvas2, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
+    cCode += "\n";  //to not have separate last curly bracket by tabulator
+    cCode += '}' + "\n";
+
+    /******************************************************************************
+     * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
+     *******************************************************************************/
+    cCode = this.rewriteIDtoNumbers(appCanvas2, cCode);
+
+    //don't return any code, these functions are pushed into array and print after template is created
+    //return cCode;
+    translateToCppCodeFunctionsArray.push(cCode);
 },
 
 /**
@@ -2155,64 +2224,6 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         return cCode; //return C/C++ code as string
 }
 
-/**
- * @method translateToCppCodeSubNode
- * @param {draw2d.Figure} nodeObj - node object to be translated to CPP code
- * @returns {String} C/C++ code as string
- * @description Load node schematic in auxiliary canvas and run translate process for it, result should be function definition for particular node.
- */
-GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
-    let cCode = "";
-    cCodeParams = "";
-    cCodeReturnDatatype = "";
-
-    GraphLang.Utils.displayContents2(nodeObj.jsonDocument, appCanvas2);
-    paramsCounter = 0;
-    appCanvas2.getFigures().each(function(figureIndex, figureObj){
-      /*
-       *  INPUT TERMINAL TRANSCRIPTION AS PARAMS FOR FUNCTION DECLARATION
-       */
-      if (
-          figureObj.userData &&
-          figureObj.userData.isTerminal &&
-          (figureObj.userData.isTerminal == 1 || figureObj.userData.isTerminal.toLowerCase() == true) &&
-          figureObj.translateToCppCodeAsParam != undefined
-      ){
-          if (paramsCounter > 0) cCodeParams += ', ';
-          cCodeParams += figureObj.translateToCppCodeAsParam();
-          paramsCounter++;
-      }
-
-      /*
-       *  RETURN VALUE
-       *      - if return node is found it asks for it datatype, if nothing is connected then it's undefined
-       *      - in stored files nodes haven't 'NAME' property but have 'type' property
-       *  
-       */
-      if (figureObj.NAME.toLowerCase().search("return") > -1){
-          cCodeReturnDatatype = figureObj.getDatatype();
-      }
-    });
-
-    cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
-    cCode += GraphLang.Utils.translateCanvasToCppCode(appCanvas2, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
-    cCode += "\n";  //to not have separate last curly bracket by tabulator
-    cCode += '}' + "\n";
-
-    /******************************************************************************
-     * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
-     *******************************************************************************/
-    cCode = this.rewriteIDtoNumbers(appCanvas2, cCode);
-
-    //don't return any code, these functions are pushed into array and print after template is created
-    //return cCode;
-    translateToCppCodeFunctionsArray.push(cCode);
-},
-
-
-
-
-
 
 
 /*****************************************************************************************************************************************************
@@ -2223,6 +2234,7 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
   let pythonCode = "";
   translateToPythonCodeDeclarationArray.clear();
   translateToPythonCodeImportArray.clear();
+  var translateToPythonCodeSubnodeArray = new draw2d.util.ArrayList();
   
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
@@ -2267,7 +2279,10 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
           /*
            *    Translate node schematic into separate function
            */
-          if (nodeObj.jsonDocument) GraphLang.Utils.translateToPythonCodeSubNode(nodeObj);
+          if (!translateToPythonCodeSubnodeArray.contains(nodeObj.NAME) && nodeObj.jsonDocument){
+            translateToPythonCodeSubnodeArray.push(nodeObj.NAME)
+            GraphLang.Utils.translateToPythonCodeSubNode(nodeObj);
+          }
 
           /*
            *    Push python import lines into global array

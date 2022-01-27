@@ -3108,6 +3108,94 @@ shape_designer.filter.PortTypeFilter = shape_designer.filter.Filter.extend({
 });
 
 
+//added by LuboJ
+shape_designer.filter.PortDatatypeFilter = shape_designer.filter.Filter.extend({
+    NAME :"shape_designer.filter.PortDatatypeFilter",
+    
+	init:function(){
+	    this._super();
+	    
+	    this.type   =0;
+        this.cssScope = this.NAME.replace(/[.]/g, "_");
+	},
+	
+	insertPane: function(figure, $parent){
+
+	   var _this = this;
+	   var datatype = figure.getDatatype();
+	   $parent.append(
+            '<div id="'+this.cssScope+'_container" class="panel panel-default">'+
+            '  <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#'+this.cssScope+'_panel">'+
+            '    Port Datatype'+
+            '  </div>'+
+        	'  <div class="panel-body collapse in" id="'+this.cssScope+'_panel">'+
+        	'     <div class="form-group portDatatypeOption">'+
+            '       <select name="'+this.cssScope+'_select">'+
+            '         <option value="int">int</option>'+
+            '         <option value="uint">uint</option>'+
+            '         <option value="float">float</option>'+
+            '         <option value="double">double</option>'+
+            '         <option value="bool">bool</option>'+
+            '         <option value="String">String</option>'+
+            '         <option value="other">other</option>'+
+            '       </select>'+
+            '       <br />'+
+            '       <input type="text" value="" disabled />'+
+            '     </div>'+
+            '  </div>'+
+            '</div>'
+        );
+
+	       if (['int','uint','float','double','bool','String'].includes(datatype)){
+               $("#"+_this.cssScope+"_panel .portDatatypeOption select").val(datatype);
+           }else{
+               $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
+               $("#"+_this.cssScope+"_panel .portDatatypeOption select").val('other');
+               $("#"+_this.cssScope+"_panel .portDatatypeOption input").val(datatype);
+           }
+
+	       $("#"+_this.cssScope+"_panel .portDatatypeOption select").on("change", function(){
+               var $this = $(this);
+	           var datatypeName = $this.val();
+               if (datatypeName == "other"){
+                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
+                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'black'});
+                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").on("change", function(){
+                       var $this = $(this);
+        	           var datatypeName = $this.val();
+                       figure.setDatatype(datatypeName);
+                   });
+                   datatypeName = $("#"+_this.cssScope+"_panel .portDatatypeOption input").val();
+                   figure.setDatatype(datatypeName);
+               }else{
+                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', true);
+                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'#CCCCCC'});
+	               figure.setDatatype(datatypeName);
+               }
+	       });
+	   },
+	   
+	    
+
+		removePane : function() {
+		},
+
+		onInstall : function(figure) {
+		},
+
+		getPersistentAttributes : function(relatedFigure) {
+			var memento = this._super(relatedFigure);
+
+			return memento;
+		},
+
+		setPersistentAttributes : function(relatedFigure, memento) {
+			this._super(relatedFigure, memento);
+
+			return memento;
+		}
+});
+
 
 
 
@@ -4105,23 +4193,33 @@ shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
 
       this.setUserData({
     	  name:"Port",
-    	  /*   LuboJ
-          type:"Hybrid",
-          */
           type:"Input",
     	  direction:null,
-          fanout:20
-    		  });
+          fanout:20,
+          datatype: "undefined"
+      });
       
       this.filters   = new draw2d.util.ArrayList();
       this.filters.add( new shape_designer.filter.PositionFilter());
       this.filters.add( new shape_designer.filter.FanoutFilter());
       this.filters.add( new shape_designer.filter.PortDirectionFilter());
       this.filters.add( new shape_designer.filter.PortTypeFilter());
+      this.filters.add( new shape_designer.filter.PortDatatypeFilter());    //added by LuboJ
 
       this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
     
+
+    setDatatype: function(datatype)
+    {
+    	if (datatype == "") datatype = "undefined";
+        this.getUserData().datatype = datatype;
+    },
+
+    getDatatype: function()
+    {
+    	return this.getUserData().datatype;
+    },
 
     setInputType: function(type)
     {
@@ -5866,7 +5964,8 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
                     y    : 100/b.h*figure.getCenter().y,
                     color: figure.getBackgroundColor().hash(),
                     name : figure.getUserData().name,
-                    fanout: figure.getMaxFanOut()
+                    fanout: figure.getMaxFanOut(),
+                    datatype: figure.getDatatype()
                     });
             }
             figure.translate(x,y);
@@ -5876,7 +5975,9 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
 
         //LuboJ
         jsonDocument = "[]";
+        loadedObjectPreservedFunctions = "";
         if (shape_designer.loadedObjectJsonDocument) jsonDocument = shape_designer.loadedObjectJsonDocument;
+        if (shape_designer.loadedObjectPreservedFunctions) loadedObjectPreservedFunctions = shape_designer.loadedObjectPreservedFunctions;
 
 
         var compiled = Hogan.compile(template);
@@ -5887,7 +5988,8 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
             ports: ports,
             width: b.w,
             height: b.h,
-            jsonDocument: jsonDocument
+            jsonDocument: jsonDocument,
+            loadedObjectPreservedFunctions: loadedObjectPreservedFunctions
         });
 
         //LuboJ, remove shape instance creation
@@ -6165,6 +6267,8 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
    *    in newly generated code for this symbol, these are from loaded file.
    */
   shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument);
+  shape_designer.loadedObjectPreservedFunctions = "";
+  if (newObject.translateToCppCode) shape_designer.loadedObjectPreservedFunctions += "translateToCppCode: " + newObject.translateToCppCode; 
 
   /*
   var js = "";

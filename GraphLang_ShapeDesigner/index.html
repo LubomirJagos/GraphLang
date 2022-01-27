@@ -32,6 +32,22 @@
       GraphLang.UserDefinedNode = {};
 
       GraphLang.PythonQtGuiLib = {};
+      MarkerStateBFigure = {};
+      MarkerStateAFigure = {};
+      MarkerFigure = {};
+      DecoratedInputPort = {};
+  	  GraphLang = {};
+  	  GraphLang.PythonQtGuiLib = {};
+  	  GraphLang.ArduinoLib = {};
+  	  GraphLang.ArduinoLib.String = {};
+  	  GraphLang.ArduinoLib.Node = {};
+  	  GraphLang.ArduinoLib.Node.Serial = {};
+  	  GraphLang.ArduinoLib.Node.Math = {};
+  	  GraphLang.ArduinoLib.FileLib = {};
+  	  GraphLang.ArduinoLib.Experimental42Lib = {};
+  	  GraphLang.ArduinoLib.DummyLib = {};
+  	  GraphLangTestShape2 = {};
+  	  GraphLangTestShape = {};
       
     </script>
 
@@ -90,9 +106,6 @@
     <!-- End of GraphLang shapes-->
 
     <!-- These are mine arduino shapes added. LuboJ. -->
-      <script src="../GraphLang IDE/ArduinoLib/__initEnv.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/ArduinoLib.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/__initEnv.js"></script>
       <script src="../GraphLang IDE/ArduinoLib/Node/DecoratedInputPort.js"></script>
       <script src="../GraphLang IDE/ArduinoLib/Node/MarkerFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
       <script src="../GraphLang IDE/ArduinoLib/Node/MarkerStateAFigure.js"></script> <!-- THIS IS HERE TO DRAW CUSTOM SYMBOLS CORRECTLY -->
@@ -114,8 +127,6 @@
       <script src="../GraphLang IDE/ArduinoLib/Node/ternarOperator.js"></script>
       <script src="../GraphLang IDE/ArduinoLib/Node/LJ42.js"></script>
       <script src="../GraphLang IDE/ArduinoLib/Node/ArduinoNano.js"></script>
-
-      <script src="../GraphLang IDE/ArduinoLib/String/__initEnv.js"></script>
       <script src="../GraphLang IDE/ArduinoLib/String/replace.js"></script>
 
 
@@ -392,51 +403,6 @@
        </div>
    </div>
 
-<script id="shape-edit-template" type="text/js-template">
-/**
- * by 'Draw2D Shape Designer'
- *
- * Custom JS code to tweak the standard behaviour of the generated
- * shape. add your custome code and event handler here.
- *
- *
- */
-testShape = testShape.extend({
-
-    init: function(attr, setter, getter){
-         this._super(attr, setter, getter);
-
-         // your special code here
-    },
-
-    /**
-     *  Called by the simulator for every calculation
-     *  loop
-     *  @required
-     **/
-    calculate:function()
-    {
-    },
-
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function()
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function()
-    {
-    }
-});
-</script>
-
 <script id="shape-base-template" type="text/js-template">
 // Generated Code for the GraphLang
 // special thanks to Draw2D touch HTML5 lib
@@ -458,6 +424,7 @@ testShape = testShape.extend({
      port.setBackgroundColor("{{color}}");
      port.setName("{{name}}");
      port.setMaxFanOut({{fanout}});
+     port.setDatatype("{{datatype}}");
      {{/ports}}
      this.persistPorts=false;
    },
@@ -609,7 +576,9 @@ testShape = testShape.extend({
         },this));
     },
     
-    jsonDocument: {{jsonDocument}}
+    jsonDocument: {{jsonDocument}},
+    
+    {{loadedObjectPreservedFunctions}}
 });
 </script>
 
