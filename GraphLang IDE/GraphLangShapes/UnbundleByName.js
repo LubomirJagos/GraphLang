@@ -67,7 +67,7 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
             clusterName = connections.first().getSource().userData.datatype;
           }
 
-          if (clusterName && clusterName.toLowerCase().search("clusterdatatype") > -1){
+          if (clusterName){
               this.getCanvas().getFigures().each(function(figureIndex, figureObj){
                   if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
                       clusterObj = figureObj;

@@ -47,11 +47,18 @@ GraphLang.Utils.ArrayClusterInPlaceEditor = draw2d.ui.LabelEditor.extend({
         this.html = $('<select id="inplaceeditor">');
         inPlaceEditorHtml = this.html
 
-        //add all available cluster datatype names
+        /*
+         *  Add all available cluster datatype names.
+         *  Cluster datatype is reference to newly created structure, so here inside in <option> is used its name
+         *  Difference between clusterObj.getDatatype() and clusterObj.getName() is that:
+         *          clusterObj.getDatatype returns clusterObj.getName() + '&' what is reference to object of that cluster because
+         *          clusters are in code referenced rather than always created new ones
+         */
         inPlaceEditorHtml.append('<option value="null">null</option>');
         this.label.getCanvas().getFigures().each(function(childIndex, childObj){
-            if (childObj.getDatatype && childObj.NAME.toLowerCase().search('clusterdatatype') > -1){
-                inPlaceEditorHtml.append('<option value="' + childObj.getDatatype() + '">' + childObj.getName() + '</option>');                
+            if (childObj.getDatatype && childObj.NAME.toLowerCase().search('clusterdatatype') > -1){                
+                var clusterDatatypeName = childObj.getName();
+                inPlaceEditorHtml.append('<option value="' + clusterDatatypeName + '">' + clusterDatatypeName + '</option>');                
             }
         });
 

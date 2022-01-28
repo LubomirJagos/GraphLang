@@ -82,7 +82,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       labelText = nodeEmitter.getText();
       labelText = labelText.replaceAll(" ","_"); 
       nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
-      labelText = GraphLang.Utils.getUniqueNodeLabel(labelText); 
+      labelText = GraphLang.Utils.getUniqueNodeLabel(nodeEmitter.getCanvas(), labelText); 
       nodeEmitter.text = labelText;                                                   //this will not fire another event!
       nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
     });
@@ -172,7 +172,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   },
 
   getDatatype: function(){
-    return "clusterDatatype_" + this.nodeLabel.getText() + "&";
+    return this.nodeLabel.getText() + "&";
   },
 
   /*
@@ -414,6 +414,14 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     }
     return port;
   },
+  
+  getVariableName: function(){
+    return "cluster_" + this.getId();
+  },
+
+  /**************************************************************************************************************************************
+   *    TRANSLATE TO CPP functions 
+   **************************************************************************************************************************************/
 
   translateToCppCodeDeclaration: function(){
     var cCode = "";
@@ -453,19 +461,18 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
     /*
      *  THIS CREATES DECLARATION OF CLUSTER ie. it physically creates variable with cluster datatype,
-     *  it has same ID number as cluster datatype definition, but keyword before prefix is different,
-     *  so into wire is assigned variable starting with cluster_... and wire has right datatype starting with clusterDatatype_...
+     *  so into wire is assigned reference to created cluster variable.
      */
-    cCode += "} cluster_" + this.getId()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
+    cCode += "} " + this.getVariableName()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
     return cCode;
   },
 
   translateToCppCode: function(){
     cCode = "";
 
-    clusterId = this.getId();
+    var variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-        cCode += 'wire_' + connectionObj.getId() + ' = ' + '&cluster_' + clusterId + ";\n";     //writing reference to this cluster to wire    
+        cCode += 'wire_' + connectionObj.getId() + ' = ' + '&' + variableName + ";\n";     //writing reference to this cluster to wire    
     });
 
     return cCode;
