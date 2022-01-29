@@ -48,6 +48,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     //so here are userData just created as empty object.
     this.userData = {};
     this.userData.isTerminal = false;
+    this.userData.nodeLabel = "nodeLabel";
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
     var label1 =  new draw2d.shape.basic.Label({text:"[0,1] with long long long long label", fontColor:"#00AF00"});
@@ -219,14 +220,10 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
   },
   
   getDatatype: function(){
-    cCode = "";
-    arrayDatatype = this.getOutputPort(0).userData.datatype;
-    if (arrayDatatype.toLowerCase().search('clusterdatatype') > -1){
-        arrayDatatype = this.getChildren().first().getText();
-        cCode += arrayDatatype + '[' + this.getArraySize() + ']';
-    }else{
-        cCode += arrayDatatype + '[]';
-    }    
+    var cCode = "";
+    var arrayDatatype = this.getOutputPort(0).userData.datatype;
+    if (arrayDatatype.toLowerCase().search('cluster') > -1) arrayDatatype = this.getChildren().first().userData.datatype;
+    cCode += arrayDatatype;
     return cCode;    
   },
   
@@ -337,19 +334,22 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
 
   getVariableName: function(){
       let variableName = "array_" + this.getId();
-      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+      if (this.userData.nodeLabel) variableName += "_" + this.userData.nodeLabel;
       return variableName   
   },
+
+  /*************************************************************************************************************************************************************
+   *    TRANSLATE TO C/C++ code functions
+   *************************************************************************************************************************************************************/
 
   /**
    *  @name translateToCppCode
    *  @desc Translate array into its declaration. There should be line declaring appropriate array for this object.
    */
   translateToCppCodeDeclaration: function(){
-      cCode = "";
-      arrayDatatype = this.getOutputPort(0).userData.datatype;    
-
-      variableName = this.getVariableName();
+      var cCode = "";
+      var arrayDatatype = this.getDatatype();    
+      var variableName = this.getVariableName();
 
       if (arrayDatatype.toLowerCase().search('cluster') > -1){
         cCode = arrayDatatype + ' ' + variableName + "[" +  this.getArraySize() + "];\n";       //translate as ie. "int array_clusterDatatypeName[42];"
@@ -391,8 +391,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
 
   translateToCppCode: function(){
     cCode = "";
-    variableName = " array_" + this.getId();
-    if (this.userData.nodeLabel) variableName = this.userData.nodeLabel; 
+    variableName = this.getVariableName(); 
 
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
       cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";

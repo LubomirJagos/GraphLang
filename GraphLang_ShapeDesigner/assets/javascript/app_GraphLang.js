@@ -812,10 +812,15 @@ shape_designer.Toolbar = Class.extend({
         /*
          *  Symbol name input field
          */
-        var symbolNameGroup=$("<div class='btn-group'  title='Symbol Name'></div>");
+        var symbolNameGroup=$("<div class='btn-group'  title='Symbol functions'></div>");
         this.toolbarDiv.append(symbolNameGroup);
-		this.symbolNameInput = $('<div>Symbol Name <input type="input" id="symbol-name-input" style=\"width: 330px;\" class="" value="GraphLangTestShape" /></div>');
+		this.symbolNameInput = $('<div class="btn btn-default">Symbol Name <input type="input" id="symbol-name-input" style="width: 270px;" class="" value="GraphLangTestShape" /></div>');
+		this.symbolCheckButton = $('<button  data-toggle="tooltip" title="Check Symbol" class="btn btn-default" >Check Symbol</button>');
+        symbolNameGroup.append(this.symbolCheckButton);
         symbolNameGroup.append(this.symbolNameInput);
+        this.symbolCheckButton.on("click",$.proxy(function(){
+            shape_designer.checkSymbolAndSchematic(this.view);
+        },this));
 
         // Inject the UNDO Button and the callbacks
         //
@@ -4218,7 +4223,9 @@ shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
 
     getDatatype: function()
     {
-    	return this.getUserData().datatype;
+    	var datatype = this.getUserData().datatype;
+        if (!datatype) datatype = "undefined";
+        return datatype;
     },
 
     setInputType: function(type)
@@ -6052,6 +6059,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
 
   //here is object creation and after getting its jsonDocument property where it's inside schematic is stored
   var newObject = eval('new ' + newObjectName + '()');
+  shape_designer.loadedObject = newObject;
 
   /*
    *    Update symbol name input in toolbar
@@ -6242,7 +6250,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     let posY = portObj.getLocator().y * newObject.height / 100;
 
     var portFigure = new shape_designer.figure.ExtPort();
-    portFigure.setUserData({name: portObj.getName()});
+    portFigure.setUserData({name: portObj.getName(), datatype: (portObj.userData && portObj.userData.datatype)?portObj.userData.datatype:"undefined"});
 
     //set in/out
     let portObjTypeStr = portObj.NAME;
@@ -6266,7 +6274,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
    *    Store into shape_designer structure functions which should be preserved and contained
    *    in newly generated code for this symbol, these are from loaded file.
    */
-  shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument);
+  shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument, null, 2);
   shape_designer.loadedObjectPreservedFunctions = "";
   if (newObject.translateToCppCode) shape_designer.loadedObjectPreservedFunctions += "translateToCppCode: " + newObject.translateToCppCode; 
 
@@ -6282,4 +6290,119 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
   copyElement.remove();
   */
   
+}
+
+shape_designer.checkSymbolAndSchematic = function(canvas){
+    var symbolPortList = new draw2d.util.ArrayList();
+    var symbolPortList2 = new draw2d.util.ArrayList();
+    canvas.getExtFigures().each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search("extport") > -1){
+            symbolPortList.push(figureObj);
+            symbolPortList2.push({name: figureObj.getUserData().name, datatype: figureObj.getDatatype(), type: figureObj.getInputType().toLowerCase()});
+        }
+    });
+    
+    var loadedObject = shape_designer.loadedObject;
+    var terminalList = new draw2d.util.ArrayList();
+    var flagReturnValueAdded = false;
+    if (loadedObject.jsonDocument){
+      loadedObject.jsonDocument.forEach(function(element){
+          if (element.userData && element.userData.isTerminal){
+            var terminalObj = eval('new ' + element.type + '()');
+            terminalList.push({name: element.userData.nodeLabel, datatype: element.userData.datatype, type: terminalObj.getOutputPorts().getSize() > 0?"input":"output"});
+          }
+          if (!flagReturnValueAdded && element.type.toLowerCase().search(".return") > -1){
+            flagReturnValueAdded = true;
+            terminalList.push({name: "return", datatype: "undefined", type: "output"});
+          }
+      });
+    }
+    
+    var terminalStatusList = new draw2d.util.ArrayList();
+    var symbolPortList2Copy = symbolPortList2.clone();
+    terminalList.each(function(terminalIndex, terminalObj){
+        if (symbolPortList2Copy.contains(terminalObj)){
+            terminalStatusList.push("ok");
+        }else if (symbolPortList2Copy.find(function(figure){return figure.name === terminalObj.name && figure.datatype === terminalObj.datatype})){
+            symbolPortList2Copy.remove(symbolPortList2Copy.find(function(figure){return figure.name === terminalObj.name && figure.datatype === terminalObj.datatype}));
+            terminalStatusList.push("wrong direction");
+        }else if (symbolPortList2Copy.find(function(figure){return figure.name === terminalObj.name && figure.type === terminalObj.type})){
+            symbolPortList2Copy.remove(symbolPortList2Copy.find(function(figure){return figure.name === terminalObj.name && figure.type === terminalObj.type}));
+            terminalStatusList.push("wrong datatype");
+        }else if (symbolPortList2Copy.find(function(figure){return figure.datatype === terminalObj.datatype && figure.type === terminalObj.type})){
+            symbolPortList2Copy.remove(symbolPortList2Copy.find(function(figure){return figure.datatype === terminalObj.datatype && figure.type === terminalObj.type}));
+            terminalStatusList.push("wrong name");
+        }else{
+            terminalStatusList.push("missing");
+        }    
+    });
+
+    msg = "------- SYMBOL PORTS ------\n";
+    symbolPortList2.each(function(index, element){
+        msg += index + JSON.stringify(element) + "\n";
+    });
+
+    msg += "\n--- SCHEMATIC PORTS --------\n";
+    terminalList.each(function(index, element){
+        msg += index + JSON.stringify(element) + "\n";
+    });
+    
+    msg += "\n--------- STATUS -----------\n";
+    terminalStatusList.each(function(index, element){
+        msg += index + JSON.stringify(element) + "\n";
+    });
+    alert(msg);
+
+    /*
+     *  Correcting symbol ports.
+     */
+    var missingTerminalCounter = 0;
+    terminalStatusList.each(function(index, element){
+        var terminalObj = terminalList.get(index);
+        var symbolPort = null;
+        
+        if (element == "wrong direction"){
+            symbolPort = symbolPortList.find(function(figure){return figure.getUserData().name === terminalObj.name && figure.getDatatype() === terminalObj.datatype});
+            symbolPort.setInputType(terminalObj.type);
+        }else if(element == "wrong datatype"){
+            symbolPort = symbolPortList.find(function(figure){return figure.getUserData().name === terminalObj.name && figure.getInputType().toLowerCase() === terminalObj.type});
+            symbolPort.setDatatype(terminalObj.datatype);
+        }else if(element == "wrong name"){
+            symbolPort = symbolPortList.find(function(figure){return figure.getDatatype() === terminalObj.datatype && figure.getInputType().toLowerCase() === terminalObj.type});
+            symbolPort.userData.name = terminalObj.name;
+        }else if(element == "missing"){
+            missingTerminalCounter++;
+            
+            var portFigure = new shape_designer.figure.ExtPort();
+            portFigure.setUserData({name: terminalObj.name, datatype: terminalObj.datatype});
+            portFigure.setInputType(terminalObj.type == 'input' ? "Input" : "Output");
+            portFigure.setConnectionDirection(terminalObj.type == 'input' ? 3 : 1);
+        
+            //place port randomly on canvas, put there some positional noise :D
+            var boundingBox = app.view.getBoundingBox();
+            var posX = boundingBox.getX() + missingTerminalCounter*30;
+            var posY = boundingBox.getY() - 50;
+            
+            var command = new draw2d.command.CommandAdd(canvas, portFigure, posX, posY);
+            canvas.getCommandStack().execute(command);
+            canvas.setCurrentSelection(portFigure);
+        }
+        
+        if (symbolPort) symbolPortList.remove(symbolPort);
+    });
+
+    symbolPortList.each(function(portIndex, portObj){
+        canvas.remove(portObj);
+    });
+    
+    app.layer.stackChanged(null);
+
+    /*
+    $(".layerElement").removeClass("layerSelectedElement");
+    var selection = this.view.getSelection();
+    selection.each(function(i,e){
+        $("#layerElement_"+e.id).addClass("layerSelectedElement");
+    });
+    */
+
 }

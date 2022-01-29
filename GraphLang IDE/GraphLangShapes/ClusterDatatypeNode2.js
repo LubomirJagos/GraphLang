@@ -53,7 +53,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
     this.userData.isTerminal = false;
-    this.userData.datatype = "clusterDatatype";
+    this.userData.datatype = "clusterDatatype_notDefinedYet";
 
     this.setPersistPorts(false); 
 
@@ -63,9 +63,11 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
      *  DO SOME ADDITIONAL CHANGES AFTER ADDED TO CANVAS
      */
     this.setResizeable(false);
-    this.on('add', function(emitter){
+    this.on('added', function(emitter){
       //emitter.setResizeable(false);
       //this.off('resize');
+      emitter.nodeLabel.setText("ahoj");
+      emitter.nodeLabel.fireEvent("change:text");
     });
     this.on('change:dimension', function(emitter, event){
       //emitter.setResizeable(false);
@@ -81,8 +83,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     this.nodeLabel.on('change:text', function(nodeEmitter, event){
       labelText = nodeEmitter.getText();
       labelText = labelText.replaceAll(" ","_"); 
-      nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
       labelText = GraphLang.Utils.getUniqueNodeLabel(nodeEmitter.getCanvas(), labelText); 
+      nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
       nodeEmitter.text = labelText;                                                   //this will not fire another event!
       nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
     });
@@ -172,7 +174,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   },
 
   getDatatype: function(){
-    return this.nodeLabel.getText() + "&";
+    return "clusterDatatype_" + this.getId() + "_" + this.nodeLabel.getText() + "*";
   },
 
   /*
@@ -450,7 +452,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
         }
     });
     
-    cCode += "struct " + this.getDatatype().replaceAll('&', '') + " {\n";
+    cCode += "struct " + this.getDatatype().replaceAll('&', '').replaceAll('*', '') + " {\n";       //dereferencing datatype
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.translateToCppCodeDeclaration){
         cCode += figureObj.translateToCppCodeDeclaration();

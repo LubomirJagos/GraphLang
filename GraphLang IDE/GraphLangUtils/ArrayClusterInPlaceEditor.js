@@ -57,8 +57,9 @@ GraphLang.Utils.ArrayClusterInPlaceEditor = draw2d.ui.LabelEditor.extend({
         inPlaceEditorHtml.append('<option value="null">null</option>');
         this.label.getCanvas().getFigures().each(function(childIndex, childObj){
             if (childObj.getDatatype && childObj.NAME.toLowerCase().search('clusterdatatype') > -1){                
-                var clusterDatatypeName = childObj.getName();
-                inPlaceEditorHtml.append('<option value="' + clusterDatatypeName + '">' + clusterDatatypeName + '</option>');                
+                var clusterName = childObj.getName();
+                var clusterDatatype = childObj.getDatatype().replaceAll('*', '').replaceAll('&', '');                   //dereferencing cluster datatype
+                inPlaceEditorHtml.append('<option value="' + clusterDatatype + '">' + clusterName + '</option>');                
             }
         });
 
@@ -122,8 +123,11 @@ GraphLang.Utils.ArrayClusterInPlaceEditor = draw2d.ui.LabelEditor.extend({
     {
         this.html.unbind("blur",this.commitCallback);
         $("body").unbind("click",this.commitCallback);
-        var label = this.html.val();
-        var cmd =new draw2d.command.CommandAttr(this.label, {text:label});
+
+        var newLabelText = $("option:selected", this.html).text();       //getting text from <select>...
+        var newDatatype = this.html.val();     //getting selected item <option value="" ...
+
+        var cmd =new draw2d.command.CommandAttr(this.label, {text: newLabelText, userData:{datatype: newDatatype}});
         this.label.getCanvas().getCommandStack().execute(cmd);
         
         //fadeOut effect
@@ -148,9 +152,10 @@ GraphLang.Utils.ArrayClusterInPlaceEditor = draw2d.ui.LabelEditor.extend({
         });
         */
 
-        newLabelText = this.label.getText();
         this.label.getParent().getChildren().each(function(childIndex, childObj){
-            childObj.setText(newLabelText);
+            childObj.setText(newLabelText);                                         //set visible text
+            if (!childObj.userData) childObj.userData = {};
+            childObj.userData.datatype = newDatatype;                               //set each item datatype
         });
         newWidth = this.label.getWidth() + 10*2;    //hardwired padding width
         this.label.getParent().setWidth(newWidth);

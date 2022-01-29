@@ -550,7 +550,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
   /*
    *  PUTTING LABELS ON WIRES
-   */
+y  *?
    /*
   let lineSegments = wire.getSegments();
   orderCounter = 0;
@@ -1797,7 +1797,10 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   //here is object creation and after getting its jsonDocument property where it's inside schematic is stored
   var newObject = eval('new ' + newObjectName + '()');
   var jsonDocument = newObject.jsonDocument;
-  if (jsonDocument) reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+
+  if (jsonDocument && jsonDocument.length > 0){
+    reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+  }
 
   /*
    *    Update schematic name input

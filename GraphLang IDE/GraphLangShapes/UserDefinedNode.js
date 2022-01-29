@@ -52,22 +52,24 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
             var port;
             if (element.userData && element.userData.isTerminal){
                 var node = eval("new " + element.type + "()");
-                if (node.getInputPorts().getSize() > 0){
+                node.getInputPorts().each(function(nodePortIndex, nodePortObj){
                    //output port
                    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100,100/outputPortCount*outputPortIndex));
                    port.setConnectionDirection(31);
                    port.setBackgroundColor("#37B1DE");
-                   port.setMaxFanOut(20);                   
+                   port.setMaxFanOut(20);
+                   port.setName(nodePortObj.getName());                   
                    outputPortIndex++;
-                }
-                if (node.getOutputPorts().getSize() > 0){
+                });
+                node.getOutputPorts().each(function(nodePortIndex, nodePortObj){
                    // input port
                    port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0,100/inputPortCount*inputPortIndex));
                    port.setConnectionDirection(3);
                    port.setBackgroundColor("#37B1DE");
                    port.setMaxFanOut(20);
+                   port.setName(nodePortObj.getName());                   
                    inputPortIndex++;
-                }
+                });
             }
             if (element.userData && element.type.toLowerCase().search('.return') > -1){
                    //output port for return node
@@ -75,6 +77,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
                    port.setConnectionDirection(1);
                    port.setBackgroundColor("#37B1DE");
                    port.setMaxFanOut(20);                   
+                   port.setName(element.userData.nodeLabel);                   
                    outputPortIndex++;
             }
         }
@@ -83,7 +86,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
 
   getObjectAsString: function(){
     var objStr = "";
-
+    
     //generate init()
     objStr += "init: function(attr,setter,getter){\n";
     objStr += "\tthis._super( $.extend({stroke:0, bgColor:null, width:" + this.width + ", height:" + this.height + ", flagAutoCreatePorts: false},attr), setter, getter);\n";

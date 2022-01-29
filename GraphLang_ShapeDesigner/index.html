@@ -424,7 +424,7 @@
      port.setBackgroundColor("{{color}}");
      port.setName("{{name}}");
      port.setMaxFanOut({{fanout}});
-     port.setDatatype("{{datatype}}");
+     port.userData = {datatype: "{{datatype}}"};
      {{/ports}}
      this.persistPorts=false;
    },
