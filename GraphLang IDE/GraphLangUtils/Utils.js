@@ -5,6 +5,8 @@
 //auxiliary ArrayList store declaration of some variables or something during translation process
 translateToCppCodeDeclarationArray = new draw2d.util.ArrayList();
 translateToCppCodeFunctionsArray = new draw2d.util.ArrayList();
+translateToCppCodeImportArray = new draw2d.util.ArrayList();
+translateToCppCodeTypeDefinitionArray = new draw2d.util.ArrayList();
 
 translateToPythonCodeFunctionsArray = new draw2d.util.ArrayList();
 translateToPythonCodeImportArray = new draw2d.util.ArrayList();
@@ -32,6 +34,19 @@ GraphLang.Utils = Class.extend({
 GraphLang.Utils.getCppCodeDeclaration = function(){
   var cCode = "";
   translateToCppCodeDeclarationArray.each(function(itemIndex, itemObj){
+    cCode += itemObj + "\n";
+  });
+  return cCode;
+}
+
+/**
+ *  @method getCppCodeTypeDefinition
+ *  @description Returns C/C++ string type definitions used in schematic.
+ */
+GraphLang.Utils.getCppCodeTypeDefinition = function(){
+  var cCode = "";
+  translateToCppCodeTypeDefinitionArray.unique();                               //remove duplicities
+  translateToCppCodeTypeDefinitionArray.each(function(itemIndex, itemObj){
     cCode += itemObj + "\n";
   });
   return cCode;
@@ -1994,6 +2009,7 @@ GraphLang.Utils.getUniqueNodeLabel = function(canvas, nodeLabel = "nodeLabel"){
 GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDeclaration = true){
   let cCode = "";
   translateToCppCodeDeclarationArray.clear();
+  translateToCppCodeTypeDefinitionArray.clear();
   var translateToCppCodeSubnodeArray = new draw2d.util.ArrayList();
   
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
@@ -2072,6 +2088,14 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
       if (nodeObj.getUserData() !== undefined &&
           nodeObj.getUserData().executionOrder == actualStep
       ){
+          /*
+           *    First getting type definition, ie. for clusters
+           */
+          if (nodeObj.translateToCppCodeTypeDefinition) translateToCppCodeTypeDefinitionArray.push(nodeObj.translateToCppCodeTypeDefinition());
+
+          /*
+           *    C++ code translation, getting node C++ declaration and code
+           */
           if (nodeObj.translateToCppCodeDeclaration && translateTerminalsDeclaration) cCode += nodeObj.translateToCppCodeDeclaration();
           if (nodeObj.translateToCppCode) cCode += nodeObj.translateToCppCode();
           
@@ -2148,7 +2172,12 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     });
 
     cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
+
+    /*
+     *  Here is calling same parent C/C++ code transcription function on 2nd canvas  
+     */
     cCode += GraphLang.Utils.translateCanvasToCppCode(appCanvas2, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
+
     cCode += "\n";  //to not have separate last curly bracket by tabulator
     cCode += '}' + "\n";
 
@@ -2184,7 +2213,9 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         template_cCode += "#define int32 int\n";
         template_cCode += "#define undefined int\n";
         template_cCode += "#define uint unsigned int\n";
-        //template_cCode += this.getCppCodeDeclaration() + "\n";
+        template_cCode += "\n";
+        template_cCode += this.getCppCodeTypeDefinition();
+        template_cCode += "\n";
         template_cCode += "void setup() {\n";
         template_cCode += "\n";
         template_cCode += cCode;

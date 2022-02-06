@@ -15,7 +15,7 @@ GraphLang.ArduinoLib.Node.Serial.println = draw2d.SetFigure.extend({
         this._super( $.extend({stroke:0, bgColor:null, width:96.92204284667969,height:94.89934667618655},attr), setter, getter);
         var port;
         // in1
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(5.158785198027105, 43.144880429889014));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(5.158785198027105, 43.144880429889014));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("in1");
@@ -25,7 +25,7 @@ GraphLang.ArduinoLib.Node.Serial.println = draw2d.SetFigure.extend({
         port.userData.datatype = "string";
 
         // errorIn
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(5.158785198027105, 83.65090986585969));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(5.158785198027105, 83.65090986585969));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("errorIn");

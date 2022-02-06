@@ -51,7 +51,6 @@
       MarkerStateAFigure = {};
       MarkerFigure = {};
       DecoratedInputPort = {};
-  	  GraphLang = {};
   	  GraphLang.PythonQtGuiLib = {};
   	  GraphLang.ArduinoLib = {};
   	  GraphLang.ArduinoLib.String = {};
@@ -67,7 +66,7 @@
     </script>
 
     <script src="./gui/Application.js"></script>
-	  <script src="./gui/View.js"></script>
+	<script src="./gui/View.js"></script>
     <script src="./gui/Toolbar.js"></script>
     <script src="./gui/HoverConnection.js"></script>
 
@@ -76,7 +75,6 @@
       <script src="./GraphLangShapes/Port.js"></script>
       <script src="./GraphLangShapes/InputPort.js"></script>
       <script src="./GraphLangShapes/OutputPort.js"></script>
-      <script src="./GraphLangShapes/Shapes.js"></script>
       <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
       <script src="./GraphLangShapes/Loop2.js"></script>
       <script src="./GraphLangShapes/Jailhouse.js"></script>
@@ -100,6 +98,7 @@
       <script src="./GraphLangShapes/SliderNode.js"></script>
       <script src="./GraphLangShapes/Return.js"></script>
       <script src="./GraphLangShapes/UserDefinedNode.js"></script>
+      <script src="./GraphLangShapes/UserDefinedDatatype.js"></script>
 
       <!--
         EXPERIMENTAL, not needed in core
@@ -489,6 +488,9 @@ function displayJSON(canvas){
             Arduino Nano
           </div>
 
+          <div data-shape="GraphLang.UserDefinedDatatype" data-label="UserDefinedDatatype" class="palette_node_element draw2d_droppable">
+            UserDefinedDatatype
+          </div>
           <div data-shape="GraphLang.UserDefinedNode" data-label="UserDefinedNode" class="palette_node_element draw2d_droppable">
             UserDefinedNode
           </div>

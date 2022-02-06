@@ -17,7 +17,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         var portColor = new GraphLang.Utils.Color();
 
         // in1
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
         port.setConnectionDirection(3);
         port.setName("in1");
         port.setMaxFanOut(20);
@@ -27,7 +27,7 @@ GraphLang.ArduinoLib.Node.Subtract = draw2d.SetFigure.extend({
         port.setBackgroundColor(portColor.getByName(port.userData.datatype));
 
         // in2
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
         port.setConnectionDirection(3);
         port.setName("in2");
         port.setMaxFanOut(20);

@@ -22,14 +22,14 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.userData = {datatype: "undefined", executionOrder: 1};
 
      // Port
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(99.90984000000026, 16.393442622950822));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(99.90984000000026, 16.393442622950822));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#F3D92E");
      port.setName("in1");
      port.setMaxFanOut(20);
      port.userData = {datatype: "undefined",  executionOrder: 0};
 
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(50, 95));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(50, 95));
      port.setConnectionDirection(2);
      port.setBackgroundColor("#F3D92E");
      port.setName("in2");

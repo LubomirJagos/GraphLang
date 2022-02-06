@@ -14,7 +14,7 @@ GraphLang.ArduinoLib.Node.toStr = draw2d.SetFigure.extend({
         this._super( $.extend({stroke:0, bgColor:null, width:88.44948275199988,height:27.91806411743164},attr), setter, getter);
         var port;
         // in1
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.4329139582124353, 50));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.4329139582124353, 50));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("in1");

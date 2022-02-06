@@ -3,7 +3,6 @@
  *  @descritpition This is label node item, it's defined as list with some attributes.
  *  Here will be also implemented ddefault function onRun3() which run after heartbeat.
  */
-GraphLang.Shapes.Basic = {};
 GraphLang.Shapes.Basic.Label = draw2d.shape.basic.Label.extend({
     /**
      * @author LuboJ.

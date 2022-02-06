@@ -17,7 +17,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
     //alert(JSON.stringify(attr));
     
     //flagAutoCreatePorts indicate if flags should be created from JSON schematic
-    if (this.jsonDocument && ("flagAutoCreatePorts" in attr) && attr.flagAutoCreatePorts) this.createPortsFromJson(this.jsonDocument);    
+    if (this.jsonDocument && attr && ("flagAutoCreatePorts" in attr) && attr.flagAutoCreatePorts) this.createPortsFromJson(this.jsonDocument);
    },
 
    /*

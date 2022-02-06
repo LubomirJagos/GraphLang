@@ -14,7 +14,7 @@ GraphLang.ArduinoLib.Node.analogWrite = draw2d.SetFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:107.94460774400022,height:96.96875},attr), setter, getter);
      var port;
      // in1
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 43.646848668256546));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 43.646848668256546));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
@@ -24,7 +24,7 @@ GraphLang.ArduinoLib.Node.analogWrite = draw2d.SetFigure.extend({
      port.userData.datatype = "int";
 
      // errorIn
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 84.11892206014826));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.10604948518731057, 84.11892206014826));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("errorIn");

@@ -25,7 +25,7 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      port.userData.datatype = "int";
 
      // Port
-     // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
+     // port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 33.734939759036145));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
@@ -36,7 +36,7 @@ GraphLang.ArduinoLib.Node.Add = draw2d.SetFigure.extend({
      port.userData.datatype = "int";
 
      // Port
-     // port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
+     // port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
      port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(28.622604334587137, 60.24096385542169));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");

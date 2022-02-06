@@ -15,7 +15,7 @@ GraphLang.ArduinoLib.Node.Divide = draw2d.SetFigure.extend({
         this._super( $.extend({stroke:0, bgColor:null, width:84.39610736639997,height:60},attr), setter, getter);
         var port;
         // in1
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 18.85479492266702));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("in1");
@@ -25,7 +25,7 @@ GraphLang.ArduinoLib.Node.Divide = draw2d.SetFigure.extend({
         port.userData.datatype = "int";
 
         // in2
-        port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
+        port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.8185586856521404, 82.92139042133367));
         port.setConnectionDirection(3);
         port.setBackgroundColor("#37B1DE");
         port.setName("in2");

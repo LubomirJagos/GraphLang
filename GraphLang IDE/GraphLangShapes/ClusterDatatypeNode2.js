@@ -4,9 +4,7 @@
  *  @author Ing. Lubomir Jagos
  *  @description Cluster datatype structure, it's rectangle inside which are place datatypes and this will generate C/C++ struct{} equivalent.
  */
-//GraphLang.Shapes.Basic.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Jailhouse.extend({
 GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2.extend({
-  //NAME: "GraphLang.Shapes.Basic.ClusterDatatypeNode2",
   NAME: "GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2",
   
   // //This doesn't run, don't know why, so initialization for userData is done in init()
@@ -425,7 +423,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
    *    TRANSLATE TO CPP functions 
    **************************************************************************************************************************************/
 
-  translateToCppCodeDeclaration: function(){
+  translateToCppCodeTypeDefinition: function(){
     var cCode = "";
     
     this.addItemsIndexes();
@@ -452,7 +450,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
         }
     });
     
-    cCode += "struct " + this.getDatatype().replaceAll('&', '').replaceAll('*', '') + " {\n";       //dereferencing datatype
+    cCode += "typedef struct " + this.getDatatype().replaceAll('&', '').replaceAll('*', '') + " {\n";       //dereferencing datatype
     allFigures.each(function(figureIndex, figureObj){
       if (figureObj.translateToCppCodeDeclaration){
         cCode += figureObj.translateToCppCodeDeclaration();
@@ -461,11 +459,13 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       }
     });
 
-    /*
-     *  THIS CREATES DECLARATION OF CLUSTER ie. it physically creates variable with cluster datatype,
-     *  so into wire is assigned reference to created cluster variable.
-     */
-    cCode += "} " + this.getVariableName()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
+    cCode += "};\n";
+    return cCode;
+  },
+
+  translateToCppCodeDeclaration: function(){
+    var cCode = "";
+    cCode += this.getDatatype() + " " + this.getVariableName()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
     return cCode;
   },
 

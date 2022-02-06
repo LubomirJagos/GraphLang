@@ -48,16 +48,12 @@ htmlTemplate = """
     <script type="text/javascript">
       /**
        *  GLOBAL DEFINITIONS
+       *    - save reference to canvas to have it globally acessible
+       *    - init empty variable object for each library, otherwise there would be error in console
        */
-      //save reference to canvas to have it globally acessible
       var appCanvas;
-      var GraphLang = {};
-      GraphLang.Shapes = {};
-      GraphLang.Shapes.Basic = {};
-      GraphLang.Shapes.Basic.Constant = {};
-      GraphLang.Shapes.ItemsNode = {};
 
-      <!-- library tree variables init place to insert -->
+      //library tree variables init place to insert
 
     </script>
 
@@ -65,36 +61,6 @@ htmlTemplate = """
     <script src="./gui/View.js"></script>
     <script src="./gui/Toolbar.js"></script>
     <script src="./gui/HoverConnection.js"></script>
-
-    <!-- These are mine shapes added. LuboJ. -->
-      <script src="./GraphLangShapes/__initEnv.js"></script>
-      <script src="./GraphLangShapes/Port.js"></script>
-      <script src="./GraphLangShapes/InputPort.js"></script>
-      <script src="./GraphLangShapes/OutputPort.js"></script>
-      <script src="./GraphLangShapes/Shapes.js"></script>
-      <script src="./GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
-      <script src="./GraphLangShapes/Loop2.js"></script>
-      <script src="./GraphLangShapes/Jailhouse.js"></script>
-      <script src="./GraphLangShapes/LayerChooser.js"></script> <!-- LuboJ, my invention -->
-      <script src="./GraphLangShapes/Tunnel.js"></script>
-      <script src="./GraphLangShapes/LeftTunnel.js"></script>
-      <script src="./GraphLangShapes/RightTunnel.js"></script>
-      <script src="./GraphLangShapes/WireConnection.js"></script>
-      <script src="./GraphLangShapes/Multilayered3.js"></script>
-      <script src="./GraphLangShapes/WhileLayer.js"></script>
-      <script src="./GraphLangShapes/ForLoop.js"></script>
-      <script src="./GraphLangShapes/Sequence.js"></script>
-      <script src="./GraphLangShapes/FeedbackNode.js"></script>
-      <script src="./GraphLangShapes/UnbundleByName.js"></script>
-      <script src="./GraphLangShapes/BundleByName.js"></script>
-      <script src="./GraphLangShapes/Unbundle.js"></script>
-      <script src="./GraphLangShapes/Bundle.js"></script>
-      <script src="./GraphLangShapes/ConstantNode.js"></script>
-      <script src="./GraphLangShapes/ArrayNode.js"></script>
-      <script src="./GraphLangShapes/ClusterDatatypeNode2.js"></script>
-      <script src="./GraphLangShapes/SliderNode.js"></script>
-      <script src="./GraphLangShapes/Return.js"></script>
-      <script src="./GraphLangShapes/UserDefinedNode.js"></script>
 
     <script src="./GraphLangUtils/Utils.js"></script>
     <script src="./GraphLangUtils/RightRelPortLocator.js"></script>
@@ -105,12 +71,6 @@ htmlTemplate = """
     <script src="./GraphLangUtils/KeyboardDeletePolicy.js"></script>
     <script src="./GraphLangUtils/Color.js"></script>
     <script src="./GraphLangUtils/ArrayClusterInPlaceEditor.js"></script>
-
-    <script type="text/javascript">
-      var jsonDocument = [];
-      var jsonDocument2 = [];
-      var userDefinedSchematics = [];
-    </script>
 
     <!-- user defined nodes place to insert -->
 
@@ -185,19 +145,23 @@ document.addEventListener("DOMContentLoaded",function () {
   	      }
   	  });
 
-      /*****************************************************************************
-       * READING DEFAULT SCHEMATIC AND DRAW IT
-       *****************************************************************************/
-      var reader = new draw2d.io.json.Reader();
-      reader.unmarshal(appCanvas, jsonDocument);
-
-
-
       /*
        *	LOADING FILE INTO BOTTOM CANVAS
 	   */
 	  appCanvas2 = app.view2;
       //reader.unmarshal(appCanvas2, jsonDocument2);
+});
+
+/**
+ *  After page is loaded add pciture to each menu node item.
+ */
+$(document).ready(function(){
+      $('#navigation').children('div').each(function () {          
+          var nodeObj = eval('new ' + $(this).attr('data-shape') + '()');
+          if (nodeObj.symbolPicture !== undefined){
+              $(this).prepend('<img src="' + nodeObj.symbolPicture + '" />');
+          }
+      });
 });
 
 /**
@@ -251,44 +215,6 @@ function displayJSON(canvas){
 
    <div id="navigation" class="">
 
-        <!--
-          Tab 1 - GraphLang core nodes
-        -->
-        <div id="GraphLang.Shapes.Basic">
-          <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="GraphLang SliderNode" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/slider.png" />
-            GraphLang SliderNode
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="GraphLang ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/Arduino_clusterDatatypeNode.png" />
-            GraphLang ClusterDatatypeNode2
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="GraphLang ArrayNode" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/ArrayNode.png" />
-            GraphLang ArrayNode
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="GraphLang ConstantNode" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/Constant.png" />
-            GraphLang ConstantNode
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="GraphLang BundleByName" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/bundleByName.png" />
-            GraphLang BundleByName
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="GraphLang UnbundleByName" class="palette_node_element draw2d_droppable">GraphLang UnbundleByName</div>
-          <div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="GraphLang Bundle" class="palette_node_element draw2d_droppable">GraphLang Bundle</div>
-          <div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="GraphLang Unbundle" class="palette_node_element draw2d_droppable">GraphLang Unbundle</div>
-          <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="GraphLang WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
-          <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="GraphLang ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
-          <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="GraphLang Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
-          <div data-shape="GraphLang.Shapes.Basic.Loop2.Sequence" data-label="GraphLang Sequence" class="palette_node_element draw2d_droppable">Sequence</div>
-          <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="GraphLang FeedbackNode" class="palette_node_element draw2d_droppable">
-            <img src="GraphLangSymbols/Arduino_feedback.png" />
-            GraphLang FeedbackNode
-          </div>
-          <div data-shape="GraphLang.Shapes.Basic.Return" data-label="GraphLang Return" class="palette_node_element draw2d_droppable">Return</div>
-        </div>
-
         <!-- user defined nodes menu place to insert -->
 
   </div>
@@ -341,7 +267,6 @@ if __name__ == "__main__":
     #print('===================================')
     #print(objectsNamesList)
 
-    jsScriptIncludeStatement = ""
     libraryObjectTree = {}
     for nodeItem in objectsNamesList:
         nodeLibTree = nodeItem[2].split('.')
@@ -349,42 +274,56 @@ if __name__ == "__main__":
             nodeLibTree.pop()
         currentParent = libraryObjectTree
         for nodeLibTreeItem in nodeLibTree:
-            if not nodeLibTreeItem in currentParent:
-               currentParent[nodeLibTreeItem] = {}
-            currentParent = currentParent[nodeLibTreeItem]
+            if not nodeLibTreeItem == "draw2d":
+                if not nodeLibTreeItem in currentParent:
+                    currentParent[nodeLibTreeItem] = {}
+                currentParent = currentParent[nodeLibTreeItem]
 
     #formatData(libraryObjectTree,0)
     createVariableInitDeclaration(libraryObjectTree, 0)
     createVariableIniStatement = createVariableIniStatement[::-1]
     classList = classList[::-1]
 
+    print('============= libraryObjetTree ===============')
+
     print(libraryObjectTree)
 
-    print('=============================')
+    print('============ objectsNameList ================')
 
+    k = 0
+    while True:
+        for j in range(0, k):
+            if objectsNamesList[k][2] == objectsNamesList[j][3]:
+                objectsNamesList[k], objectsNamesList[j] = objectsNamesList[j], objectsNamesList[k]
+                k = 0
+                break   
+        k += 1
+        if k >= len(objectsNamesList):
+            break 
+        
     for k in objectsNamesList:
         print(k)
 
-    print('=============================')
+    print('============= classList ================')
 
     print(classList)
 
-    print('=============================')
+    print('============== <script> ===============')
 
-    for className in classList:
-        for nodeItem in objectsNamesList:
-            jsNodeName = nodeItem[2]
-            if jsNodeName.rfind('.') > -1:
-               jsNodeName = jsNodeName[:jsNodeName.rfind('.')]
-
-            if jsNodeName == className:
-               jsScriptIncludeStatement += "\t" + '<script src="' + nodeItem[1] + '"></script>' + "\n"
+    jsScriptIncludeStatement = ""
+    htmlNodeMenuItem = ""
+    for nodeItem in objectsNamesList:
+        jsScriptIncludeStatement += "\t" + '<script src="./' + nodeItem[1].replace('\\','/') + '"></script>' + "\n"
+        
+        htmlNodeMenuItemName = nodeItem[2].split('.')[-1]
+        htmlNodeMenuItem += '<div data-shape="' + nodeItem[2] + '" data-label="' + htmlNodeMenuItemName + '" class="palette_node_element draw2d_droppable">' + htmlNodeMenuItemName + '</div>' + "\n" 
 
     print(jsScriptIncludeStatement)
 
-    #print(jsScriptIncludeStatement)
     outputStr = htmlTemplate.replace('<!-- user defined nodes place to insert -->', '<!-- user defined nodes place to insert -->'+"\n"+jsScriptIncludeStatement)
-    outputStr = outputStr.replace('<!-- library tree variables init place to insert -->', '<!-- library tree variables init place to insert -->'+"\n"+ "".join(createVariableIniStatement))
+    outputStr = outputStr.replace('//library tree variables init place to insert', '//library tree variables init place to insert'+"\n"+ "".join(createVariableIniStatement))
+    outputStr = outputStr.replace('<!-- user defined nodes menu place to insert -->', '<!-- user defined nodes menu place to insert -->'+"\n"+ "".join(htmlNodeMenuItem))
+
     #print(outputStr)
     with open("GrahpLang IDE Generated 1.html", "w") as fileOutput:
          fileOutput.write(outputStr)

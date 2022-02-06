@@ -12,7 +12,7 @@ GraphLang.PythonQtGuiLib.UiExec = draw2d.SetFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:85.19680000000005,height:52.041919314575196},attr), setter, getter);
      var port;
      // Port
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(1.0610727163461489, 46.0428829597166));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(1.0610727163461489, 46.0428829597166));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#70db70");
      port.setName("Port");

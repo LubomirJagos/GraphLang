@@ -30,7 +30,7 @@ GraphLang.PythonQtGuiLib.UiLoad = draw2d.SetFigure.extend({
      port.userData.datatype = "QtUiApplication";
 
      // in1
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator(-0.3280115839261028, 50));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-0.3280115839261028, 50));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");

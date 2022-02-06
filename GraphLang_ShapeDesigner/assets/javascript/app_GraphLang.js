@@ -3062,12 +3062,12 @@ shape_designer.filter.PortTypeFilter = shape_designer.filter.Filter.extend({
                 	   '   <div class="form-group portTypeOption">'+
 
 						   '<label>'+
-						   '  <input '+(type=='Input'?' checked="checked"':'')+'type="radio" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="Input" />'+
+						   '  <input '+(type=='input'?' checked="checked"':'')+'type="radio" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="input" />'+
 						   '  <span  title="down" class="icon ion-log-in">input</span>'+
 						   '</label>'+
 						   '<br>'+
 						   '<label>'+
-						   '  <input '+(type=='Output'?' checked="checked"':'')+'type="radio" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="Output" />'+
+						   '  <input '+(type=='output'?' checked="checked"':'')+'type="radio" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="output" />'+
 						   '  <span  title="down" class="icon ion-log-out">output</span>'+
 						   '</label>'+
 
@@ -4198,7 +4198,7 @@ shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
 
       this.setUserData({
     	  name:"Port",
-          type:"Input",
+          type:"input",
     	  direction:null,
           fanout:20,
           datatype: "undefined"
@@ -4853,8 +4853,8 @@ shape_designer.FigureWriter = draw2d.io.Writer.extend({
                     });
             }else if(figure instanceof shape_designer.figure.ExtPort){
                 ports.push({
-                    type:figure.getInputType()==="Input"?"new DecoratedInputPort()":'"'+figure.getInputType().toLowerCase()+'"',
-                    method:figure.getInputType()==="Input"?"addPort":'createPort',
+                    type:figure.getInputType()==="input"?"new DecoratedInputPort()":'"'+figure.getInputType().toLowerCase()+'"',
+                    method:figure.getInputType()==="input"?"addPort":'createPort',
                     direction:figure.getConnectionDirection(),
                     x    : 100/b.w*figure.getCenter().x,
                     y    : 100/b.h*figure.getCenter().y,
@@ -5964,7 +5964,7 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
                     });
             }else if(figure instanceof shape_designer.figure.ExtPort){
                 ports.push({
-                    type:figure.getInputType()==="Input"? '"input"': '"output"',
+                    type:figure.getInputType()==="input"? '"input"': '"output"',
                     method: 'createPort',
                     direction:figure.getConnectionDirection(),
                     x    : 100/b.w*figure.getCenter().x,
@@ -5985,7 +5985,7 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
         loadedObjectPreservedFunctions = "";
         if (shape_designer.loadedObjectJsonDocument) jsonDocument = shape_designer.loadedObjectJsonDocument;
         if (shape_designer.loadedObjectPreservedFunctions) loadedObjectPreservedFunctions = shape_designer.loadedObjectPreservedFunctions;
-
+        symbolPicture = shape_designer.getSymbolPicture(app.view);
 
         var compiled = Hogan.compile(template);
         var output = compiled.render({
@@ -5995,6 +5995,7 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
             ports: ports,
             width: b.w,
             height: b.h,
+            symbolPicture: symbolPicture,
             jsonDocument: jsonDocument,
             loadedObjectPreservedFunctions: loadedObjectPreservedFunctions
         });
@@ -6375,7 +6376,7 @@ shape_designer.checkSymbolAndSchematic = function(canvas){
             
             var portFigure = new shape_designer.figure.ExtPort();
             portFigure.setUserData({name: terminalObj.name, datatype: terminalObj.datatype});
-            portFigure.setInputType(terminalObj.type == 'input' ? "Input" : "Output");
+            portFigure.setInputType(terminalObj.type == 'input' ? "input" : "output");
             portFigure.setConnectionDirection(terminalObj.type == 'input' ? 3 : 1);
         
             //place port randomly on canvas, put there some positional noise :D
@@ -6404,5 +6405,22 @@ shape_designer.checkSymbolAndSchematic = function(canvas){
         $("#layerElement_"+e.id).addClass("layerSelectedElement");
     });
     */
-
 }
+
+shape_designer.getSymbolPicture = function(canvas){
+        var writer = new draw2d.io.png.Writer();
+        var boundingBox = canvas.getBoundingBox();
+        boundingBox.setX(boundingBox.getX()-10);
+        boundingBox.setY(boundingBox.getY()-10);
+        boundingBox.setWidth(boundingBox.getWidth()+20);
+        boundingBox.setHeight(boundingBox.getHeight()+20);
+        
+        var resultPictureAsVase64Data = "";
+        writer.marshal(canvas,function(pngBase64Data, pngData){
+            navigator.clipboard.writeText(pngBase64Data);
+            resultPictureAsVase64Data = pngBase64Data;
+        }, boundingBox);
+        
+        return resultPictureAsVase64Data;
+}
+
