@@ -1033,6 +1033,12 @@ shape_designer.Toolbar = Class.extend({
             shape_designer.readSingleFile(e, this.view, this.view.auxView)
         },this));
 
+        this.saveSymbolButton  = $('<button  data-toggle="tooltip" title="Save symbol</span>" class=\"btn btn-default\" >Save</button>');
+        buttonGroup.append(this.saveSymbolButton);
+        this.saveSymbolButton.on("click",$.proxy(function(){
+            new shape_designer.saveSymbol();
+        },this));
+
         this.exportGraphLangButton  = $('<button  data-toggle="tooltip" title="Export JavaScript code</span>" class=\"btn btn-default\" ><img src="./assets/images/toolbar_export_js.png"></button>');
         buttonGroup.append(this.exportGraphLangButton);
         this.exportGraphLangButton.on("click",$.proxy(function(){
@@ -6424,3 +6430,44 @@ shape_designer.getSymbolPicture = function(canvas){
         return resultPictureAsVase64Data;
 }
 
+/**
+ *  @method: shape_designer.saveSymbol
+ *  @ddescription: Save current file into file.
+ */
+shape_designer.saveSymbol = function(){
+    var writer = new shape_designer.GraphLangFigureWriter();
+    writer.marshal(app.view,$("#symbol-name-input").val(),function(data){
+        var filename = $("#symbol-name-input").val() + '.js';
+        var type = 'text/javascript';
+    
+        /*
+         *  This is here because there were some html encoded chars in data as &quote; and &gt; so this will make them back to ",>,...
+         */
+        htmlDecode = function(input){
+          var e = document.createElement('textarea');
+          e.innerHTML = input;
+          // handle case of empty input
+          return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+        data = htmlDecode(data);
+        
+        /*
+         *  Generic function to saver file and open download dialog for user.
+         */
+        var file = new Blob([data], {type: type});
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        else { // Others
+            var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+    });
+}
