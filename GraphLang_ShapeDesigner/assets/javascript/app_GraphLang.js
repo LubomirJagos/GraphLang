@@ -6303,8 +6303,11 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
 
   /*
    *    AT THE END CHECK DIFFERENCE BETWEEN PORT AND SCHEMATIC PORTS
+   *        - port compare against schematic is done just in case schematic is defined at object ie. jsonDocument exists
    */
-  this.checkSymbolAndSchematic(canvas)
+  if (newObject.jsonDocument) {
+    this.checkSymbolAndSchematic(canvas)
+  }
 
 }
 
