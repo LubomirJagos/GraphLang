@@ -42,9 +42,11 @@
 
       //library tree variables init place to insert
 	xxx = {};
+	withCase_2 = {};
 	withCase_1 = {};
 	UserDefinedExample = {};
 	Serial = {};
+	schematic_3 = {};
 	myProject_1 = {};
 	LuboJ_SimpleLogic_2 = {};
 	LuboJ_SimpleLogic_1 = {};
@@ -53,6 +55,7 @@
 	GraphLangTestShape3 = {};
 	GraphLangTestShape2 = {};
 	GraphLangTestShape = {};
+	ggg = {};
 	fff = {};
 	ConsoleLog2 = {};
 	ConsoleLog = {};
@@ -125,6 +128,7 @@
 	<script src="./UserDefinedNode/ConsoleLog.js"></script>
 	<script src="./UserDefinedNode/ConsoleLog2.js"></script>
 	<script src="./UserDefinedNode/fff.js"></script>
+	<script src="./UserDefinedNode/ggg.js"></script>
 	<script src="./UserDefinedNode/GraphLangTestShape.js"></script>
 	<script src="./UserDefinedNode/GraphLangTestShape2.js"></script>
 	<script src="./UserDefinedNode/GraphLangTestShape3.js"></script>
@@ -135,9 +139,11 @@
 	<script src="./UserDefinedNode/myProject_1.js"></script>
 	<script src="./UserDefinedNode/schematic_1.js"></script>
 	<script src="./UserDefinedNode/schematic_2.js"></script>
+	<script src="./UserDefinedNode/schematic_3.js"></script>
 	<script src="./UserDefinedNode/Serial.println.js"></script>
 	<script src="./UserDefinedNode/UserDefinedExample.js"></script>
 	<script src="./UserDefinedNode/withCase_1.js"></script>
+	<script src="./UserDefinedNode/withCase_2.js"></script>
 	<script src="./UserDefinedNode/xxx.js"></script>
 	<script src="./ArduinoLib/DummyLib/DummyEnd1Node.js"></script>
 	<script src="./ArduinoLib/Experimental42Lib/Dragon1Node.js"></script>
@@ -358,6 +364,7 @@ function displayJSON(canvas){
 <div data-shape="ConsoleLog" data-label="ConsoleLog" class="palette_node_element draw2d_droppable">ConsoleLog</div>
 <div data-shape="ConsoleLog2" data-label="ConsoleLog2" class="palette_node_element draw2d_droppable">ConsoleLog2</div>
 <div data-shape="fff" data-label="fff" class="palette_node_element draw2d_droppable">fff</div>
+<div data-shape="ggg" data-label="ggg" class="palette_node_element draw2d_droppable">ggg</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
 <div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>
@@ -368,9 +375,11 @@ function displayJSON(canvas){
 <div data-shape="myProject_1" data-label="myProject_1" class="palette_node_element draw2d_droppable">myProject_1</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+<div data-shape="schematic_3" data-label="schematic_3" class="palette_node_element draw2d_droppable">schematic_3</div>
 <div data-shape="Serial.println" data-label="println" class="palette_node_element draw2d_droppable">println</div>
 <div data-shape="UserDefinedExample" data-label="UserDefinedExample" class="palette_node_element draw2d_droppable">UserDefinedExample</div>
 <div data-shape="withCase_1" data-label="withCase_1" class="palette_node_element draw2d_droppable">withCase_1</div>
+<div data-shape="withCase_2" data-label="withCase_2" class="palette_node_element draw2d_droppable">withCase_2</div>
 <div data-shape="xxx" data-label="xxx" class="palette_node_element draw2d_droppable">xxx</div>
 <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-label="DummyEnd1Node" class="palette_node_element draw2d_droppable">DummyEnd1Node</div>
 <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-label="Dragon1Node" class="palette_node_element draw2d_droppable">Dragon1Node</div>
@@ -405,8 +414,8 @@ function displayJSON(canvas){
 
    <!-- window with JSON representation of schematic -->
    <div id="json" style="display: none; overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>
-   <div id="json2" style="display: none; overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray">
-   </div>
+   <div id="json2" style="display: none; overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray"></div>
+   <div id="subnodeCanvasContainer" style="display: none;"/></div>
 
 </body>
 </html>

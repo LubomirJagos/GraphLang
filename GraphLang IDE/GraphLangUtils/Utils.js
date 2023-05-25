@@ -7,6 +7,7 @@ translateToCppCodeDeclarationArray = new draw2d.util.ArrayList();
 translateToCppCodeFunctionsArray = new draw2d.util.ArrayList();
 translateToCppCodeImportArray = new draw2d.util.ArrayList();
 translateToCppCodeTypeDefinitionArray = new draw2d.util.ArrayList();
+translateSubnodeCanvasArray = new draw2d.util.ArrayList();
 
 translateToPythonCodeFunctionsArray = new draw2d.util.ArrayList();
 translateToPythonCodeImportArray = new draw2d.util.ArrayList();
@@ -1685,7 +1686,7 @@ GraphLang.Utils.readSingleFile2 = function(e){
   var reader = new FileReader();
   reader.onload = function(e) {
     var contents = e.target.result;             //result is read
-    GraphLang.Utils.displayContentsFromClass(contents);  //display as alert
+    GraphLang.Utils.displayContentsFromClass(contents, appCanvas);  //display as alert
   };
   reader.readAsText(file);  //this will put result into internal variable named result
 }
@@ -1758,7 +1759,7 @@ GraphLang.Utils.loadedNodeShapeAndSchematicStr = null;
  *  @param {String} content String content to display
  *  @description Translates schematic on given canvas to C/C++ code as function which can be called in other diagrams using symbol with assign schematic.
  */
-GraphLang.Utils.displayContentsFromClass = function(contents){
+GraphLang.Utils.displayContentsFromClass = function(contents, canvasObj){
 /*
   var element = document.getElementById('file-content');
   element.textContent = contents;
@@ -1811,7 +1812,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
 
   //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
   eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
-  appCanvas.clear();
+  canvasObj.clear();
   var reader = new draw2d.io.json.Reader();
 
   //here is object creation and after getting its jsonDocument property where it's inside schematic is stored
@@ -1819,7 +1820,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   var jsonDocument = newObject.jsonDocument;
 
   if (jsonDocument && jsonDocument.length > 0){
-    reader.unmarshal(appCanvas, jsonDocument);  //this variable was evaluated inside eval() function
+    reader.unmarshal(canvasObj, jsonDocument);  //this variable was evaluated inside eval() function
   }
 
   /*
@@ -1834,7 +1835,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   if (newObject.getObjectAsString) GraphLang.Utils.loadedNodeShapeAndSchematicStr = newObject.getObjectAsString();
 
   //here are composite object repaired, they are assigned back to their ownership
-  var allFigures = appCanvas.getFigures();
+  var allFigures = canvasObj.getFigures();
   allFigures.each(function(figureIndex, figureObj){
 
     /*
@@ -1878,7 +1879,7 @@ GraphLang.Utils.displayContents2 = function(jsonDocument, canvasObj){
 
   //THIS FOLLOW VIOLATE ALL PROGRAMMING PRINCIPPLES NOW FOR DEBUGGING SUPPOSE VARIABLES ARE GLOBAL!
   //eval(contents); //all schematics are saved as JSON assigned to variable jsonDocument
-  
+
   canvasObj.clear();
   var reader = new draw2d.io.json.Reader();
 
@@ -2087,7 +2088,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           allNodes.push(figureObj);
       }
   });
-  
+
   //translate nodes based on their execution order
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
@@ -2151,10 +2152,22 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     cCodeParamsOutput = "";
     cCodeReturnDatatype = "void";
 
-    GraphLang.Utils.displayContents2(nodeObj.jsonDocument, appCanvas2);
+    /*
+    var divSubnodeCanvasId = 'subnodeCanvas_'+translateSubnodeCanvasArray.getSize();
+    $('#subnodeCanvasContainer').append("<div id=\"" + divSubnodeCanvasId + "\" style=\"width: 1500px; height: 600px;\"></div>");
+    var subnodeCanvas = new draw2d.Canvas(divSubnodeCanvasId);
+    translateSubnodeCanvasArray.push([divSubnodeCanvasId, subnodeCanvas])
+     */
+
+    var subnodeCanvas = appCanvas2;
+    appCanvas2.clear();
+
+    GraphLang.Utils.displayContents2(nodeObj.jsonDocument, subnodeCanvas);
+    //GraphLang.Utils.displayContentsFromClass(nodeObj, subnodeCanvas);
+
     paramsCounterInput = 0;
     paramsCounterOutput = 0;
-    appCanvas2.getFigures().each(function(figureIndex, figureObj){
+    subnodeCanvas.getFigures().each(function(figureIndex, figureObj){
       /*
        *  INPUT TERMINAL TRANSCRIPTION AS PARAMS FOR FUNCTION DECLARATION
        */
@@ -2208,7 +2221,7 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     /*
      *  Here is calling same parent C/C++ code transcription function on 2nd canvas  
      */
-    cCode += GraphLang.Utils.translateCanvasToCppCode(appCanvas2, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
+    cCode += GraphLang.Utils.translateCanvasToCppCode(subnodeCanvas, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
 
     cCode += "\n";  //to not have separate last curly bracket by tabulator
     cCode += '}' + "\n";
@@ -2216,11 +2229,16 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     /******************************************************************************
      * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
      *******************************************************************************/
-    cCode = this.rewriteIDtoNumbers(appCanvas2, cCode);
+    cCode = this.rewriteIDtoNumbers(subnodeCanvas, cCode);
 
     //don't return any code, these functions are pushed into array and print after template is created
     //return cCode;
     translateToCppCodeFunctionsArray.push(cCode);
+
+    translateSubnodeCanvasArray.each(function(canvasIndex, canvasObjArray){
+        $("canvas").remove("#"+canvasObjArray[0]);
+        canvasObjArray[1].destroy();
+    });
 },
 
 /**
@@ -2234,6 +2252,7 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         /******************************************************************************
          * Translate canvas to C/C++ code
          *******************************************************************************/
+        translateSubnodeCanvasArray.clear();
         translateToCppCodeFunctionsArray.clear();
         let cCode = GraphLang.Utils.translateCanvasToCppCode(canvas, translateTerminalsDeclaration = true);
 

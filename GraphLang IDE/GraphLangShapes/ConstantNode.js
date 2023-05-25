@@ -19,7 +19,7 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
     this.userData = {};
     this.userData.datatype = "int";
     this.userData.isTerminal = false
-    this.userData.nodeLabel = "nodeLabel";
+    //this.userData.nodeLabel = "nodeLabel";    //do not intialize, therefore it will be translated as const_..., if node label available it's used as variable name
 
     /*****************************************************************************
      *  OUTPUT PORT

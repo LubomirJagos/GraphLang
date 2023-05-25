@@ -236,8 +236,8 @@ function displayJSON(canvas){
 
    <!-- window with JSON representation of schematic -->
    <div id="json" style="display: none; overflow:auto;position:absolute; top:100px; right:10px; width:350; height:100;background:white;border:1px solid gray"></div>
-   <div id="json2" style="display: none; overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray">
-   </div>
+   <div id="json2" style="display: none; overflow:auto;position:absolute; top:100px; left:220px; width:250; height:100;background:white;border:1px solid gray"></div>
+   <div id="subnodeCanvasContainer" style="display: none;"/></div>
 
 </body>
 </html>
