@@ -2264,12 +2264,11 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         /******************************************************************************
          * SubNode code printed as subfunctions
          *******************************************************************************/
+        cCode += "/************* Transcripted SubNode function definitions ************/\n\n";
         translateToCppCodeFunctionsArray.unique();  //removes duplicates
         translateToCppCodeFunctionsArray.each(function(functionIndex, functionStr){
             cCode += "\n";
-            cCode += "/************* BEGIN SubNode function definition ************/\n";
             cCode += functionStr;
-            cCode += "/************* END SubNode function definition ************/\n";
             cCode += "\n";
         });
 

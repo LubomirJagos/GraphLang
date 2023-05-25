@@ -12,24 +12,24 @@ GraphLangTestShape3 = GraphLang.UserDefinedNode.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:42, height:42, flagAutoCreatePorts: false},attr), setter, getter);
      var port;
      // in0
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-11.904761904761905, 10.714285714285714));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-9.523809523809524, 13.095238095238095));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in0");
      port.setMaxFanOut(20);
      port.userData = {datatype: "int"};
-     // subtractResult
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(154.76190476190476, 61.904761904761905));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("subtractResult");
-     port.setMaxFanOut(20);
-     port.userData = {datatype: "undefined"};
      // in1
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-11.904761904761905, 88.09523809523809));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(-9.523809523809524, 90.47619047619048));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
+     port.setMaxFanOut(20);
+     port.userData = {datatype: "int"};
+     // subtractResult
+     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(107.14285714285714, 50));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("subtractResult");
      port.setMaxFanOut(20);
      port.userData = {datatype: "int"};
      this.persistPorts=false;
@@ -195,7 +195,7 @@ GraphLangTestShape3 = GraphLang.UserDefinedNode.extend({
         },this));
     },
     
-    symbolPicture: "data:image/png;base64,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",
+    symbolPicture: "data:image/png;base64,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",
     
     jsonDocument: [
   {
@@ -437,47 +437,6 @@ GraphLangTestShape3 = GraphLang.UserDefinedNode.extend({
 ],
     
     translateToCppCode: function(){
-
-    /*
-     *  First translate this node function as spearate function, call IDE method for this, THIS IDE METHOD MUST BE DEFINED!
-     *  Passing reference to this object. Schematic in jsonDocument is used.
-     */
-    let cCode = "";
-    
-    let paramsCounter = 0;
-    let paramsStr = "";
-    this.getInputPorts().each(function(portIndex, portObj){
-        let connections = portObj.getConnections();
-        if (paramsCounter > 0) paramsStr += ', ';
-
-        if (connections.getSize() > 0){
-            paramsStr += 'wire_' + connections.first().getId();
-        }else{        
-            paramsStr += 'null';
-        } 
-
-        paramsCounter++;
-    });
-
-    let functionCallStr = this.translateToCppCodeFunctionName() + '(' + paramsStr + ')';
-
-    if (this.getOutputPorts().getSize() > 0){
-        /*
-         *  Node output translation process defined just for first output port! This is for C/C++ there is nothing like multiple rturn values.
-         */
-        let connections = this.getOutputPorts().first().getConnections()
-        if (connections.getSize() > 0){
-          connections.each(function(connectionIndex, connectionObj){
-              cCode += 'wire_' + connectionObj.getId() + ' = ' + functionCallStr + ";\n";
-          });
-        }else{
-            cCode += functionCallStr + "; /* output not assigned */ \n";    
-        }
-        
-    }else{
-        cCode += functionCallStr + "; /* node has no output port */ \n";    
+        return this.translateToCppCodeTemplate();
     }
-    
-    return cCode;
-  }
 });

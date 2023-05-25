@@ -54,7 +54,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
                 var node = eval("new " + element.type + "()");
                 node.getInputPorts().each(function(nodePortIndex, nodePortObj){
                    //output port
-                   port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100,100/outputPortCount*outputPortIndex));
+                   port = node.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100,100/outputPortCount*outputPortIndex));
                    port.setConnectionDirection(31);
                    port.setBackgroundColor("#37B1DE");
                    port.setMaxFanOut(20);
@@ -63,7 +63,7 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
                 });
                 node.getOutputPorts().each(function(nodePortIndex, nodePortObj){
                    // input port
-                   port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0,100/inputPortCount*inputPortIndex));
+                   port = node.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0,100/inputPortCount*inputPortIndex));
                    port.setConnectionDirection(3);
                    port.setBackgroundColor("#37B1DE");
                    port.setMaxFanOut(20);
@@ -197,50 +197,80 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
     cCode = this.NAME;
     return cCode;
   },
-  
-  translateToCppCode: function(){
 
-    /*
-     *  First translate this node function as spearate function, call IDE method for this, THIS IDE METHOD MUST BE DEFINED!
-     *  Passing reference to this object. Schematic in jsonDocument is used.
-     */
-    let cCode = "";
-    
-    let paramsCounter = 0;
-    let paramsStr = "";
-    this.getInputPorts().each(function(portIndex, portObj){
-        let connections = portObj.getConnections();
-        if (paramsCounter > 0) paramsStr += ', ';
+    translateToCppCodeTemplate: function(){
 
-        if (connections.getSize() > 0){
-            paramsStr += 'wire_' + connections.first().getId();
-        }else{        
-            paramsStr += 'null';
-        } 
-
-        paramsCounter++;
-    });
-
-    let functionCallStr = this.translateToCppCodeFunctionName() + '(' + paramsStr + ')';
-
-    if (this.getOutputPorts().getSize() > 0){
         /*
-         *  Node output translation process defined just for first output port! This is for C/C++ there is nothing like multiple rturn values.
+         *  First translate this node function as spearate function, call IDE method for this, THIS IDE METHOD MUST BE DEFINED!
+         *  Passing reference to this object. Schematic in jsonDocument is used.
          */
-        let connections = this.getOutputPorts().first().getConnections()
-        if (connections.getSize() > 0){
-          connections.each(function(connectionIndex, connectionObj){
-              cCode += 'wire_' + connectionObj.getId() + ' = ' + functionCallStr + ";\n";
-          });
-        }else{
-            cCode += functionCallStr + "; /* output not assigned */ \n";    
+        let cCode = "";
+
+        let paramsCounter = 0;
+        let paramsStr = "";
+        this.getInputPorts().each(function(portIndex, portObj){
+            /*
+             *  Write as input param connected wire JUST FIRST to parameter string
+             */
+            let connections = portObj.getConnections();
+            if (paramsCounter > 0) paramsStr += ', ';
+            if (connections.getSize() > 0){
+                paramsStr += 'wire_' + connections.first().getId();
+            }else{
+                paramsStr += 'null';
+            }
+
+            paramsCounter++;
+        });
+
+
+        /*
+         *  Output params written into parameter string
+         */
+        let outputPortWiresList = [];
+        if (this.getOutputPorts().getSize() > 0){
+            this.getOutputPorts().each(function(portIndex, portObj) {
+                let portName = 'outputPort_' + portObj.getName().replace(['.','\s'], '_');
+
+                /*
+                 *  Genereate C/C++ port output variable
+                 */
+                cCode += portObj.userData.datatype + " " + portName + ";\n";
+
+                let connections = portObj.getConnections();
+                outputPortWiresList[portName] = [];
+                if (connections.getSize() > 0) {
+                    connections.each(function (connectionIndex, connectionObj) {
+                        wireName = "wire_" + connectionObj.getId();
+                        outputPortWiresList[portName].push(wireName);
+                    });
+                }
+
+                if (paramsCounter > 0) paramsStr += ', ';
+                paramsStr += portName;
+                paramsCounter++;
+            });
         }
-        
-    }else{
-        cCode += functionCallStr + "; /* node has no output port */ \n";    
+
+        /*
+         *  Finally write whole function call
+         */
+        cCode += this.translateToCppCodeFunctionName() + '(' + paramsStr + ');\n';
+
+        /*
+         *  Assignment to output wires
+         */
+        Object.keys(outputPortWiresList).forEach(function (portName) {
+            for (var wireIndex = 0; wireIndex < outputPortWiresList[portName].length; wireIndex++) {
+                cCode += outputPortWiresList[portName][wireIndex] + " = " + portName + ";\n";
+            }
+        });
+
+        return cCode;
+    },
+
+    translateToCppCode: function(){
+        return this.translateToCppCodeTemplate();
     }
-    
-    return cCode;
-  }
-    
+
 });
