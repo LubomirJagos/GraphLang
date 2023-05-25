@@ -115,16 +115,6 @@ example.Toolbar = Class.extend({
 		document.getElementById('file-input2').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
 
 		/**
-		*	saveSchematic Button
-		*/
-		this.saveSchematicButton  = $("<button id=\"saveSchematicButton\">saveSchematic</button>");
-		this.saveSchematicButton.button().click($.proxy(function(){
-			filename = $('#schematicName').val();
-			GraphLang.Utils.saveSchematic2(appCanvas, filename, 'text/javascript');
-		}));
-		this.html.append(this.saveSchematicButton);
-
-		/**
 		*	zoomIn Button
 		*/
 		this.zoomInButton  = $("<button id=\"zoomInButton\">+</button>");
@@ -156,6 +146,16 @@ example.Toolbar = Class.extend({
 		 */
 		this.schematicNameInput  = $("<span>&nbsp; Schematic name: <input id=\"schematicName\" type=\"input\" value=\"GraphLangTestShape\"/></span>");
 		this.html.append(this.schematicNameInput);
+
+		/**
+		 *	saveSchematic Button
+		 */
+		this.saveSchematicButton  = $("<button id=\"saveSchematicButton\">saveSchematic</button>");
+		this.saveSchematicButton.button().click($.proxy(function(){
+			filename = $('#schematicName').val();
+			GraphLang.Utils.saveSchematic2(appCanvas, filename, 'text/javascript');
+		}));
+		this.html.append(this.saveSchematicButton);
 	},
 
 	/**
