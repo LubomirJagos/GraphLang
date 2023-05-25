@@ -104,19 +104,23 @@ example.Toolbar = Class.extend({
 		*/
 		//this.loadSchematicButton  = $("<button id=\"loadSchematicButton\">loadSchematic</button>");
 		//
-		this.loadSchematicButton  = $('<input type="file" id="file-input" />');
+		this.loadSchematicButton  = $('<input type="file" id="file-input2" />');
+/*
 		this.loadSchematicButton.button().click($.proxy(function(){
 			GraphLang.Utils.loadSchematic(appCanvas);
 		}));
+
+ */
 		this.html.append(this.loadSchematicButton);
-		document.getElementById('file-input').addEventListener('change', GraphLang.Utils.readSingleFile, false);
+		document.getElementById('file-input2').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
 
 		/**
 		*	saveSchematic Button
 		*/
 		this.saveSchematicButton  = $("<button id=\"saveSchematicButton\">saveSchematic</button>");
 		this.saveSchematicButton.button().click($.proxy(function(){
-			GraphLang.Utils.saveSchematic(appCanvas, 'GraphLang_Schematic', 'text/javascript');
+			filename = $('#schematicName').val();
+			GraphLang.Utils.saveSchematic2(appCanvas, filename, 'text/javascript');
 		}));
 		this.html.append(this.saveSchematicButton);
 
@@ -146,6 +150,12 @@ example.Toolbar = Class.extend({
             appCanvas.setZoom(1.0, true);
 		}));
 		this.html.append(this.zoomNormalButton);
+
+		/**
+		 *	Schematic name input
+		 */
+		this.schematicNameInput  = $("<span>&nbsp; Schematic name: <input id=\"schematicName\" type=\"input\" value=\"GraphLangTestShape\"/></span>");
+		this.html.append(this.schematicNameInput);
 	},
 
 	/**

@@ -59,7 +59,7 @@ htmlTemplate = """
 
     <script src="./gui/Application.js"></script>
     <script src="./gui/View.js"></script>
-    <script src="./gui/Toolbar.js"></script>
+    <script src="./gui/Toolbar 2.js"></script>
     <script src="./gui/HoverConnection.js"></script>
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -150,6 +150,21 @@ document.addEventListener("DOMContentLoaded",function () {
 	   */
 	  appCanvas2 = app.view2;
       //reader.unmarshal(appCanvas2, jsonDocument2);
+
+
+      /*****************************************************************************
+       * LOAD PICTURES TO USER DEFINED NODES IN LEFT TOOLBOX
+       *****************************************************************************/
+      $('#navigation').children('div[id="GraphLang.UserDefined"]').children('div').each(function(index,htmlObj){
+        jsCode="new " + htmlObj.getAttribute('data-shape') + "()";
+        nodeObj = eval(jsCode);
+
+        if (nodeObj.symbolPicture) {
+          var imgElement = new Image();
+          imgElement.src = nodeObj.symbolPicture;
+          htmlObj.append(imgElement);
+        }
+      });
 });
 
 /**
@@ -259,7 +274,7 @@ if __name__ == "__main__":
                 #print(fileName)
                 with open(fileName, "r") as currentFile:
                      fileContent = currentFile.read()
-                     regExp = re.compile(r"[\/\s\n]*([a-zA-Z0-9\.\-]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend", re.MULTILINE)
+                     regExp = re.compile(r"[\/\s\n]*([a-zA-Z0-9\.\-\_]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend", re.MULTILINE)
                      matchPattern = regExp.findall(fileContent)
                      if matchPattern:
                         objectsNamesList.append((os.path.dirname(fileName), fileName, matchPattern[0][0], matchPattern[0][1]))

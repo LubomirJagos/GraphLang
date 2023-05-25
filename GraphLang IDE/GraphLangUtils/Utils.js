@@ -1767,8 +1767,13 @@ GraphLang.Utils.displayContentsFromClass = function(contents){
   var fileName = element.value.split("\\").pop();
   var schematicName = fileName.split(".")[0];  //no extension
 
+  /*
+   *    Node name extraction, ie:
+   *        GraphLang.UserDefined.SomeNewName = exted.UserDefined.... -> SomeNew
+   *        allowed chars for new object name: A-Z, a-z, 0-9, _, .,
+   */
   //regular expression match over multiple lines also using groups
-  let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend\(\{/gm);
+  let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-\_]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend\(\{/gm);
   let matchPattern = regExp.exec(contents);
 
   var newObjectName = '';
@@ -1954,6 +1959,7 @@ GraphLang.Utils.saveSchematic2 = function(canvas, filename, type) {
         url = URL.createObjectURL(file);
         a.href = url;
         a.download = filename;
+
         document.body.appendChild(a);
         a.click();
         setTimeout(function() {
@@ -2102,7 +2108,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           /*
            *    Translate node schematic into separate function
            */
-          if (!translateToCppCodeSubnodeArray.contains(nodeObj.NAME) && nodeObj.jsonDocument){
+          if (!translateToCppCodeSubnodeArray.contains(nodeObj.NAME) && nodeObj.jsonDocument !== undefined && nodeObj.jsonDocument.length > 0){
             translateToCppCodeSubnodeArray.push(nodeObj.NAME);
             GraphLang.Utils.translateToCppCodeSubNode(nodeObj);
           }
@@ -2141,10 +2147,13 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
 GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     let cCode = "";
     cCodeParams = "";
-    cCodeReturnDatatype = "";
+    cCodeParamsInput = "";
+    cCodeParamsOutput = "";
+    cCodeReturnDatatype = "void";
 
     GraphLang.Utils.displayContents2(nodeObj.jsonDocument, appCanvas2);
-    paramsCounter = 0;
+    paramsCounterInput = 0;
+    paramsCounterOutput = 0;
     appCanvas2.getFigures().each(function(figureIndex, figureObj){
       /*
        *  INPUT TERMINAL TRANSCRIPTION AS PARAMS FOR FUNCTION DECLARATION
@@ -2155,16 +2164,39 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
           (figureObj.userData.isTerminal == 1 || figureObj.userData.isTerminal.toLowerCase() == true) &&
           figureObj.translateToCppCodeAsParam != undefined
       ){
-          if (paramsCounter > 0) cCodeParams += ', ';
-          cCodeParams += figureObj.translateToCppCodeAsParam();
-          paramsCounter++;
+          if (paramsCounterInput > 0) cCodeParamsInput += ', ';
+          cCodeParamsInput += figureObj.translateToCppCodeAsParam();
+          paramsCounterInput++;
       }
+
+        /*
+         *  OUTPUT TERMINAL, as pointers
+         *
+         *      for now accept just output terminal node
+         */
+        if (figureObj.NAME.toLowerCase().search("terminaloutput") > -1){
+            if (paramsCounterOutput > 0) cCodeParamsOutput += ', ';
+            cCodeParamsOutput += figureObj.translateToCppCodeAsParam();
+            paramsCounterOutput++;
+        }
+
+        /*
+         *  COMPLETE FUNCTION CALL PARAMETERS LIST
+         */
+        if (cCodeParamsInput !== "") {
+            cCodeParams = cCodeParamsInput + ", " +cCodeParamsOutput;
+        }else{
+            cCodeParams = cCodeParamsOutput;
+        }
+
 
       /*
        *  RETURN VALUE
        *      - if return node is found it asks for it datatype, if nothing is connected then it's undefined
        *      - in stored files nodes haven't 'NAME' property but have 'type' property
-       *  
+       *
+       *
+       *    Last iterated return is used as it's now, there SO THIS IS WRONG! shoulb be reworked somehow better.
        */
       if (figureObj.NAME.toLowerCase().search("return") > -1){
           cCodeReturnDatatype = figureObj.getDatatype();
@@ -2255,6 +2287,7 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
 
         if (showCode) alert(cCode); //DEBUG show code in alert message
 
+        this.initAllPortToDefault(canvas);
         return cCode; //return C/C++ code as string
 }
 

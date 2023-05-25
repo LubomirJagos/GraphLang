@@ -37,9 +37,9 @@ jQuery.fn.reverse = [].reverse;
 
         // ich liebe Regexpr.... :-)
         //
-        //              1 YYYY                2 MM       3 DD           4 HH    5 mm       6 ss        7 msec        8 Z 9 ±    10 tzHH    11 tzmm
+        //              1 YYYY                2 MM       3 DD           4 HH    5 mm       6 ss        7 msec        8 Z 9 ï¿½    10 tzHH    11 tzmm
         if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(date))) {
-            // avoid NaN timestamps caused by “undefined” values being passed to Date.UTC
+            // avoid NaN timestamps caused by ï¿½undefinedï¿½ values being passed to Date.UTC
             for (var i = 0, k; (k = numericKeys[i]); ++i) {
                 struct[k] = +struct[k] || 0;
             }
@@ -1199,7 +1199,7 @@ shape_designer.dialog.FigureTest = Class.extend(
 				    ' <div title="Close" id="test_close" class="icon ion-ios-close-outline"></div>'+
 				'<div>');
 
-	        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfügen
+	        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfï¿½gen
 	        // wenn das canvas nicht sichtbar ist. In diesen Fall mach ich das Canvas "leicht" sichtbar und raphael ist
 	        // zufrieden.
 	        $("body").append(splash);
@@ -1364,7 +1364,7 @@ Therefore, the output is always 0 except when all the inputs are 1.
             ' <div title="Close" id="test_close" class="icon ion-ios-close-outline"></div>'+
             '<div>');
 
-        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfügen
+        // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfï¿½gen
         // wenn das canvas nicht sichtbar ist. In diesen Fall mach ich das Canvas "leicht" sichtbar und raphael ist
         // zufrieden.
         $("body").append(splash);
@@ -6018,7 +6018,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
   var canvas2 = appCanvas2;     //auxiliar canvas which is hidden
 
   //regular expression match over multiple lines also using groups
-  let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-]+)[\s]*=[\s]*([a-zA-Z0-9\.\-]+)\.extend\(\{/gm);
+  let regExp = new RegExp(/[\s\n]*([a-zA-Z0-9\.\-\_]+)[\s]*=[\s]*([a-zA-Z0-9\.\-\_]+)\.extend\(\{/gm);
   let matchPattern = regExp.exec(contents);
 
   var newObjectName = '';
@@ -6296,7 +6296,16 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
   document.execCommand('copy');
   copyElement.remove();
   */
-  
+
+
+
+
+
+  /*
+   *    AT THE END CHECK DIFFERENCE BETWEEN PORT AND SCHEMATIC PORTS
+   */
+  this.checkSymbolAndSchematic(canvas)
+
 }
 
 shape_designer.checkSymbolAndSchematic = function(canvas){
@@ -6314,13 +6323,30 @@ shape_designer.checkSymbolAndSchematic = function(canvas){
     var flagReturnValueAdded = false;
     if (loadedObject.jsonDocument){
       loadedObject.jsonDocument.forEach(function(element){
+
+          /*
+           *  This terminal nodes.
+           */
           if (element.userData && element.userData.isTerminal){
             var terminalObj = eval('new ' + element.type + '()');
             terminalList.push({name: element.userData.nodeLabel, datatype: element.userData.datatype, type: terminalObj.getOutputPorts().getSize() > 0?"input":"output"});
           }
+
+          /*
+           *    Add return node as terminal, BUT ADD IT ONLY ONCE
+           */
+          /*
           if (!flagReturnValueAdded && element.type.toLowerCase().search(".return") > -1){
-            flagReturnValueAdded = true;
-            terminalList.push({name: "return", datatype: "undefined", type: "output"});
+              flagReturnValueAdded = true;  //this prevent to add multiple return nodes as output terminals
+              terminalList.push({name: "return", datatype: "undefined", type: "output"});
+          }
+          */
+
+         /*
+          *  This takes return node and add output port to node.
+          */
+          if (element.type.toLowerCase().search(".terminaloutput") > -1){
+            terminalList.push({name: element.text, datatype: "undefined", type: "output"});
           }
       });
     }

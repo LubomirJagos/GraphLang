@@ -71,7 +71,10 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
                    inputPortIndex++;
                 });
             }
-            if (element.userData && element.type.toLowerCase().search('.return') > -1){
+            if (
+                element.userData && element.type.toLowerCase().search('.return') > -1 ||
+                element.userData && element.type.toLowerCase().search('.terminaloutput') > -1
+            ){
                    //output port for return node
                    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100,100/outputPortCount*outputPortIndex));
                    port.setConnectionDirection(1);
@@ -168,7 +171,27 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
   /*****************************************************************************************************************
    *    THESE FUNCTIONS BELOW ARE SPECIFIC TO TRANSLATE NODE TO C/C++ CODE
    *****************************************************************************************************************/
-  
+
+  getVariableName: function(){
+      let variableName = "outputTerminal_" + this.getId();
+      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+      return variableName
+  },
+
+    translateToCppCodeAsParam:function(){
+        cCode = "";
+        var constDatatype = this.getDatatype();
+
+        //create param definition using also default value, if there is string use quotes
+        if (this.getDatatype().toLowerCase().search("string") == -1){
+            cCode += constDatatype + " " + this.getVariableName() + ' = ' + this.getText();
+        }else{
+            cCode += constDatatype + " " + this.getVariableName() + ' = "' + this.getText() + '"';
+        }
+
+        return cCode;
+    },
+
   translateToCppCodeFunctionName: function(){
     return this.NAME.replaceAll('.', '_');
   },

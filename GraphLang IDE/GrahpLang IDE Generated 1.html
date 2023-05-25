@@ -42,18 +42,23 @@
 
       //library tree variables init place to insert
 	UserDefinedExample = {};
+	myProject_1 = {};
+	LuboJ_SimpleLogic_1 = {};
+	GraphLangTestShape3 = {};
 	GraphLangTestShape2 = {};
 	GraphLangTestShape = {};
+	ConsoleLog2 = {};
+	ConsoleLog = {};
 	GraphLang = {};
 	GraphLang.PythonQtGuiLib = {};
 	GraphLang.ArduinoLib = {};
 	GraphLang.ArduinoLib.String = {};
-	GraphLang.ArduinoLib.FileLib = {};
-	GraphLang.ArduinoLib.Experimental42Lib = {};
-	GraphLang.ArduinoLib.DummyLib = {};
 	GraphLang.ArduinoLib.Node = {};
 	GraphLang.ArduinoLib.Node.Serial = {};
 	GraphLang.ArduinoLib.Node.Math = {};
+	GraphLang.ArduinoLib.FileLib = {};
+	GraphLang.ArduinoLib.Experimental42Lib = {};
+	GraphLang.ArduinoLib.DummyLib = {};
 	GraphLang.Shapes = {};
 	GraphLang.Shapes.Basic = {};
 	GraphLang.Shapes.Basic.Loop2 = {};
@@ -63,7 +68,7 @@
 
     <script src="./gui/Application.js"></script>
     <script src="./gui/View.js"></script>
-    <script src="./gui/Toolbar.js"></script>
+    <script src="./gui/Toolbar 2.js"></script>
     <script src="./gui/HoverConnection.js"></script>
 
     <script src="./GraphLangUtils/Utils.js"></script>
@@ -97,16 +102,20 @@
 	<script src="./GraphLangShapes/RightTunnel.js"></script>
 	<script src="./GraphLangShapes/Sequence.js"></script>
 	<script src="./GraphLangShapes/SliderNode.js"></script>
+	<script src="./GraphLangShapes/TerminalOutput.js"></script>
 	<script src="./GraphLangShapes/LeftTunnel.js"></script>
 	<script src="./GraphLangShapes/UnbundleByName.js"></script>
 	<script src="./GraphLangShapes/Unbundle.js"></script>
-	<script src="./GraphLangShapes/UserDefinedDatatype.js"></script>
 	<script src="./GraphLangShapes/UserDefinedNode.js"></script>
 	<script src="./GraphLangShapes/WhileLayer.js"></script>
 	<script src="./GraphLangShapes/WireConnection.js"></script>
-	<script src="./UserDefinedNode/GraphLang.ArduinoLib.Node.Multiply2.js"></script>
+	<script src="./UserDefinedNode/ConsoleLog.js"></script>
+	<script src="./UserDefinedNode/ConsoleLog2.js"></script>
 	<script src="./UserDefinedNode/GraphLangTestShape.js"></script>
 	<script src="./UserDefinedNode/GraphLangTestShape2.js"></script>
+	<script src="./UserDefinedNode/GraphLangTestShape3.js"></script>
+	<script src="./UserDefinedNode/LuboJ_SimpleLogic_1.js"></script>
+	<script src="./UserDefinedNode/myProject_1.js"></script>
 	<script src="./UserDefinedNode/UserDefinedExample.js"></script>
 	<script src="./ArduinoLib/DummyLib/DummyEnd1Node.js"></script>
 	<script src="./ArduinoLib/Experimental42Lib/Dragon1Node.js"></script>
@@ -213,6 +222,21 @@ document.addEventListener("DOMContentLoaded",function () {
 	   */
 	  appCanvas2 = app.view2;
       //reader.unmarshal(appCanvas2, jsonDocument2);
+
+
+      /*****************************************************************************
+       * LOAD PICTURES TO USER DEFINED NODES IN LEFT TOOLBOX
+       *****************************************************************************/
+      $('#navigation').children('div[id="GraphLang.UserDefined"]').children('div').each(function(index,htmlObj){
+        jsCode="new " + htmlObj.getAttribute('data-shape') + "()";
+        nodeObj = eval(jsCode);
+
+        if (nodeObj.symbolPicture) {
+          var imgElement = new Image();
+          imgElement.src = nodeObj.symbolPicture;
+          htmlObj.append(imgElement);
+        }
+      });
 });
 
 /**
@@ -299,16 +323,20 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.Shapes.Basic.RightTunnel" data-label="RightTunnel" class="palette_node_element draw2d_droppable">RightTunnel</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.Sequence" data-label="Sequence" class="palette_node_element draw2d_droppable">Sequence</div>
 <div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="SliderNode" class="palette_node_element draw2d_droppable">SliderNode</div>
+<div data-shape="GraphLang.Shapes.Basic.TerminalOutput" data-label="TerminalOutput" class="palette_node_element draw2d_droppable">TerminalOutput</div>
 <div data-shape="GraphLang.Shapes.Basic.LeftTunnel" data-label="LeftTunnel" class="palette_node_element draw2d_droppable">LeftTunnel</div>
 <div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="UnbundleByName" class="palette_node_element draw2d_droppable">UnbundleByName</div>
 <div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="Unbundle" class="palette_node_element draw2d_droppable">Unbundle</div>
-<div data-shape="GraphLang.UserDefinedDatatype" data-label="UserDefinedDatatype" class="palette_node_element draw2d_droppable">UserDefinedDatatype</div>
 <div data-shape="GraphLang.UserDefinedNode" data-label="UserDefinedNode" class="palette_node_element draw2d_droppable">UserDefinedNode</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
 <div data-shape="GraphLang.Shapes.Basic.WireConnection" data-label="WireConnection" class="palette_node_element draw2d_droppable">WireConnection</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Multiply2" data-label="Multiply2" class="palette_node_element draw2d_droppable">Multiply2</div>
+<div data-shape="ConsoleLog" data-label="ConsoleLog" class="palette_node_element draw2d_droppable">ConsoleLog</div>
+<div data-shape="ConsoleLog2" data-label="ConsoleLog2" class="palette_node_element draw2d_droppable">ConsoleLog2</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
+<div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>
+<div data-shape="LuboJ_SimpleLogic_1" data-label="LuboJ_SimpleLogic_1" class="palette_node_element draw2d_droppable">LuboJ_SimpleLogic_1</div>
+<div data-shape="myProject_1" data-label="myProject_1" class="palette_node_element draw2d_droppable">myProject_1</div>
 <div data-shape="UserDefinedExample" data-label="UserDefinedExample" class="palette_node_element draw2d_droppable">UserDefinedExample</div>
 <div data-shape="GraphLang.ArduinoLib.DummyLib.DummyEnd1Node" data-label="DummyEnd1Node" class="palette_node_element draw2d_droppable">DummyEnd1Node</div>
 <div data-shape="GraphLang.ArduinoLib.Experimental42Lib.Dragon1Node" data-label="Dragon1Node" class="palette_node_element draw2d_droppable">Dragon1Node</div>

@@ -45,6 +45,7 @@
 
       GraphLang.UserDefinedSymbol = {};
       GraphLang.UserDefinedNode = {};
+      GraphLang.UserDefined = {};
 
       GraphLang.PythonQtGuiLib = {};
       MarkerStateBFigure = {};
@@ -179,7 +180,13 @@
     <script src="./GraphLangUtils/Color.js"></script>
     <script src="./GraphLangUtils/ArrayClusterInPlaceEditor.js"></script>
 
-    <script type="text/javascript">
+  <script src="./GraphLangShapes/TerminalOutput.js"></script>
+   <script src="./UserDefinedNode/GraphLangTestShape.js"></script>
+  <script src="./UserDefinedNode/GraphLangTestShape2.js"></script>
+  <script src="./UserDefinedNode/LuboJ_SimpleLogic_1.js"></script>
+
+
+  <script type="text/javascript">
       var jsonDocument = [];
       var jsonDocument2 = [];
       var userDefinedSchematics = [];
@@ -510,7 +517,15 @@ function displayJSON(canvas){
           <div data-shape="GraphLang.PythonQtGuiLib.UiExec" data-label="Qt Ui Show" class="palette_node_element draw2d_droppable">
             Qt Ui Exec
           </div>
-          
+
+          <div data-shape="GraphLang.Shapes.Basic.TerminalOutput" data-label="GraphLang TerminalOutput" class="palette_node_element draw2d_droppable">
+            Output Terminal
+          </div>
+
+          <div data-shape="LuboJ_SimpleLogic_1" data-label="LuboJ_SimpleLogic_1" class="palette_node_element draw2d_droppable">
+            LuboJ_SimpleLogic_1.js
+          </div>
+
         </div>
 
   </div>

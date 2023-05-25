@@ -1,9 +1,9 @@
 /**
- *  @class GraphLang.Shapes.Basic.Return
- *  @descritpition Numeric constant. For now implemented just integers and floats.
+ *  @class GraphLang.Shapes.Basic.TerminalOutput
+ *  @descritpition Output terminal. There could be multiple instances of this on canvas.
  */
-GraphLang.Shapes.Basic.Return = draw2d.shape.basic.Label.extend({
-  NAME: "GraphLang.Shapes.Basic.Return",
+GraphLang.Shapes.Basic.TerminalOutput = draw2d.shape.basic.Label.extend({
+  NAME: "GraphLang.Shapes.Basic.TerminalOutput",
 
   /**
    *  @method init
@@ -37,9 +37,40 @@ GraphLang.Shapes.Basic.Return = draw2d.shape.basic.Label.extend({
 
     this.setColor(new draw2d.util.Color("#0000FF"));
     this.setFontColor(new draw2d.util.Color("#FFFFFF"));
-    this.setBackgroundColor(new draw2d.util.Color("#AAAAAA"));
-    this.getInputPort(0).userData.datatype = "int";
-    this.setText("return");    
+    this.setBackgroundColor(new draw2d.util.Color("#626262"));
+    this.setStroke(3);
+    this.setColor("#FF0000");
+    this.setDashArray("-");
+    this.setText("outputTerminal");
+
+    this.installEditor(new draw2d.ui.LabelInplaceEditor());
+  },
+
+  getConnectedDatatype: function(){
+    let connections = this.getInputPort(0).getConnections();
+    let datatypeStr = "undefined";
+
+    if (connections.getSize() > 0){
+      datatypeStr = connections.first().getSource().userData.datatype;
+    }
+    return datatypeStr;
+  },
+
+  getVariableName: function(){
+    let variableName = this.getText();
+    if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+    return variableName
+  },
+
+  /**
+   * Get C/C++ code to be assign as function call output call arguments as pointers for connected wires.
+   * Return pointer to it's variable ie.:
+   *    void someBlockName(int inputVariableA, int inputVariableB, int &outputPortVariableA, int &outputPortVariableB){...}
+   * @returns {string}
+   */
+  translateToCppCodeAsParam:function(){
+    cCode = this.getDatatype() + " &" + this.getText();
+    return cCode;
   },
 
   /**
@@ -48,23 +79,17 @@ GraphLang.Shapes.Basic.Return = draw2d.shape.basic.Label.extend({
    *  and translate content of nummeric constant as assignement to wire.
    */
   translateToCppCode:function(){
+    terminalObj = this;
+    datatype = this.getDatatype();
     cCode = "";
 
-    this.getInputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "return wire_" + connectionObj.getId() + ";\n";
-    });
+    cCode += this.getText() + ' = wire_' + this.getInputPort(0).getConnections().first().getId() + ';\n';
 
     return cCode;
   },
   
   getDatatype: function(){
-    let cCode = "undefined";
-
-    if (this.getInputPort(0).getConnections().getSize() > 0){
-        cCode = this.getInputPort(0).getConnections().first().getSource().userData.datatype;
-    }
-
-    return cCode;    
+    return this.getConnectedDatatype();
   }
     
 });
