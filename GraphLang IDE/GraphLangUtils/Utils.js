@@ -1341,6 +1341,11 @@ GraphLang.Utils.getCanvasAsObjectString = function(canvas){
         }else if (json[k].type != undefined && json[k].type.toLowerCase().search("connection") > -1){
           //alert("connection");
           clearedJson.push(json[k]);
+        }else if (json[k].type != undefined && json[k].type.toLowerCase().search("terminaloutput") > -1){
+            let outputTerminalObj = canvas.getFigure(json[k].id);
+            json[k].userData.datatype = outputTerminalObj.getDatatype();
+
+            clearedJson.push(json[k]);
         }else if (json[k].type != undefined && json[k].type.toLowerCase().search("tunnel") == -1){
           clearedJson.push(json[k]);
         }else{

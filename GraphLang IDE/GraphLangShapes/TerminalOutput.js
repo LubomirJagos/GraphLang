@@ -51,8 +51,16 @@ GraphLang.Shapes.Basic.TerminalOutput = draw2d.shape.basic.Label.extend({
     let datatypeStr = "undefined";
 
     if (connections.getSize() > 0){
-      datatypeStr = connections.first().getSource().userData.datatype;
+      let sourcePort = connections.first().getSource();
+      if (sourcePort.userData && sourcePort.userData.datatype && sourcePort.getParent().NAME.toLowerCase().search("tunnel") == -1){
+        datatypeStr = sourcePort.userData.datatype;
+      }else if(sourcePort.getParent().getDatatype){
+        datatypeStr = sourcePort.getParent().getDatatype();
+      }else if(sourcePort.userData && sourcePort.userData.datatype){
+        datatypeStr = sourcePort.userData.datatype;
+      }
     }
+
     return datatypeStr;
   },
 

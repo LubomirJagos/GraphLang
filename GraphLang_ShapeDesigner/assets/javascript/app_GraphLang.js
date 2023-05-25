@@ -815,12 +815,20 @@ shape_designer.Toolbar = Class.extend({
         var symbolNameGroup=$("<div class='btn-group'  title='Symbol functions'></div>");
         this.toolbarDiv.append(symbolNameGroup);
 		this.symbolNameInput = $('<div class="btn btn-default">Symbol Name <input type="input" id="symbol-name-input" style="width: 270px;" class="" value="GraphLangTestShape" /></div>');
+
 		this.symbolCheckButton = $('<button  data-toggle="tooltip" title="Check Symbol" class="btn btn-default" >Check Symbol</button>');
-        symbolNameGroup.append(this.symbolCheckButton);
-        symbolNameGroup.append(this.symbolNameInput);
         this.symbolCheckButton.on("click",$.proxy(function(){
             shape_designer.checkSymbolAndSchematic(this.view);
         },this));
+
+        this.saveSymbolButton  = $('<button  data-toggle="tooltip" title="Save symbol</span>" class=\"btn btn-default\" >Save</button>');
+        this.saveSymbolButton.on("click",$.proxy(function(){
+            new shape_designer.saveSymbol();
+        },this));
+
+        symbolNameGroup.append(this.symbolCheckButton);
+        symbolNameGroup.append(this.symbolNameInput);
+        symbolNameGroup.append(this.saveSymbolButton);
 
         // Inject the UNDO Button and the callbacks
         //
@@ -1031,12 +1039,6 @@ shape_designer.Toolbar = Class.extend({
 		//document.getElementById('node-file-input').addEventListener('change', GraphLang.Utils.readSingleFile2, false);
         this.loadNodeButton.on("change",$.proxy(function(e){
             shape_designer.readSingleFile(e, this.view, this.view.auxView)
-        },this));
-
-        this.saveSymbolButton  = $('<button  data-toggle="tooltip" title="Save symbol</span>" class=\"btn btn-default\" >Save</button>');
-        buttonGroup.append(this.saveSymbolButton);
-        this.saveSymbolButton.on("click",$.proxy(function(){
-            new shape_designer.saveSymbol();
         },this));
 
         this.exportGraphLangButton  = $('<button  data-toggle="tooltip" title="Export JavaScript code</span>" class=\"btn btn-default\" ><img src="./assets/images/toolbar_export_js.png"></button>');
@@ -6349,7 +6351,7 @@ shape_designer.checkSymbolAndSchematic = function(canvas){
           *  This takes return node and add output port to node.
           */
           if (element.type.toLowerCase().search(".terminaloutput") > -1){
-            terminalList.push({name: element.text, datatype: "undefined", type: "output"});
+            terminalList.push({name: element.text, datatype: element.userData.datatype, type: "output"});
           }
       });
     }
