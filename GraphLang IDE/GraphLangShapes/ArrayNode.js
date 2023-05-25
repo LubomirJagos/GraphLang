@@ -49,6 +49,7 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
     this.userData = {};
     this.userData.isTerminal = false;
     this.userData.nodeLabel = "nodeLabel";
+    this.userData.datatype = defaultDatatype + "*"; //array is datatype ofg pointer to its elements datatype therefore needs to add asterix
 
 /*  THIS IS EXAMPLE CODE, BUT IT'S REALLY RUNNING
     var label1 =  new draw2d.shape.basic.Label({text:"[0,1] with long long long long label", fontColor:"#00AF00"});
@@ -128,6 +129,8 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
                       }
   
                       emitter.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: labelText});
+                      emitter.nodeLabel.userData = {};
+                      emitter.nodeLabel.userData.type = "nodeLabel";
                       emitter.add(emitter.nodeLabel, new draw2d.layout.locator.TopLocator());
                       emitter.nodeLabel.installEditor(new draw2d.ui.LabelInplaceEditor());
                       emitter.nodeLabel.on('change:text', function(nodeEmitter, event){
@@ -280,7 +283,8 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
             childObj.userData.datatype = newDatatype;
           }
         });
-        
+
+        this.userData.datatype = newDatatype + "*"; //array is datatype ofg pointer to its elements datatype therefore needs to add asterix
         this.getOutputPort(0).userData.datatype = newDatatype;
         //this.fireEvent("resize");
     },
@@ -322,13 +326,13 @@ GraphLang.Shapes.Basic.ArrayNode = draw2d.shape.layout.TableLayout.extend({
           //FOR TUNNELS THERE IS NEEDED FOR THEIR RESTORE ALSO READ LOCATORS POSITION which is stored in previous function getPers...
           curDatatype = json.type;
 
-          /*
-           *  HERE IS REALLY IMPORTANT TO SET SAME ID TO TUNNEL AS IT WAS SAVED, it then creates ports for that tunnel with same id as from file and wires can be connected to that
-           */
-          var figure =  eval("new "+json.type+"({id: '" + json.id + "'})"); // create the figure stored in the JSON, SET SAME ID AS SAVED IN FILE, THIS IS IMPORTANT!!! (for tunnels, look at its init() function)
-          figure.attr(json);
+          //this condition here to differ elements of array from label maybe wrong but seems to be running
+          if (json.userData && json.userData.datatype && json.userData.type != "nodeLabel") {
+              var figure = eval("new " + json.type + "({id: '" + json.id + "'})"); // create the figure stored in the JSON, SET SAME ID AS SAVED IN FILE, THIS IS IMPORTANT!!! (for tunnels, look at its init() function)
+              figure.attr(json);
+              this.addRow(figure);    // add the new figure as child to this figure
+          }
 
-          this.addRow(figure);    // add the new figure as child to this figure
       },this));
   },
 

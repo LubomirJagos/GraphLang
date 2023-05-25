@@ -1868,6 +1868,17 @@ GraphLang.Utils.displayContentsFromClass = function(contents, canvasObj){
         figureObj.updateFrames();
       });
     }
+
+    /*
+     *  Repairs cluster nodes
+     *      1. set value
+     *      2. add event handler for node label of cluster
+     */
+    if (figureObj.NAME.toLowerCase().search('clusterdatatype') > -1){
+        figureObj.nodeLabel.setText(figureObj.getNodeLabelText());
+        figureObj.nodeLabel.on('change:text', figureObj.nodeLabelChanged);
+    }
+
   });
 
 }

@@ -78,15 +78,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     });
 
     this.nodeLabel = new GraphLang.Shapes.Basic.Label({bgColor: '#000000', fontColor: '#FFFFFF', text: "clusterName"});
-    this.nodeLabel.on('change:text', function(nodeEmitter, event){
-      labelText = nodeEmitter.getText();
-      labelText = labelText.replaceAll(" ","_"); 
-      labelText = GraphLang.Utils.getUniqueNodeLabel(nodeEmitter.getCanvas(), labelText); 
-      nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
-      nodeEmitter.text = labelText;                                                   //this will not fire another event!
-      nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
-    });
-    
+    this.nodeLabel.on('change:text', this.nodeLabelChanged);
+
     //this.add(this.nodeLabel, new draw2d.layout.locator.TopLocator());
     this.add(this.nodeLabel, new draw2d.layout.locator.BottomLocator());
     //this.add(this.nodeLabel, new draw2d.layout.locator.XYAbsPortLocator(0,0));
@@ -159,6 +152,16 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
       });
   },
 
+  nodeLabelChanged: function(nodeEmitter, event){
+    alert("cluster name changed");
+    labelText = nodeEmitter.getText();
+    labelText = labelText.replaceAll(" ","_");
+    labelText = GraphLang.Utils.getUniqueNodeLabel(nodeEmitter.getCanvas(), labelText);
+    nodeEmitter.getParent().userData.nodeLabel = labelText;                  //when text change do this also in userData
+    nodeEmitter.text = labelText;                                                   //this will not fire another event!
+    nodeEmitter.getParent().getOutputPort('clusterOutput').userData.datatype = nodeEmitter.getParent().getDatatype();   //change outputPort datatype
+    nodeEmitter.getParent().userData.datatype = nodeEmitter.getParent().getDatatype();
+  },
 
   /********************************************************************************************************************
    *  Functions below are implemented by me (LuboJ)
@@ -171,8 +174,18 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
     return this.nodeLabel.getText();
   },
 
+  /**
+   * Return cluster datatype, returns reference using * because cluster will be mutable, also their names must
+   * be unique so ID is used and no to be removed and replace by easier number at code generation
+   * from ID - are removed.
+   * @returns {string}
+   */
   getDatatype: function(){
-    return "clusterDatatype_" + this.getId() + "_" + this.nodeLabel.getText() + "*";
+    return "clusterDatatype_" + this.getId().replaceAll("-", "") + "_" + this.nodeLabel.getText() + "*";
+  },
+
+  getNodeLabelText: function(){
+    return this.userData.nodeLabel;
   },
 
   /*
