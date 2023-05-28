@@ -1902,7 +1902,9 @@ GraphLang.Utils.displayContents2 = function(jsonDocument, canvasObj){
   //need to do put connection into separate list and create them after all fgures are created to have phzsically on canvas ports to have place for them
   //var connectionList = new draw2d.utils.ArrayList
 
-  reader.unmarshal(canvasObj, jsonDocument);  //this variable was evaluated inside eval() function
+  //jsonDocumentCopy = jsonDocument;
+  jsonDocumentCopy = JSON.parse(JSON.stringify(jsonDocument));
+  reader.unmarshal(canvasObj, jsonDocumentCopy);  //this variable was evaluated inside eval() function
   //just for now, uncomment in future //this.initAllPortToDefault();  //this must be here, without this canvas behave non/standard, it's not possible to remove wires etc.
 
   //here are composite object repaired, they are assigned back to their ownership
@@ -2168,14 +2170,15 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     cCodeParamsOutput = "";
     cCodeReturnDatatype = "void";
 
-    /*
     var divSubnodeCanvasId = 'subnodeCanvas_'+translateSubnodeCanvasArray.getSize();
     $('#subnodeCanvasContainer').append("<div id=\"" + divSubnodeCanvasId + "\" style=\"width: 1500px; height: 600px;\"></div>");
     var subnodeCanvas = new draw2d.Canvas(divSubnodeCanvasId);
     translateSubnodeCanvasArray.push([divSubnodeCanvasId, subnodeCanvas])
-     */
 
+    /*
     var subnodeCanvas = appCanvas2;
+    */
+
     appCanvas2.clear();
 
     GraphLang.Utils.displayContents2(nodeObj.jsonDocument, subnodeCanvas);
@@ -2251,6 +2254,9 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     //return cCode;
     translateToCppCodeFunctionsArray.push(cCode);
 
+    /*
+        Remove canvas html element and destroy JS canvas in memory
+     */
     translateSubnodeCanvasArray.each(function(canvasIndex, canvasObjArray){
         $("canvas").remove("#"+canvasObjArray[0]);
         canvasObjArray[1].destroy();

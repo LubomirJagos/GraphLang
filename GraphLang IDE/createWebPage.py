@@ -3,10 +3,12 @@ import glob
 import re
 
 searchDirs = [
-    "GraphLangShapes",
-    "UserDefinedNode",
-    "ArduinoLib",
-    "PythonQtGuiLib",
+    "LibraryBlocks",
+]
+
+excludeFromHtmlBlockPatterns = [
+    "Core/utils",
+    "GraphLangExperimental",
 ]
 
 objectsNamesList = []
@@ -328,12 +330,23 @@ if __name__ == "__main__":
     jsScriptIncludeStatement = ""
     htmlNodeMenuItem = ""
     for nodeItem in objectsNamesList:
-        jsScriptIncludeStatement += "\t" + '<script src="./' + nodeItem[1].replace('\\','/') + '"></script>' + "\n"
+        scriptTagStr = "\t" + '<script src="./' + nodeItem[1].replace('\\','/') + '"></script>' + "\n"
+        jsScriptIncludeStatement += scriptTagStr
         
-        htmlNodeMenuItemName = nodeItem[2].split('.')[-1]
-        htmlNodeMenuItem += '<div data-shape="' + nodeItem[2] + '" data-label="' + htmlNodeMenuItemName + '" class="palette_node_element draw2d_droppable">' + htmlNodeMenuItemName + '</div>' + "\n" 
+        #
+        #   Check if path is in exclude patterns, if yes flag is set and html <div> will not be generated
+        #
+        generateHtml = True
+        for excludeStr in excludeFromHtmlBlockPatterns:
+            if (scriptTagStr.find(excludeStr) > -1):
+                generateHtml = False
+
+        if generateHtml:
+            htmlNodeMenuItemName = nodeItem[2].split('.')[-1]
+            htmlNodeMenuItem += '<div data-shape="' + nodeItem[2] + '" data-label="' + htmlNodeMenuItemName + '" class="palette_node_element draw2d_droppable">' + htmlNodeMenuItemName + '</div>' + "\n"
 
     print(jsScriptIncludeStatement)
+    print(htmlNodeMenuItem)
 
     outputStr = htmlTemplate.replace('<!-- user defined nodes place to insert -->', '<!-- user defined nodes place to insert -->'+"\n"+jsScriptIncludeStatement)
     outputStr = outputStr.replace('//library tree variables init place to insert', '//library tree variables init place to insert'+"\n"+ "".join(createVariableIniStatement))
