@@ -56,10 +56,10 @@
 	GraphLang.Shapes.Basic.Loop2 = {};
 	GraphLang.ArduinoLib = {};
 	GraphLang.ArduinoLib.String = {};
+	GraphLang.ArduinoLib.FileLib = {};
 	GraphLang.ArduinoLib.Node = {};
 	GraphLang.ArduinoLib.Node.Serial = {};
 	GraphLang.ArduinoLib.Node.Math = {};
-	GraphLang.ArduinoLib.FileLib = {};
 
 
     </script>
@@ -80,24 +80,24 @@
     <script src="./GraphLangUtils/ArrayClusterInPlaceEditor.js"></script>
 
     <!-- user defined nodes place to insert -->
+	<script src="./LibraryBlocks/Arduino/Core/Add.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/analogRead.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/analogWrite.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/digitalRead.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/digitalWrite.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Divide.js"></script>
+	<script src="./LibraryBlocks/Core/utils/UserDefinedNode.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Multiply.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Not.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/pinMode.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Serial.begin.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Serial.println.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Subtract.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/ternarOperator.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/toStr.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/waitUntilNextMs.js"></script>
 	<script src="./LibraryBlocks/Arduino/FileLib/OpenFolderNode.js"></script>
 	<script src="./LibraryBlocks/Arduino/FileLib/SearchDirectoryNode.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Add.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/analogRead.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/analogWrite.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/digitalRead.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/digitalWrite.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Divide.js"></script>
-	<script src="./LibraryBlocks/Core/utils/UserDefinedNode.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Multiply.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Not.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/pinMode.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Serial.begin.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Serial.println.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Subtract.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/ternarOperator.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/toStr.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/waitUntilNextMs.js"></script>
 	<script src="./LibraryBlocks/Arduino/String/replace.js"></script>
 	<script src="./LibraryBlocks/Core/ArrayNode.js"></script>
 	<script src="./LibraryBlocks/Core/BundleByName.js"></script>
@@ -123,7 +123,7 @@
 	<script src="./LibraryBlocks/Core/utils/Port.js"></script>
 	<script src="./LibraryBlocks/Core/utils/RightTunnel.js"></script>
 	<script src="./LibraryBlocks/Core/utils/LeftTunnel.js"></script>
-	<script src="./LibraryBlocks/Arduino/Node/Math.Abs.js"></script>
+	<script src="./LibraryBlocks/Arduino/Core/Math.Abs.js"></script>
 	<script src="./LibraryBlocks/Core/WhileLayer.js"></script>
 	<script src="./LibraryBlocks/Core/WireConnection.js"></script>
 	<script src="./LibraryBlocks/GraphLangExperimental/InvokeNode.js"></script>
@@ -299,8 +299,6 @@ function displayJSON(canvas){
    <div id="navigation" class="">
 
         <!-- user defined nodes menu place to insert -->
-<div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
-<div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
 <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="Add" class="palette_node_element draw2d_droppable">Add</div>
 <div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="analogRead" class="palette_node_element draw2d_droppable">analogRead</div>
 <div data-shape="GraphLang.ArduinoLib.Node.analogWrite" data-label="analogWrite" class="palette_node_element draw2d_droppable">analogWrite</div>
@@ -316,6 +314,8 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="ternarOperator" class="palette_node_element draw2d_droppable">ternarOperator</div>
 <div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="toStr" class="palette_node_element draw2d_droppable">toStr</div>
 <div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="waitUntilNextMs" class="palette_node_element draw2d_droppable">waitUntilNextMs</div>
+<div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
+<div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
 <div data-shape="GraphLang.ArduinoLib.String.replace" data-label="replace" class="palette_node_element draw2d_droppable">replace</div>
 <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="ArrayNode" class="palette_node_element draw2d_droppable">ArrayNode</div>
 <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="BundleByName" class="palette_node_element draw2d_droppable">BundleByName</div>

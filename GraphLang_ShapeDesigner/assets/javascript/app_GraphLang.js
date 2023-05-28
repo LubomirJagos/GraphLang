@@ -6264,9 +6264,9 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     //set in/out
     let portObjTypeStr = portObj.NAME;
     if (portObjTypeStr.toLowerCase().search("input") > -1){
-        portFigure.setInputType("Input");
+        portFigure.setInputType("input");
     }else if (portObjTypeStr.toLowerCase().search("output") > -1){
-        portFigure.setInputType("Output");
+        portFigure.setInputType("output");
     }
     portFigure.setColor(portObj.getColor());
     portFigure.setConnectionDirection(portObj.getConnectionDirection());
@@ -6307,7 +6307,7 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
    *    AT THE END CHECK DIFFERENCE BETWEEN PORT AND SCHEMATIC PORTS
    *        - port compare against schematic is done just in case schematic is defined at object ie. jsonDocument exists
    */
-  if (newObject.jsonDocument) {
+  if (newObject.jsonDocument && Array.isArray(newObject.jsonDocument) && newObject.jsonDocument.length > 0) {
     this.checkSymbolAndSchematic(canvas)
   }
 

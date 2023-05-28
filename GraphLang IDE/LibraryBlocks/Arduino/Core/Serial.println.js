@@ -12,23 +12,23 @@ GraphLang.ArduinoLib.Node.Serial.println = GraphLang.UserDefinedNode.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:86.5, height:88.00742181809329, flagAutoCreatePorts: false},attr), setter, getter);
      var port;
      // in1
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(2.3121387283236996, 39.828782698059776));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(2.3121387283236996, 39.828782698059776));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
      port.setMaxFanOut(20);
      port.userData = {datatype: "string"};
      // errorIn
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(2.3121387283236996, 83.50686859705742));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(2.3121387283236996, 83.50686859705742));
      port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
+     port.setBackgroundColor("#F3D957");
      port.setName("errorIn");
      port.setMaxFanOut(20);
      port.userData = {datatype: "error"};
      // errorOut
      port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(105.35721753156072, 83.50686859705742));
      port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
+     port.setBackgroundColor("#F3D957");
      port.setName("errorOut");
      port.setMaxFanOut(20);
      port.userData = {datatype: "error"};

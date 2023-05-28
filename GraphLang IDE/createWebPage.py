@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded",function () {
  *  After page is loaded add pciture to each menu node item.
  */
 $(document).ready(function(){
-      $('#navigation').children('div').each(function () {          
+      $('#navigation div').each(function () {
           var nodeObj = eval('new ' + $(this).attr('data-shape') + '()');
           if (nodeObj.symbolPicture !== undefined){
               $(this).prepend('<img src="' + nodeObj.symbolPicture + '" />');

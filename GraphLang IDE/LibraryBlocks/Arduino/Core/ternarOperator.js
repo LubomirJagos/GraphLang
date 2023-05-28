@@ -17,18 +17,18 @@ GraphLang.ArduinoLib.Node.ternarOperator = GraphLang.UserDefinedNode.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
      port.setMaxFanOut(20);
-     port.userData = {datatype: "int"};
+     port.userData = {datatype: "polymorphic"};
      // in3
      port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.9919423542858194, 83.0851160880089));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("in3");
      port.setMaxFanOut(20);
-     port.userData = {datatype: "int"};
+     port.userData = {datatype: "polymorphic"};
      // in2
      port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.9919423542858194, 50.742620074834974));
      port.setConnectionDirection(2);
-     port.setBackgroundColor("#37B1DE");
+     port.setBackgroundColor("#00FF00");
      port.setName("in2");
      port.setMaxFanOut(20);
      port.userData = {datatype: "bool"};
@@ -38,7 +38,7 @@ GraphLang.ArduinoLib.Node.ternarOperator = GraphLang.UserDefinedNode.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("out1");
      port.setMaxFanOut(20);
-     port.userData = {datatype: "int"};
+     port.userData = {datatype: "polymorphic"};
      this.persistPorts=false;
    },
 

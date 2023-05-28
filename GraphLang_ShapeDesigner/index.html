@@ -21,34 +21,25 @@
     -->
     <script src="../draw2d_hardCopy/draw2d.js"></script>
     <script type="text/javascript">
-      var GraphLang = {};
-
-      GraphLang.Shapes = {};
-      GraphLang.Shapes.Basic = {};
-      GraphLang.Shapes.Basic.Constant = {};
-      GraphLang.Shapes.ItemsNode = {};
-
-      GraphLang.UserDefinedSymbol = {};
-      GraphLang.UserDefinedNode = {};
-
+      UserDefinedExample = {};
+      GraphLangTestShape3 = {};
+      GraphLangTestShape2 = {};
+      GraphLangTestShape = {};
+      ConsoleLog2 = {};
+      ConsoleLog = {};
+      GraphLang = {};
       GraphLang.PythonQtGuiLib = {};
-      MarkerStateBFigure = {};
-      MarkerStateAFigure = {};
-      MarkerFigure = {};
-      DecoratedInputPort = {};
-  	  GraphLang = {};
-  	  GraphLang.PythonQtGuiLib = {};
-  	  GraphLang.ArduinoLib = {};
-  	  GraphLang.ArduinoLib.String = {};
-  	  GraphLang.ArduinoLib.Node = {};
-  	  GraphLang.ArduinoLib.Node.Serial = {};
-  	  GraphLang.ArduinoLib.Node.Math = {};
-  	  GraphLang.ArduinoLib.FileLib = {};
-  	  GraphLang.ArduinoLib.Experimental42Lib = {};
-  	  GraphLang.ArduinoLib.DummyLib = {};
-  	  GraphLangTestShape2 = {};
-  	  GraphLangTestShape = {};
-      
+      GraphLang.Shapes = {};
+      GraphLang.Shapes.ItemsNode = {};
+      GraphLang.Shapes.ItemsNode.InvokeNode = {};
+      GraphLang.Shapes.Basic = {};
+      GraphLang.Shapes.Basic.Loop2 = {};
+      GraphLang.ArduinoLib = {};
+      GraphLang.ArduinoLib.String = {};
+      GraphLang.ArduinoLib.Node = {};
+      GraphLang.ArduinoLib.Node.Serial = {};
+      GraphLang.ArduinoLib.Node.Math = {};
+      GraphLang.ArduinoLib.FileLib = {};
     </script>
 
 
@@ -66,69 +57,69 @@
     <script src="../GraphLang IDE/GraphLangUtils/Utils.js"></script>
     <script src="../GraphLang IDE/gui/HoverConnection.js"></script>
 
-    <!-- These are mine shapes added. LuboJ. -->
-      <script src="../GraphLang IDE/GraphLangShapes/__initEnv.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Port.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/InputPort.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/OutputPort.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Label.js"></script>  <!-- here is some serious PROBLEM, without definition inside file of variale it's not running, DAMN-->
-      <script src="../GraphLang IDE/GraphLangShapes/Loop2.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Jailhouse.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Tunnel.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/LeftTunnel.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/RightTunnel.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/WireConnection.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Multilayered3.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/WhileLayer.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/ForLoop.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Sequence.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/FeedbackNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/UnbundleByName.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/BundleByName.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Unbundle.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Bundle.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/ConstantNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/ArrayNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/ClusterDatatypeNode2.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/SliderNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/Return.js"></script>
-      <script src="../GraphLang IDE/GraphLangShapes/UserDefinedNode.js"></script>
-
-      <!--
-        EXPERIMENTAL, not needed in core
-      -->
-      <script src="../GraphLang IDE/GraphLangExperimental/UserCodeBlock.js"></script>
-      <script src="../GraphLang IDE/GraphLangExperimental/PropertyNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangExperimental/InvokeNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangExperimental/ExternalOutputPortNode.js"></script>
-      <script src="../GraphLang IDE/GraphLangExperimental/ExternalInputPortNode.js"></script>
-    <!-- End of GraphLang shapes-->
-
-    <!-- These are mine arduino shapes added. LuboJ. -->
-      <script src="../GraphLang IDE/ArduinoLib/Node/Add.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Not.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Subtract.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Multiply.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Divide.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/digitalWrite.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/digitalRead.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/analogRead.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/analogWrite.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/waitUntilNextMs.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Math.Abs.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/pinMode.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/Serial.begin.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/toStr.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/ternarOperator.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/LJ42.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/Node/ArduinoNano.js"></script>
-      <script src="../GraphLang IDE/ArduinoLib/String/replace.js"></script>
-
-
     <!--
-        User defined shape example
+        HERE MUST BE ADDED ALL NODE .js FILES
     -->
-    <script src="../GraphLang IDE/UserDefinedNode/GraphLangTestShape.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Add.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/analogRead.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/analogWrite.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/digitalRead.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/digitalWrite.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Divide.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/UserDefinedNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Multiply.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Not.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/pinMode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Serial.begin.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Serial.println.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Subtract.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/ternarOperator.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/toStr.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/waitUntilNextMs.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/FileLib/OpenFolderNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/FileLib/SearchDirectoryNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/String/replace.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/ArrayNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/BundleByName.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/Bundle.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/Loop2.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/ConstantNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/FeedbackNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/ForLoop.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/Multilayered3.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/Return.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/Sequence.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/SliderNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/TerminalOutput.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/UnbundleByName.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/Unbundle.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/InputPort.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/Jailhouse.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/Label.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/LayerChooser.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/Tunnel.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/ClusterDatatypeNode2.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/OutputPort.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/Port.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/RightTunnel.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/utils/LeftTunnel.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Arduino/Core/Math.Abs.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/WhileLayer.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/Core/WireConnection.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/GraphLangExperimental/InvokeNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/GraphLangExperimental/ExternalOutputPortNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/GraphLangExperimental/ExternalInputPortNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/GraphLangExperimental/PropertyNode.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/GraphLangExperimental/UserCodeBlock.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/PythonQtGuiLib/UiExec.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/PythonQtGuiLib/UiLoad.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/PythonQtGuiLib/UiShow.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/ConsoleLog.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/ConsoleLog2.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/GraphLangTestShape.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/GraphLangTestShape2.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/GraphLangTestShape3.js"></script>
+    <script src="../GraphLang IDE/LibraryBlocks/UserDefinedNode/UserDefinedExample.js"></script>
 
 
     <script type="text/javascript">

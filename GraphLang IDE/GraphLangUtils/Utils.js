@@ -177,15 +177,15 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	      intersection = intersectPoint.data[k];
 		  intersection.loopObj = loopObj;					//remember top multilayered loop
 
-          if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersection.intersectionEdge = 3;                                        //LEFT edge
-          else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersection.intersectionEdge = 0;                                   //TOP edge
-          else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersection.intersectionEdge = 1;     //RIGHT edge
-          else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersection.intersectionEdge = 2;    //BOTTOM edge
+          if (Math.round(intersectPoint.data[k].x) == Math.round(loopBoundingRect.getX())) intersection.intersectionEdge = 3;                                        //LEFT edge
+          else if (Math.round(intersectPoint.data[k].y) == Math.round(loopBoundingRect.getY())) intersection.intersectionEdge = 0;                                   //TOP edge
+          else if (Math.round(intersectPoint.data[k].x) == Math.round(loopBoundingRect.getX() + loopBoundingRect.getWidth())) intersection.intersectionEdge = 1;     //RIGHT edge
+          else if (Math.round(intersectPoint.data[k].y) == Math.round(loopBoundingRect.getY() + loopBoundingRect.getHeight())) intersection.intersectionEdge = 2;    //BOTTOM edge
 
-          if (intersectPoint.data[k].x == loopBoundingRect.getX()) intersection.intersectionEdgeStr = "left";                                        //LEFT edge
-          else if (intersectPoint.data[k].y == loopBoundingRect.getY()) intersection.intersectionEdgeStr = "top";                                   //TOP edge
-          else if (intersectPoint.data[k].x == loopBoundingRect.getX() + loopBoundingRect.getWidth()) intersection.intersectionEdgeStr = "right";     //RIGHT edge
-          else if (intersectPoint.data[k].y == loopBoundingRect.getY() + loopBoundingRect.getHeight()) intersection.intersectionEdgeStr = "bottom";    //BOTTOM edge
+          if (Math.round(intersectPoint.data[k].x) == Math.round(loopBoundingRect.getX())) intersection.intersectionEdgeStr = "left";                                        //LEFT edge
+          else if (Math.round(intersectPoint.data[k].y) == Math.round(loopBoundingRect.getY())) intersection.intersectionEdgeStr = "top";                                   //TOP edge
+          else if (Math.round(intersectPoint.data[k].x) == Math.round(loopBoundingRect.getX() + loopBoundingRect.getWidth())) intersection.intersectionEdgeStr = "right";     //RIGHT edge
+          else if (Math.round(intersectPoint.data[k].y) == Math.round(loopBoundingRect.getY() + loopBoundingRect.getHeight())) intersection.intersectionEdgeStr = "bottom";    //BOTTOM edge
 
           if (loopBoundingRect.hitTest(wire.getSource().getAbsoluteX(), wire.getSource().getAbsoluteY())){
           	intersection.containWireSource = "1";

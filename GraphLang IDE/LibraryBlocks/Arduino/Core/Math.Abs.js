@@ -17,14 +17,14 @@ GraphLang.ArduinoLib.Node.Math.Abs = GraphLang.UserDefinedNode.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("in1");
      port.setMaxFanOut(20);
-     port.userData = {datatype: "double"};
+     port.userData = {datatype: "numeric"};
      // out1
      port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(100.73862495196246, 50.892857142857004));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out1");
      port.setMaxFanOut(20);
-     port.userData = {datatype: "double"};
+     port.userData = {datatype: "numeric"};
      this.persistPorts=false;
    },
 

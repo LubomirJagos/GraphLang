@@ -153,7 +153,6 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
   },
 
   nodeLabelChanged: function(nodeEmitter, event){
-    alert("cluster name changed");
     labelText = nodeEmitter.getText();
     labelText = labelText.replaceAll(" ","_");
     labelText = GraphLang.Utils.getUniqueNodeLabel(nodeEmitter.getCanvas(), labelText);
