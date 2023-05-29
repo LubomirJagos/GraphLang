@@ -214,20 +214,9 @@ function displayJSON(canvas){
 <body id="container">
 
    <div id="content">
-   		<div id="toolbar"></div>
-   		<div id="canvas" style="width: 1500px; height: 600px;"></div>
-      <div id="canvas2" style="width: 1500px; height: 600px;"></div> <!-- Size of bottom window is defined in Application.js -->
-
-      <!--
-       Canvas for screenshots set to not display but it's still here just chane its style attr.
-       -->
-      <div style="display: inline; position: absolute; right: 20px; bottom: 20px; width: 400px; height: 220px; background: none;">
-        <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
-
-        <div id="imgDiv" style="display: inline; overflow: hidden; height: 200px; width: 200px; background: yellow;">
-          <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
-        </div>
-      </div>
+        <div id="toolbar"></div>
+        <div id="canvas" style="width: 1500px; height: 600px;"></div>
+        <div id="canvas2" style="width: 1500px; height: 600px;"></div> <!-- Size of bottom window is defined in Application.js -->
    </div>
 
    <div id="navigation" class="">

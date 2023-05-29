@@ -18,55 +18,28 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
 
     this.persistPorts=false;    /*??what's this??*/
   },
-  translateToCppCode: function(){
-    this.getUserData().wasTranslatedToCppCode = true;
-    // return "for (TBD){";
 
-    var cCode = "";
-    var iterationCount = "/* forLoop iterationCount value */"
-    var iterationTerminal = this.getInputPort("iterationTerminal");
-    if (iterationTerminal.getConnections().getSize() > 0){
-      iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go
-    }
-
-    var forLoopIteratorVariable = 'forLoopIterator_' + this.getId(); 
-
-    cCode += this.getTunnelsDeclarationCppCode();
-    cCode += "for (var " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
-    cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t") + "\n";
-    cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
-
-    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *          RECURSION CALL
-     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     */
-    cCode += "\t/*code inside FOR LOOP */\n";
-    this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
-
-      if (figObj.translateToCppCode){
-        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n";
-      }else if (figObj.translateToCppCode2){
-        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n";
+  /*
+   *    This event is called when figure is dropped on layer.
+   */
+  onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
+    //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
+    if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
+      this._super(droppedFigure, x, y, shiftKey, ctrlKey);
+      if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
+        //alert('no layer change')
+      }else{
+        //alert('new layer assignment')
+        droppedFigure.getPorts().each(function(portIndex, portObj){
+          portObj.getConnections().each(function(connectionIndex, connectionObj){
+            GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
+          });
+        });
       }
-
-     /* in case of post C/C++ code run it */
-     if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
-
-    });
-
-    return cCode;
-
-  },
-  translateToCppCodePost: function(){
-    var cCode = "";
-    cCode += "} /* END FOR LOOP */" + "\n";
-    cCode += this.getRightTunnelsAssignementOutputCppCode();
-
-    return cCode;
+    }
   },
 
-    /**
+  /**
    * @method setPersistentAttributes
    * @descritpiton Read all attributes from the serialized properties and transfer them into the shape.
    * This is used when file is lOADED.
@@ -125,6 +98,55 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     }
   },
 
-  symbolPicture: " data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABSCAIAAABBpbS2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGSSURBVHhe7dw/SwJxHMdxUfyHwyG4hSL0QBxtaxAdBIXWpp5A2z2Lc2lxcQ7aFHKwVdpuiWaDzClL6iP+Og4hiuuG++X7zXdSvOP74tBz0NT64IMAAggUBBBAoCD4BcFg8G71+P6b2eSbfiBYrVbt9kO1uqzVNjZOKvURnWAymbRa3aOvms3T0Wj0bFXz+Ut0As/ztHa5fJHP32Yyj7ncneNc6hHXdc3hbSg6wXQ61bal0pVeH55i8VqPD4dDc4bEF52g1zurVM7DywfjOG6jcWLOkPiiE9Trx4XCTXjzYLLZe10Ivu+bkyS7iASLxUJLatXw5sGk00s9O5vNzEmSHVcB7wV/IeATYduh3xfsGo/HB313GLT7jtDpPJmjWlU8BKrf33S7r+aoVgUBBBAoCCCAQEEAAQQKAgggUBBAAIGCAAIIFAQQQKAggAACBQEEECgIIIBAQQABBAoCCCBQEEAAgYIAAggUBBBAoCCAAAIVJ8Hez8EtmngI9v4OwLqJgeDfBwEEECgIIIBAQQDBev0J+WznB2v5Ek4AAAAASUVORK5CYII="
+  symbolPicture: " data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABSCAIAAABBpbS2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGSSURBVHhe7dw/SwJxHMdxUfyHwyG4hSL0QBxtaxAdBIXWpp5A2z2Lc2lxcQ7aFHKwVdpuiWaDzClL6iP+Og4hiuuG++X7zXdSvOP74tBz0NT64IMAAggUBBBAoCD4BcFg8G71+P6b2eSbfiBYrVbt9kO1uqzVNjZOKvURnWAymbRa3aOvms3T0Wj0bFXz+Ut0As/ztHa5fJHP32Yyj7ncneNc6hHXdc3hbSg6wXQ61bal0pVeH55i8VqPD4dDc4bEF52g1zurVM7DywfjOG6jcWLOkPiiE9Trx4XCTXjzYLLZe10Ivu+bkyS7iASLxUJLatXw5sGk00s9O5vNzEmSHVcB7wV/IeATYduh3xfsGo/HB313GLT7jtDpPJmjWlU8BKrf33S7r+aoVgUBBBAoCCCAQEEAAQQKAgggUBBAAIGCAAIIFAQQQKAggAACBQEEECgIIIBAQQABBAoCCCBQEEAAgYIAAggUBBBAoCCAAAIVJ8Hez8EtmngI9v4OwLqJgeDfBwEEECgIIIBAQQDBev0J+WznB2v5Ek4AAAAASUVORK5CYII=",
+
+  translateToCppCode: function(){
+    this.getUserData().wasTranslatedToCppCode = true;
+    // return "for (TBD){";
+
+    var cCode = "";
+    var iterationCount = "/* forLoop iterationCount value */"
+    var iterationTerminal = this.getInputPort("iterationTerminal");
+    if (iterationTerminal.getConnections().getSize() > 0){
+      iterationCount = "wire_" + iterationTerminal.getConnections().get(0).getId(); //getting wire name connected to iteration terminal, how many times has this for loop go
+    }
+
+    var forLoopIteratorVariable = 'forLoopIterator_' + this.getId();
+
+    cCode += this.getTunnelsDeclarationCppCode();
+    cCode += "for (var " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
+    cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t") + "\n";
+    cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
+
+    /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     *          RECURSION CALL
+     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    cCode += "\t/*code inside FOR LOOP */\n";
+    this.getAssignedFigures().each(function(figIndex, figObj){
+      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+
+      if (figObj.translateToCppCode){
+        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n";
+      }else if (figObj.translateToCppCode2){
+        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n";
+      }
+
+      /* in case of post C/C++ code run it */
+      if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
+
+    });
+
+    return cCode;
+
+  },
+
+  translateToCppCodePost: function(){
+    var cCode = "";
+    cCode += "} /* END FOR LOOP */" + "\n";
+    cCode += this.getRightTunnelsAssignementOutputCppCode();
+
+    return cCode;
+  }
 
 });

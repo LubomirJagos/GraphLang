@@ -99,6 +99,7 @@
 	<script src="./LibraryBlocks/Arduino/FileLib/OpenFolderNode.js"></script>
 	<script src="./LibraryBlocks/Arduino/FileLib/SearchDirectoryNode.js"></script>
 	<script src="./LibraryBlocks/Arduino/String/replace.js"></script>
+	<script src="./LibraryBlocks/Arduino/String/replace2.js"></script>
 	<script src="./LibraryBlocks/Core/ArrayNode.js"></script>
 	<script src="./LibraryBlocks/Core/BundleByName.js"></script>
 	<script src="./LibraryBlocks/Core/Bundle.js"></script>
@@ -136,6 +137,7 @@
 	<script src="./LibraryBlocks/PythonQtGuiLib/UiShow.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/ConsoleLog.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/ConsoleLog2.js"></script>
+	<script src="./LibraryBlocks/UserDefinedNode/experiment_1.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape2.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape3.js"></script>
@@ -239,7 +241,7 @@ document.addEventListener("DOMContentLoaded",function () {
  *  After page is loaded add pciture to each menu node item.
  */
 $(document).ready(function(){
-      $('#navigation').children('div').each(function () {          
+      $('#navigation div').each(function () {
           var nodeObj = eval('new ' + $(this).attr('data-shape') + '()');
           if (nodeObj.symbolPicture !== undefined){
               $(this).prepend('<img src="' + nodeObj.symbolPicture + '" />');
@@ -280,20 +282,9 @@ function displayJSON(canvas){
 <body id="container">
 
    <div id="content">
-   		<div id="toolbar"></div>
-   		<div id="canvas" style="width: 1500px; height: 600px;"></div>
-      <div id="canvas2" style="width: 1500px; height: 600px;"></div> <!-- Size of bottom window is defined in Application.js -->
-
-      <!--
-       Canvas for screenshots set to not display but it's still here just chane its style attr.
-       -->
-      <div style="display: inline; position: absolute; right: 20px; bottom: 20px; width: 400px; height: 220px; background: none;">
-        <canvas id="myCanvas" width="160px" height="85px" style="background: red; float: left;"></canvas>
-
-        <div id="imgDiv" style="display: inline; overflow: hidden; height: 200px; width: 200px; background: yellow;">
-          <img class="shadow" id="preview" style="border-radius:5px;overflow:auto;/* position:absolute; top:10px; left:10px; */width:150; height:150;border:3px solid gray; background: #FFFFFF; margin: 0 0 0 0;"/>
-        </div>
-      </div>
+        <div id="toolbar"></div>
+        <div id="canvas" style="width: 1500px; height: 600px;"></div>
+        <div id="canvas2" style="width: 1500px; height: 600px;"></div> <!-- Size of bottom window is defined in Application.js -->
    </div>
 
    <div id="navigation" class="">
@@ -317,6 +308,7 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
 <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
 <div data-shape="GraphLang.ArduinoLib.String.replace" data-label="replace" class="palette_node_element draw2d_droppable">replace</div>
+<div data-shape="GraphLang.ArduinoLib.String.replace2" data-label="replace2" class="palette_node_element draw2d_droppable">replace2</div>
 <div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="ArrayNode" class="palette_node_element draw2d_droppable">ArrayNode</div>
 <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="BundleByName" class="palette_node_element draw2d_droppable">BundleByName</div>
 <div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="Bundle" class="palette_node_element draw2d_droppable">Bundle</div>
@@ -339,6 +331,7 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.PythonQtGuiLib.UiShow" data-label="UiShow" class="palette_node_element draw2d_droppable">UiShow</div>
 <div data-shape="ConsoleLog" data-label="ConsoleLog" class="palette_node_element draw2d_droppable">ConsoleLog</div>
 <div data-shape="ConsoleLog2" data-label="ConsoleLog2" class="palette_node_element draw2d_droppable">ConsoleLog2</div>
+<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
 <div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>

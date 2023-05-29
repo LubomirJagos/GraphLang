@@ -2266,9 +2266,9 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
 /**
  * @method getCppCode3
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
- * @param {bool} showCodee - if true there is code showed in alert message after click on button
+ * @param {bool} showCode - if true there is code showed in alert message after click on button
  * @returns {String} C/C++ code as string
- * @description Copy diagram as C/C++ code into clipboard, uses inside translateToCppCode2() function.
+ * @description Generate C/C++ code using template written in this function.
  */
 GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         /******************************************************************************
@@ -2286,6 +2286,7 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         template_cCode += "#define int32 int\n";
         template_cCode += "#define undefined int\n";
         template_cCode += "#define uint unsigned int\n";
+        template_cCode += "#define numeric float\n";
         template_cCode += "\n";
         template_cCode += this.getCppCodeTypeDefinition();
         template_cCode += "\n";
@@ -2461,7 +2462,7 @@ GraphLang.Utils.translateToPythonCodeSubNode = function(nodeObj){
  * @param {draw2d.Canvas} canvas - schematic which will be serialize to JSON
  * @param {bool} showCode - if true there is code showed in alert message after click on button
  * @returns {String} python code as string
- * @description Copy diagram as Python code into clipboard.
+ * @description Generate python code using template defined in this function.
  */
 GraphLang.Utils.getPythonCode = function(canvas, showCode = true){
         translateToPythonCodeFunctionsArray.clear();

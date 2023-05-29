@@ -8,8 +8,8 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
 
         this._super(attr);
         this.setBackgroundColor("#fdc11d");
-        this.setHeight(50);
-        this.setWidth(20);
+        this.setHeight(30);
+        this.setWidth(15);
 
         this.originalWidth = this.getWidth();
         this.originalHeight = this.getHeight();

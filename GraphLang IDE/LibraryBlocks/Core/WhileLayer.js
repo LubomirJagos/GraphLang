@@ -110,7 +110,27 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     }
   },
 
-  symbolPicture: " data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFkAAABUCAIAAABm9wwmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAJrSURBVHhe7dw/aBphHMZxW86huWpIMlSF0EDWZGoX61QKtcVJt0IzmYKboUsXN8FSJ6d2sEqIiKTdnATBLZRASEEslLYujX8okuCg5BRieugbnir+K81yb5/PcN7vvZu+cC+3nDe63a6J+m6KX2KLP7EFsAWwBbAFsAWwBcx+16rX64lEQgzGFAqFxNlUc7Xw+Xxut1vMRqMoyjW3SKfTNptNLBlHNBqdvwX3C2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAuQtkWz2SwUCuVyuVqtiqVZ5GwRiURcLterYPDHwUEul7u3uZlMJsW1ySRs8WJr69P+/vuzs28nJ0eVyvdaLVithsNhPZC4YwLZWsRisZ/F4sdK5cn5+WDl1uWlv9VKnZ7G4/F8Pj9YHEu2FplU6mWjcefiQsxXHmras3Y7s7sr5nGkalEqlVqa9ljTxDzsUadzdHwshnGkatHpdPSjtdcbjCMsvV67f8MkUrVwOBz68YvZPBhHfDWb7079xFaqFna7/f7Gxp6qinlYZmXlqdcrhnFk2zsDOzsZVX1nsYi5T39mgsvLraWlQCAglsaRrYXT6dTfI14vLnpXV/UiHxYW3litD9bWPq+vv00kLMONRvzF9+xiNoJarZbNZouHh78ajduq+nx72+/3K4oiLk8wbwsxGJDH47nO/zkQZ4al76nibKrZLf4fsu2d/4ItgC2ALYAtgC2ALYAtgC2umEy/AQJRu3dzYW7lAAAAAElFTkSuQmCC",
+  /*
+   *    This event is called when figure is dropped on layer.
+   */
+  onCatch(droppedFigure, x, y, shiftKey, ctrlKey){
+      //run super() or continue just in case there is not dropped tunnel inside layer, tunnel is possible to move
+      if (droppedFigure.NAME.toLowerCase().search('tunnel') == -1){
+          this._super(droppedFigure, x, y, shiftKey, ctrlKey);
+          if (droppedFigure.getComposite() && droppedFigure.getComposite().getId() == this.getId()){
+              //alert('no layer change')
+          }else{
+              //alert('new layer assignment')
+              droppedFigure.getPorts().each(function(portIndex, portObj){
+                  portObj.getConnections().each(function(connectionIndex, connectionObj){
+                      GraphLang.Utils.detectTunnels2(droppedFigure.getCanvas(), connectionObj);
+                  });
+              });
+          }
+      }
+  },
+
+    symbolPicture: " data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFkAAABUCAIAAABm9wwmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAJrSURBVHhe7dw/aBphHMZxW86huWpIMlSF0EDWZGoX61QKtcVJt0IzmYKboUsXN8FSJ6d2sEqIiKTdnATBLZRASEEslLYujX8okuCg5BRieugbnir+K81yb5/PcN7vvZu+cC+3nDe63a6J+m6KX2KLP7EFsAWwBbAFsAWwBcx+16rX64lEQgzGFAqFxNlUc7Xw+Xxut1vMRqMoyjW3SKfTNptNLBlHNBqdvwX3C2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAtgC2ALYAuQtkWz2SwUCuVyuVqtiqVZ5GwRiURcLterYPDHwUEul7u3uZlMJsW1ySRs8WJr69P+/vuzs28nJ0eVyvdaLVithsNhPZC4YwLZWsRisZ/F4sdK5cn5+WDl1uWlv9VKnZ7G4/F8Pj9YHEu2FplU6mWjcefiQsxXHmras3Y7s7sr5nGkalEqlVqa9ljTxDzsUadzdHwshnGkatHpdPSjtdcbjCMsvV67f8MkUrVwOBz68YvZPBhHfDWb7079xFaqFna7/f7Gxp6qinlYZmXlqdcrhnFk2zsDOzsZVX1nsYi5T39mgsvLraWlQCAglsaRrYXT6dTfI14vLnpXV/UiHxYW3litD9bWPq+vv00kLMONRvzF9+xiNoJarZbNZouHh78ajduq+nx72+/3K4oiLk8wbwsxGJDH47nO/zkQZ4al76nibKrZLf4fsu2d/4ItgC2ALYAtgC2ALYAtgC2umEy/AQJRu3dzYW7lAAAAAElFTkSuQmCC",
 
   /*****************************************************************************************************************************************************
    *    TRANSLATE TO C/C++ functions
