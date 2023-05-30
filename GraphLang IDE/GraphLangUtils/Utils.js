@@ -211,13 +211,13 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
   		auxLoopIntersections = [];
   		if (segmentObj.start.y < segmentObj.end.y){
-  			startY = segmentObj.start.y; 
+  			startY = segmentObj.start.y;
   			endY = segmentObj.end.y;
-			lineDirection = "down"; 
+			lineDirection = "down";
   		}else{
-  			startY = segmentObj.end.y; 
-  			endY = segmentObj.start.y; 
-			lineDirection = "up"; 
+  			startY = segmentObj.end.y;
+  			endY = segmentObj.start.y;
+			lineDirection = "up";
   		}
 
 		for (k = 0; k < loopIntersections.length; k++){
@@ -234,7 +234,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	  			if ( a.y > b.y ) return 1;
 	  		}else if (lineDirection == "up"){
   				if ( a.y > b.y ) return -1;
-	  			if ( a.y < b.y ) return 1;			
+	  			if ( a.y < b.y ) return 1;
 	   	  }
   			return 0;
   		});
@@ -249,13 +249,13 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 
   		auxLoopIntersections = [];
   		if (segmentObj.start.x < segmentObj.end.x){
-  			startX = segmentObj.start.x; 
-  			endX = segmentObj.end.x; 
-			lineDirection = "right"; 
+  			startX = segmentObj.start.x;
+  			endX = segmentObj.end.x;
+			lineDirection = "right";
   		}else{
-  			startX = segmentObj.end.x; 
-  			endX = segmentObj.start.x; 
-			lineDirection = "left"; 
+  			startX = segmentObj.end.x;
+  			endX = segmentObj.start.x;
+			lineDirection = "left";
   		}
 
 		for (k = 0; k < loopIntersections.length; k++){
@@ -321,7 +321,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 				tunnelObj.setRotationAngle(-90);
 			}
-			
+
 			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "bottom" && loopIntersectionsOrdered[k].lineDirection == "down"){
 				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 				tunnelObj.setRotationAngle(90);
@@ -330,7 +330,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
 				tunnelObj.setRotationAngle(-90);
 			}
-			
+
 			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "left" && loopIntersectionsOrdered[k].lineDirection == "left"){
 				tunnelObj = new GraphLang.Shapes.Basic.RightTunnel();
 				tunnelObj.setRotationAngle(180);
@@ -339,7 +339,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
 				tunnelObj.setRotationAngle(0);
 			}
-			
+
 			if (loopIntersectionsOrdered[k].intersectionEdgeStr == "right" && loopIntersectionsOrdered[k].lineDirection == "left"){
 				tunnelObj = new GraphLang.Shapes.Basic.LeftTunnel();
 				tunnelObj.setRotationAngle(180);
@@ -390,7 +390,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
                Math.abs(pY - loopObj.getY() - tunnelObj.getHeight()/2)/loopBoundingRect.getHeight()*100 //<----- THIS IS PROBABLY BAD OR SOMETHING WRONG
              );
            }
-           
+
            addedTunnels.push(tunnelObj);
            addedTunnelsLocator.push(tunnelLocatorRel);
            addedTunnelLoopObj.push(loopObj);
@@ -424,7 +424,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
          addedTunnelLoopObj[k].add(addedTunnels[k],addedTunnelsLocator[k])
          addedTunnels[k].setSelectable(true);
   }
-  
+
 	/*
 	 *	NO TUNNELS, CONNECTION BETWEEN ALREADY EXISTING TUNNELS INSIDE ONE LOOP, GENERATE WireConnection
 	 */
@@ -434,20 +434,20 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		wire.getTarget().getParent().NAME.toLowerCase().search("righttunnel") > -1 &&
 		wire.getSource().getParent().getParent().getId() == wire.getTarget().getParent().getParent().getId()
 	){
-		pX = (wire.getSource().getAbsoluteX() + wire.getTarget().getAbsoluteX())/2; 
+		pX = (wire.getSource().getAbsoluteX() + wire.getTarget().getAbsoluteX())/2;
 		pY = (wire.getSource().getAbsoluteY() + wire.getTarget().getAbsoluteY())/2;
 		wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
 		var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
-	
+
 		canvas.add(wireConnectionObj, wireConnectionLocatorAbs);
-	
+
 		wire.getSource().getParent().getParent().getActiveLayer().assignFigure(wireConnectionObj);
 		wireConnectionObj.setRotationAngle(wire.getTarget().getParent().getRotationAngle());
 		if (wire.getTarget().getParent().getRotationAngle() == 0) wireConnectionObj.setWidth(30);
-		else wireConnectionObj.setHeight(30);	 
-	
+		else wireConnectionObj.setHeight(30);
+
 		var additionalConnection = new HoverConnection();
-		additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+		additionalConnection.setSource(wireConnectionObj.getOutputPort(0));
 		additionalConnection.setTarget(wire.getTarget());
 	    canvas.add(additionalConnection);
 
@@ -475,38 +475,38 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		 */
 		if (
 			wire.getSource().getParent().NAME.toLowerCase().search("tunnel") > -1 &&
-			wire.getSource().getParent().getParent().getId() == addedTunnels[k].getParent().getId() 
+			wire.getSource().getParent().getParent().getId() == addedTunnels[k].getParent().getId()
 		){
-			pX = (wire.getSource().getAbsoluteX() + addedTunnels[k].getAbsoluteX())/2; 
+			pX = (wire.getSource().getAbsoluteX() + addedTunnels[k].getAbsoluteX())/2;
 			pY = (wire.getSource().getAbsoluteY() + addedTunnels[k].getAbsoluteY())/2;
 			wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
 			var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
-	
+
 			canvas.add(wireConnectionObj, wireConnectionLocatorAbs);
-	
+
 			addedTunnels[k].getParent().getActiveLayer().assignFigure(wireConnectionObj);
 			wireConnectionObj.setRotationAngle(addedTunnels[k].getRotationAngle());
 			if (addedTunnels[k].getRotationAngle() == 0) wireConnectionObj.setWidth(30);
-			else wireConnectionObj.setHeight(30);	 
-	
+			else wireConnectionObj.setHeight(30);
+
 			wire.setTarget(wireConnectionObj.getInputPort(0));
-	
+
 			var additionalConnection = new HoverConnection();
-			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));
 			additionalConnection.setTarget(addedTunnels[k].getInputPort(0));
 		    canvas.add(additionalConnection);
 		}else{
 			wire.setTarget(addedTunnels[k].getInputPort(0));
 		}
 	}
-	
+
 	/*
 	 *	START ADDING NEW WIRES AND CONNECT THEM BETWEEN TUNNELS AND TARGET
 	 */
 	//LAST SEGMENT, CONNECTING LAST TUNNEL AND TARGET
 	if (k == addedTunnels.length-1){
 		var additionalConnection = new HoverConnection();
-		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
+		additionalConnection.setSource(addedTunnels[k].getOutputPort(0));
 		additionalConnection.setTarget(wireTarget);
     	canvas.add(additionalConnection);
 	}else{
@@ -517,7 +517,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 		 */
 		if (addedTunnels[k].getParent().getId() == addedTunnels[k+1].getParent().getId()){
 
-			pX = (addedTunnels[k].getAbsoluteX() + addedTunnels[k+1].getAbsoluteX())/2; 
+			pX = (addedTunnels[k].getAbsoluteX() + addedTunnels[k+1].getAbsoluteX())/2;
 			pY = (addedTunnels[k].getAbsoluteY() + addedTunnels[k+1].getAbsoluteY())/2;
 			wireConnectionObj = new GraphLang.Shapes.Basic.WireConnection();
 			var wireConnectionLocatorAbs =  new draw2d.layout.locator.XYAbsPortLocator(pX, pY);
@@ -527,24 +527,24 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 			addedTunnels[k].getParent().getActiveLayer().assignFigure(wireConnectionObj);
 			wireConnectionObj.setRotationAngle(addedTunnels[k+1].getRotationAngle());
 			if (addedTunnels[k+1].getRotationAngle() == 0) wireConnectionObj.setWidth(30);
-			else wireConnectionObj.setHeight(30);	 
+			else wireConnectionObj.setHeight(30);
 
    			var additionalConnection = new HoverConnection();
-			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
+			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));
 			additionalConnection.setTarget(wireConnectionObj.getInputPort(0));
 		    canvas.add(additionalConnection);
 
    			var additionalConnection = new HoverConnection();
-			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));	
+			additionalConnection.setSource(wireConnectionObj.getOutputPort(0));
 			additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));
 		    canvas.add(additionalConnection);
 
 		}else{
 			var additionalConnection = new HoverConnection();
-			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));	
+			additionalConnection.setSource(addedTunnels[k].getOutputPort(0));
 			additionalConnection.setTarget(addedTunnels[k+1].getInputPort(0));
 		    canvas.add(additionalConnection);
-		}	
+		}
 	}
   }
 
@@ -560,7 +560,7 @@ GraphLang.Utils.detectTunnels2 = function(canvas, wire = null){
 	    stroke:1, color:"#FF0000", fontColor:"#0d0d0d"
 	  }),
 	  new draw2d.layout.locator.XYRelPortLocator(0,0)
-	);  	
+	);
   }
   */
 
@@ -713,12 +713,12 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
      ****************************************************************/
     multilayerObj = portObj.getParent();
     if (multilayerObj.NAME.toLowerCase().search("multilayered") > -1){
-      
+
 	  /*
 	   *	THIS SHOULDN'T BE RUNNING BUT THIS REMOVE MOST EXECUTION LABELS, NEED INSPECTION!!!!!!
 	   *	remove execution order labels from all figures inside layers
 	   */
-	  
+
 	  multilayerObj.layers.each(function(childIndex, childObj){
         if (childObj.NAME.toLowerCase().search("jailhouse") > -1){
           childObj.getChildren().each(function(layerChildIndex, layerChildObj){
@@ -738,7 +738,7 @@ GraphLang.Utils.initAllPortToDefault = function(canvas){
 */
 
     }
-    
+
     /*
 	 *  DON'T KNOW WHY BUT THIS REMOVE TOP LEVEL MULTILAYERED EXECUTION ORDER LABELS?????
 	 *	remove execution order labels from multilayered structure
@@ -993,7 +993,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
           allNodes.push(childObj);
         }
       });
-    }	
+    }
   });
 
   let cnt1 = 0;
@@ -1092,7 +1092,7 @@ GraphLang.Utils.executionOrder = function executionOrder(canvas){
 			nodeObj.NAME.toLowerCase().search("itemsnode") == -1 &&
 			nodeObj.NAME.toLowerCase().search("jailhouse") == -1		//DON'T PUT LABEL FOR jailhouse, they are layers of multilayered structure
 		){
-		  nodeObj.userData.executionOrder = actualStepNum;          
+		  nodeObj.userData.executionOrder = actualStepNum;
           nodeObj.add(
             new draw2d.shape.basic.Label({
               text:new String(actualStepNum),
@@ -1355,12 +1355,12 @@ GraphLang.Utils.getCanvasAsObjectString = function(canvas){
 
       var jsonCanvasStr = JSON.stringify(clearedJson, null, 2);
       var objectDefaultName = $("#schematicName").val();
-      
-      schematicAsObjectStr += objectDefaultName + ' = GraphLang.UserDefinedNode.extend({' + "\n";            
+
+      schematicAsObjectStr += objectDefaultName + ' = GraphLang.UserDefinedNode.extend({' + "\n";
       schematicAsObjectStr += 'NAME: "' + objectDefaultName + '",' + "\n";
 
       /*
-       *    If object was loaded from some file ie. means that it can have some symbol defined, 
+       *    If object was loaded from some file ie. means that it can have some symbol defined,
        *    then init function and shape functions are taken original ones.
        */
       if (GraphLang.Utils.loadedNodeShapeAndSchematicStr !== null){
@@ -1736,7 +1736,7 @@ GraphLang.Utils.displayContents = function(contents){
       });
       figureObj.renewLayerChooser();
       figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
-      
+
       figureObj.switchActiveLayer();    //TO REWRITE TUNNELS IF THERE ARE SOME ON LOOPS
     }
 
@@ -1809,7 +1809,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents, canvasObj){
         }
     });
   }
-  
+
   if (!newObjectName){
     alert("Schematic file is not corrupted. Loaded process canceled.");
     return;
@@ -1832,7 +1832,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents, canvasObj){
    *    Update schematic name input
    */
   $("#schematicName").val(newObject.NAME);
-  
+
   /*
    *    If object has method getObjectAsString() its content is stored into loaded function string, becuase object is
    *    user defined an potentionaly can have some shape generated in Shape Designer
@@ -1854,7 +1854,7 @@ GraphLang.Utils.displayContentsFromClass = function(contents, canvasObj){
       });
       figureObj.renewLayerChooser();
       figureObj.renewLayerSelector(); //NOT RUNNING CORRECTLY
-      
+
       figureObj.switchActiveLayer();    //TO REWRITE TUNNELS IF THERE ARE SOME ON LOOPS
     }
 
@@ -2023,7 +2023,7 @@ GraphLang.Utils.getUniqueNodeLabel = function(canvas, nodeLabel = "nodeLabel"){
 
 /*****************************************************************************************************************************************************
  *    TRANSLATE TO C/C++ functions
- *****************************************************************************************************************************************************/ 
+ *****************************************************************************************************************************************************/
 
 /**
  * @method translateCanvasToCppCode
@@ -2036,26 +2036,26 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
   translateToCppCodeDeclarationArray.clear();
   translateToCppCodeTypeDefinitionArray.clear();
   var translateToCppCodeSubnodeArray = new draw2d.util.ArrayList();
-  
+
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
-  
+
   //THIS ADAPT PORT DATATYPES SAME AS CONNECTED Wires
   //this can cause some problems because it's not bullet proof function, beacuse it's running statically, need to rewrite it more adaptive but when clicked at least 3 times it's OK
   GraphLang.Utils.setWiresColorByPorts(canvas);
-  
+
   //ORIGINAL WITHOUT REWRITING IDs
   //copyElement.innerHTML = GraphLang.Utils.translateToCppCode2(canvas, null);
-  
+
   // INITIALIZATION
   // added by LuboJ. this CAN CAUSE SOME ERRORS IT WASN'T HERE UNTIL RECENTLY when I saw that there is not port initialization and execution order done in this task.
   this.initAllPortToDefault(canvas);
   this.executionOrder(canvas);
-  
+
   /*
    *    Now just ticking with clock and run nodes setup to run at that step by execution order.
    */
-  
+
   /*********************************************************************************************************
    *  WIRES DECLARATION
    *
@@ -2063,7 +2063,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
    *  ERROR:
    *    - THERE IS NOT VALUE ASSIGNEMENT WHEN WIRE IS CONNECTED TO CONSTANT
    *********************************************************************************************************/
-  
+
   //FIRST get all top figures (they have no composite set) and then get their input ports and connections connected to them
   //	tunnels doesn't have assigned it's loop as its parent, so iterating over tunnels is done when loop is detected, then if it
   //	has no composite (what means it's most top structure on canvas) it's iterating over it's children and detecting left tunnels
@@ -2078,7 +2078,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           sourceDatatype = lineObj.getSource().getUserData().datatype;
           cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
       }
-  
+
       /*
        *  for tunnel it's different little, IMPORTANT are just RIGHT TUNNELs because then wire is outside structure,
        *  in case if source is LEFT TUNNEL we are sure that wire is laying inside some structure
@@ -2091,12 +2091,12 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
       }
   });
-  
+
   /****************************************************************
    *  NODES TRANSLATING
    *  Going through diagram and translate each graphical node into its text representation.
    ****************************************************************/
-  
+
   //obtain list of top level figures, their getComposite() returns null
   let allNodes = new draw2d.util.ArrayList()
   canvas.getFigures().each(function(figureIndex, figureObj){
@@ -2123,7 +2123,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
            */
           if (nodeObj.translateToCppCodeDeclaration && translateTerminalsDeclaration) cCode += nodeObj.translateToCppCodeDeclaration();
           if (nodeObj.translateToCppCode) cCode += nodeObj.translateToCppCode();
-          
+
           /*
            *    Translate node schematic into separate function
            */
@@ -2135,11 +2135,11 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           /*
            *    Translate POST code, like ending while or for loop
            */
-          if (nodeObj.translateToCppCodePost) cCode += nodeObj.translateToCppCodePost();            
+          if (nodeObj.translateToCppCodePost) cCode += nodeObj.translateToCppCodePost();
       }
     });
   }
-  
+
   /* erase flag for for loops at the end of this operation, to be able run again correctly, otherwise
   there will be orphans flags that loops were translated and it will make mess when multiple times
   executed this function without initializing ports */
@@ -2148,7 +2148,7 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
       nodeObj.getUserData().wasTranslatedToCppCode = false;
     }
   });
-  
+
   /******************************************************************************
    * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
    *******************************************************************************/
@@ -2238,7 +2238,7 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
 
     /*
-     *  Here is calling same parent C/C++ code transcription function on 2nd canvas  
+     *  Here is calling same parent C/C++ code transcription function on 2nd canvas
      */
     cCode += GraphLang.Utils.translateCanvasToCppCode(subnodeCanvas, translateTerminalsDeclaration = false).replaceAll('\n','\n\t');
 
@@ -2278,18 +2278,88 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         translateToCppCodeFunctionsArray.clear();
         let cCode = GraphLang.Utils.translateCanvasToCppCode(canvas, translateTerminalsDeclaration = true);
 
-        /******************************************************************************
-         * LuboJ my template for Arduino stuff
-         *******************************************************************************/
         var template_cCode = "";
-        template_cCode += "#define error int\n";
-        template_cCode += "#define int32 int\n";
-        template_cCode += "#define undefined int\n";
-        template_cCode += "#define uint unsigned int\n";
-        template_cCode += "#define numeric float\n";
+
+        template_cCode += `
+typedef int error;
+typedef int int32;
+typedef int undefined;
+typedef unsigned int uint;
+typedef float numeric;
+#define HIGH true
+#define LOW false
+
+using namespace std;
+
+/**** MOCKING CLASSES **************************/
+#include<iostream>
+#include<string>
+#include<unistd.h>
+
+typedef string String;
+
+class SerialClass{
+    public:
+        void println(string msg);
+        void begin(int pinNumber);
+    private:
+        bool initializeFlag = false;
+        int pinNumber;
+};
+
+void SerialClass::println(string msg){
+    cout << msg << endl;
+}
+
+void SerialClass::begin(int pinNumber){
+    this->initializeFlag = true;
+    this->pinNumber = pinNumber;
+    cout << "Serial initialized at pin " << pinNumber << endl;
+}
+
+void delay(int time_ms){
+    usleep(time_ms*1000);
+}
+
+int arduinoPinValue[100];
+int arduinoPinMode[100];
+enum pinMode{
+    INPUT,
+    OUTPUT,
+    INPUT_PULLUP
+};
+
+bool digitalRead(int pin){
+    return arduinoPinValue[pin];
+}
+
+void digitalWrite(int pin, bool value){
+    arduinoPinValue[pin] = value;
+}
+
+void pinMode(int pin, pinMode mode){
+    arduinoPinMode[pin] = mode;
+}
+/***********************************************/
+        `;
+
         template_cCode += "\n";
         template_cCode += this.getCppCodeTypeDefinition();
         template_cCode += "\n";
+
+        /******************************************************************************
+         * SubNode code printed as subfunctions
+         *******************************************************************************/
+        template_cCode += "/************* BEGIN Transcripted SubNode function definitions ************/\n\n";
+        translateToCppCodeFunctionsArray.unique();  //removes duplicates
+        translateToCppCodeFunctionsArray.each(function(functionIndex, functionStr){
+            template_cCode += "\n";
+            template_cCode += functionStr;
+            template_cCode += "\n";
+        });
+        template_cCode += "/************* END Transcripted SubNode function definitions ************/\n\n";
+
+        /*
         template_cCode += "void setup() {\n";
         template_cCode += "\n";
         template_cCode += cCode;
@@ -2298,21 +2368,16 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         template_cCode += "void loop() {\n";
         template_cCode += "  // put your main code here, to run repeatedly:\n";
         template_cCode += "}\n";
-        cCode = template_cCode;
-        /******************************************************************************
-         * END MY TEMPLATE
-         *******************************************************************************/
+        */
 
-        /******************************************************************************
-         * SubNode code printed as subfunctions
-         *******************************************************************************/
-        cCode += "/************* Transcripted SubNode function definitions ************/\n\n";
-        translateToCppCodeFunctionsArray.unique();  //removes duplicates
-        translateToCppCodeFunctionsArray.each(function(functionIndex, functionStr){
-            cCode += "\n";
-            cCode += functionStr;
-            cCode += "\n";
-        });
+        template_cCode += "int main(int argc, char* argv[]){\n";
+        template_cCode += "\n";
+        template_cCode += cCode;
+        template_cCode += "\n";
+        template_cCode += "\t return 0;\n";
+        template_cCode += "}\n";
+
+        cCode = template_cCode;
 
         /******************************************************************************
          * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
@@ -2336,35 +2401,35 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
 
 /*****************************************************************************************************************************************************
  *    TRANSLATE TO Python functions
- *****************************************************************************************************************************************************/ 
+ *****************************************************************************************************************************************************/
 
 GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminalsDeclaration = true){
   let pythonCode = "";
   translateToPythonCodeDeclarationArray.clear();
   translateToPythonCodeImportArray.clear();
   var translateToPythonCodeSubnodeArray = new draw2d.util.ArrayList();
-  
+
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
-  
+
   //THIS ADAPT PORT DATATYPES SAME AS CONNECTED Wires
   //this can cause some problems because it's not bullet proof function, beacuse it's running statically, need to rewrite it more adaptive but when clicked at least 3 times it's OK
   GraphLang.Utils.setWiresColorByPorts(canvas);
-  
+
   // INITIALIZATION
   // added by LuboJ. this CAN CAUSE SOME ERRORS IT WASN'T HERE UNTIL RECENTLY when I saw that there is not port initialization and execution order done in this task.
   this.initAllPortToDefault(canvas);
   this.executionOrder(canvas);
-  
+
   /*
    *    Now just ticking with clock and run nodes setup to run at that step by execution order.
    */
-  
+
   /****************************************************************
    *  NODES TRANSLATING
    *  Going through diagram and translate each graphical node into its text representation.
    ****************************************************************/
-  
+
   //obtain list of top level figures, their getComposite() returns null
   let allNodes = new draw2d.util.ArrayList()
   canvas.getFigures().each(function(figureIndex, figureObj){
@@ -2374,7 +2439,7 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
           allNodes.push(figureObj);
       }
   });
-  
+
   //translate nodes based on their execution order
   for (var actualStep = 0; actualStep < 20; actualStep++){
     allNodes.each(function(nodeIndex, nodeObj){
@@ -2383,7 +2448,7 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
       ){
           if (nodeObj.translateToPythonCodeDeclaration && translateTerminalsDeclaration) pythonCode += nodeObj.translateToPythonCodeDeclaration();
           if (nodeObj.translateToPythonCode) pythonCode += nodeObj.translateToPythonCode();
-          
+
           /*
            *    Translate node schematic into separate function
            */
@@ -2403,7 +2468,7 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
       }
     });
   }
-  
+
   /* erase flag for for loops at the end of this operation, to be able run again correctly, otherwise
   there will be orphans flags that loops were translated and it will make mess when multiple times
   executed this function without initializing ports */
@@ -2412,7 +2477,7 @@ GraphLang.Utils.translateCanvasToPythonCode = function(canvas, translateTerminal
       nodeObj.getUserData().wasTranslatedToPythonCode = false;
     }
   });
-  
+
   /******************************************************************************
    * REWRITE IDs to HUMAN READABLE NUMBERS (starts from 1,2,...,N)
    *******************************************************************************/
@@ -2483,7 +2548,7 @@ GraphLang.Utils.getPythonCode = function(canvas, showCode = true){
         template_pythonCode += "\n";
         template_pythonCode += pythonCode;
         template_pythonCode += "\n";
-        
+
         pythonCode = template_pythonCode;
         /******************************************************************************
          * END MY TEMPLATE

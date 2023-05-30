@@ -114,7 +114,7 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     var forLoopIteratorVariable = 'forLoopIterator_' + this.getId();
 
     cCode += this.getTunnelsDeclarationCppCode();
-    cCode += "for (var " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
+    cCode += "for (int " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
     cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t") + "\n";
     cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
 
