@@ -3,10 +3,10 @@
  */
 
 //auxiliary ArrayList store declaration of some variables or something during translation process
-translateToCppCodeDeclarationArray = new draw2d.util.ArrayList();
 translateToCppCodeFunctionsArray = new draw2d.util.ArrayList();
 translateToCppCodeImportArray = new draw2d.util.ArrayList();
 translateToCppCodeTypeDefinitionArray = new draw2d.util.ArrayList();
+translateToCppCodeSubnodeArray = new draw2d.util.ArrayList();
 translateSubnodeCanvasArray = new draw2d.util.ArrayList();
 
 translateToPythonCodeFunctionsArray = new draw2d.util.ArrayList();
@@ -28,16 +28,13 @@ GraphLang.Utils = Class.extend({
   }
 });
 
-/**
- *  @method getCppCodeDeclaration
- *  @description Returns ArrayList containing actual declarations for clusters and so collected during traversing diagram.
- */
-GraphLang.Utils.getCppCodeDeclaration = function(){
-  var cCode = "";
-  translateToCppCodeDeclarationArray.each(function(itemIndex, itemObj){
-    cCode += itemObj + "\n";
-  });
-  return cCode;
+GraphLang.Utils.getCppCodeImport = function(){
+    var cCode = "";
+    translateToCppCodeImportArray.unique();                               //remove duplicities
+    translateToCppCodeImportArray.each(function(itemIndex, itemObj){
+        cCode += itemObj + "\n";
+    });
+    return cCode;
 }
 
 /**
@@ -2033,9 +2030,6 @@ GraphLang.Utils.getUniqueNodeLabel = function(canvas, nodeLabel = "nodeLabel"){
  */
 GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDeclaration = true){
   let cCode = "";
-  translateToCppCodeDeclarationArray.clear();
-  translateToCppCodeTypeDefinitionArray.clear();
-  var translateToCppCodeSubnodeArray = new draw2d.util.ArrayList();
 
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
@@ -2114,7 +2108,12 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           nodeObj.getUserData().executionOrder == actualStep
       ){
           /*
-           *    First getting type definition, ie. for clusters
+           *    Getting import statements
+           */
+          if (nodeObj.translateToCppCodeImport) translateToCppCodeImportArray.push(nodeObj.translateToCppCodeImport());
+
+          /*
+           *    Getting type definition, ie. for clusters
            */
           if (nodeObj.translateToCppCodeTypeDefinition) translateToCppCodeTypeDefinitionArray.push(nodeObj.translateToCppCodeTypeDefinition());
 
@@ -2271,14 +2270,23 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
  * @description Generate C/C++ code using template written in this function.
  */
 GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
+
+        translateToCppCodeImportArray.clear();          //import statements
+        translateToCppCodeTypeDefinitionArray.clear();
+        translateToCppCodeFunctionsArray.clear();       //translated subnodes functions bodies
+        translateToCppCodeSubnodeArray.clear();         //already translated subnodes function names
+        translateSubnodeCanvasArray.clear();
+
         /******************************************************************************
          * Translate canvas to C/C++ code
          *******************************************************************************/
-        translateSubnodeCanvasArray.clear();
-        translateToCppCodeFunctionsArray.clear();
         let cCode = GraphLang.Utils.translateCanvasToCppCode(canvas, translateTerminalsDeclaration = true);
 
         var template_cCode = "";
+
+        template_cCode += "\n";
+        template_cCode += this.getCppCodeImport();
+        template_cCode += "\n";
 
         template_cCode += `
 typedef int error;
@@ -2295,6 +2303,7 @@ using namespace std;
 #include<iostream>
 #include<string>
 #include<unistd.h>
+#include<vector>
 
 typedef string String;
 

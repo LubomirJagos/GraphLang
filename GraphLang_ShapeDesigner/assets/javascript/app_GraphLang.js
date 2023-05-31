@@ -6285,19 +6285,23 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
    */
   shape_designer.loadedObjectJsonDocument = JSON.stringify(newObject.jsonDocument, null, 2);
   shape_designer.loadedObjectPreservedFunctions = "";
-  if (newObject.translateToCppCode) shape_designer.loadedObjectPreservedFunctions += "translateToCppCode: " + newObject.translateToCppCode; 
+  if (newObject.translateToCppCodeImport) shape_designer.loadedObjectPreservedFunctions += "translateToCppCodeImport: " + newObject.translateToCppCodeImport + ",\n\n";
+  if (newObject.translateToCppCodeTypeDefinition) shape_designer.loadedObjectPreservedFunctions += "translateToCppCodeImport: " + newObject.translateToCppCodeTypeDefinition + ",\n\n";
+  if (newObject.translateToCppCodeDeclaration) shape_designer.loadedObjectPreservedFunctions += "translateToCppCodeImport: " + newObject.translateToCppCodeDeclaration + ",\n\n";
+  if (newObject.translateToCppCode) shape_designer.loadedObjectPreservedFunctions += "translateToCppCode: " + newObject.translateToCppCode + ",\n\n";
+  if (newObject.translateToCppCodePost) shape_designer.loadedObjectPreservedFunctions += "translateToCppCodeImport: " + newObject.translateToCppCodePost + ",\n\n";
 
-  /*
-  var js = "";
-  js = newObject.getObjectAsString();
-  alert(js);
-  var copyElement = document.createElement('textarea');
-  copyElement.innerHTML=js;
-  copyElement = document.body.appendChild(copyElement);
-  copyElement.select();
-  document.execCommand('copy');
-  copyElement.remove();
-  */
+    /*
+    var js = "";
+    js = newObject.getObjectAsString();
+    alert(js);
+    var copyElement = document.createElement('textarea');
+    copyElement.innerHTML=js;
+    copyElement = document.body.appendChild(copyElement);
+    copyElement.select();
+    document.execCommand('copy');
+    copyElement.remove();
+    */
 
 
 

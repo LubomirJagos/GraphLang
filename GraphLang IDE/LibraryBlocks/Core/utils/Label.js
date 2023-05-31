@@ -4,5 +4,5 @@
  *  @description Label extended class to have own GraphLang implementation
  */
 GraphLang.Shapes.Basic.Label = draw2d.shape.basic.Label.extend({
-    NAME: "GraphLang.Shapes.Basic.LayerChooser",
+    NAME: "GraphLang.Shapes.Basic.Label",
 });

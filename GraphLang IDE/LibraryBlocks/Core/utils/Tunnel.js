@@ -163,10 +163,6 @@ GraphLang.Shapes.Basic.Tunnel = draw2d.shape.node.Between.extend({
 
     },  //END init() function
     
-    onRun3:function(){
-      alert("TUNNEL id: " + this.id);
-    },
-
     /*
      *  Returns tunnel datatype, it's based on connected wire, if wire is connected to tunnel
      *  then it should recursively get datatype based on port which is traversed back

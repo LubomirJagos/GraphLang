@@ -20,9 +20,6 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
   },
-  onRun3: function(){
-    alert("THIS IS ANOTHER FUNCTION \n Actual node ID: " + this.id + "\n" + "Node type: " + this.NAME);
-  },
 
   //THIS IS MY FUNCTION TO GET INPUT PORTS LIST FOR THIS Loop
   getInputPorts: function(){

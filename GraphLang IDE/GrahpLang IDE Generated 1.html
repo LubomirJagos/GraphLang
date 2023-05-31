@@ -48,6 +48,9 @@
 	Convolution = {};
 	ConsoleLog2 = {};
 	ConsoleLog = {};
+	ConvertDatatype = {};
+	Arduino = {};
+	Arduino.File = {};
 	GraphLang = {};
 	GraphLang.PythonQtGuiLib = {};
 	GraphLang.Shapes = {};
@@ -97,6 +100,10 @@
 	<script src="./LibraryBlocks/Arduino/Core/ternarOperator.js"></script>
 	<script src="./LibraryBlocks/Arduino/Core/toStr.js"></script>
 	<script src="./LibraryBlocks/Arduino/Core/waitUntilNextMs.js"></script>
+	<script src="./LibraryBlocks/Arduino/FileLib/fclose.js"></script>
+	<script src="./LibraryBlocks/Arduino/FileLib/fileSize.js"></script>
+	<script src="./LibraryBlocks/Arduino/FileLib/fopen.js"></script>
+	<script src="./LibraryBlocks/Arduino/FileLib/fread.js"></script>
 	<script src="./LibraryBlocks/Arduino/FileLib/OpenFolderNode.js"></script>
 	<script src="./LibraryBlocks/Arduino/FileLib/SearchDirectoryNode.js"></script>
 	<script src="./LibraryBlocks/Arduino/String/replace.js"></script>
@@ -106,6 +113,7 @@
 	<script src="./LibraryBlocks/Core/Bundle.js"></script>
 	<script src="./LibraryBlocks/Core/utils/Loop2.js"></script>
 	<script src="./LibraryBlocks/Core/ConstantNode.js"></script>
+	<script src="./LibraryBlocks/Core/ConvertDatatype.js"></script>
 	<script src="./LibraryBlocks/Core/FeedbackNode.js"></script>
 	<script src="./LibraryBlocks/Core/ForLoop.js"></script>
 	<script src="./LibraryBlocks/Core/Multilayered3.js"></script>
@@ -126,6 +134,7 @@
 	<script src="./LibraryBlocks/Core/utils/RightTunnel.js"></script>
 	<script src="./LibraryBlocks/Core/utils/LeftTunnel.js"></script>
 	<script src="./LibraryBlocks/Arduino/Core/Math.Abs.js"></script>
+	<script src="./LibraryBlocks/Core/VectorNode.js"></script>
 	<script src="./LibraryBlocks/Core/WhileLayer.js"></script>
 	<script src="./LibraryBlocks/Core/WireConnection.js"></script>
 	<script src="./LibraryBlocks/GraphLangExperimental/InvokeNode.js"></script>
@@ -140,9 +149,12 @@
 	<script src="./LibraryBlocks/UserDefinedNode/ConsoleLog2.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/Convolution.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/experiment_1.js"></script>
+	<script src="./LibraryBlocks/UserDefinedNode/generated_.js"></script>
+	<script src="./LibraryBlocks/UserDefinedNode/generated_2.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape2.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/GraphLangTestShape3.js"></script>
+	<script src="./LibraryBlocks/UserDefinedNode/simple_read_file_1.js"></script>
 	<script src="./LibraryBlocks/UserDefinedNode/UserDefinedExample.js"></script>
 
 
@@ -307,6 +319,10 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="ternarOperator" class="palette_node_element draw2d_droppable">ternarOperator</div>
 <div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="toStr" class="palette_node_element draw2d_droppable">toStr</div>
 <div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="waitUntilNextMs" class="palette_node_element draw2d_droppable">waitUntilNextMs</div>
+<div data-shape="Arduino.File.fclose" data-label="fclose" class="palette_node_element draw2d_droppable">fclose</div>
+<div data-shape="Arduino.File.fileSize" data-label="fileSize" class="palette_node_element draw2d_droppable">fileSize</div>
+<div data-shape="Arduino.File.fopen" data-label="fopen" class="palette_node_element draw2d_droppable">fopen</div>
+<div data-shape="Arduino.File.fread" data-label="fread" class="palette_node_element draw2d_droppable">fread</div>
 <div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
 <div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
 <div data-shape="GraphLang.ArduinoLib.String.replace" data-label="replace" class="palette_node_element draw2d_droppable">replace</div>
@@ -315,6 +331,7 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="BundleByName" class="palette_node_element draw2d_droppable">BundleByName</div>
 <div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="Bundle" class="palette_node_element draw2d_droppable">Bundle</div>
 <div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="ConstantNode" class="palette_node_element draw2d_droppable">ConstantNode</div>
+<div data-shape="ConvertDatatype" data-label="ConvertDatatype" class="palette_node_element draw2d_droppable">ConvertDatatype</div>
 <div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="FeedbackNode" class="palette_node_element draw2d_droppable">FeedbackNode</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
@@ -326,6 +343,7 @@ function displayJSON(canvas){
 <div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="Unbundle" class="palette_node_element draw2d_droppable">Unbundle</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">ClusterDatatypeNode2</div>
 <div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="Abs" class="palette_node_element draw2d_droppable">Abs</div>
+<div data-shape="GraphLang.Shapes.Basic.VectorNode" data-label="VectorNode" class="palette_node_element draw2d_droppable">VectorNode</div>
 <div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
 <div data-shape="GraphLang.Shapes.Basic.WireConnection" data-label="WireConnection" class="palette_node_element draw2d_droppable">WireConnection</div>
 <div data-shape="GraphLang.PythonQtGuiLib.UiExec" data-label="UiExec" class="palette_node_element draw2d_droppable">UiExec</div>
@@ -336,8 +354,11 @@ function displayJSON(canvas){
 <div data-shape="Convolution" data-label="Convolution" class="palette_node_element draw2d_droppable">Convolution</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
 <div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>
+<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
 <div data-shape="UserDefinedExample" data-label="UserDefinedExample" class="palette_node_element draw2d_droppable">UserDefinedExample</div>
 
 
