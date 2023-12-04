@@ -309,7 +309,16 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     });
     cCode += "/* END LEFT TUNNELs declarations */\n";
 
-    return cCode;
+    /*
+     *  Create feedback nodes declarations.
+     */
+    this.getAssignedFigures().each(function(figureIndex, figureObj){
+        if (figureObj.NAME.toLowerCase().search("feedbacknode") > -1){
+            cCode += figureObj.translateToCppCodeDeclaration();
+        }
+    });
+
+      return cCode;
   },
 
   /*
@@ -326,26 +335,43 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
     layerFigures.sort(function(figureA, figureB){ return figureA.userData.executionOrder - figureB.userData.executionOrder}); //order figure by their executionOrder
 
   	allConnections = new draw2d.util.ArrayList();
+    allFeedbackNodes = new draw2d.util.ArrayList();
   	thisId = this.getComposite();
-      layerFigures.each(function(figureIndex, figureObj){
-  	  if (figureObj.getPorts){
-    		if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
-    			figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
-    				allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
-    			});
-    		}else{
-    			//if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
-    			if (figureObj.NAME.toLowerCase().search('loop') > -1){
-    				figureObj.getChildren().each(function(childIndex, childObj){
-    					if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
-    						allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas			
-    					}
-    				});
-    			}
-    		}
-  	  }
+
+    /*
+     *  Add wires connected to direct children figure TO THEIR INPUT PORTS
+     */
+    layerFigures.each(function(figureIndex, figureObj){
+        if (figureObj.getPorts){
+            if (figureObj.NAME.toLowerCase().search('loop') == -1 && figureObj.NAME.toLowerCase().search('tunnel') == -1){
+                figureObj.getInputPorts().each(function(inputPortIndex, inputPortObj){
+                    allConnections.addAll(inputPortObj.getConnections());				//adding conenction into list of top most connections on canvas
+                });
+            }else{
+                //if loop is found, then it's going to iterate over it's children left tunnels and add connections to their input ports
+                if (figureObj.NAME.toLowerCase().search('loop') > -1){
+                    figureObj.getChildren().each(function(childIndex, childObj){
+                        if (childObj.NAME.toLowerCase().search('lefttunnel') > -1){
+                            allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas
+                        }
+                    });
+                }
+            }
+        }
     });
 
+    /*
+     *  Add wires connected to input port of righttunnel
+     */
+    this.getChildren().each(function(childIndex, childObj){
+        if (childObj.NAME.toLowerCase().search("righttunnel") > -1){
+            allConnections.addAll(childObj.getInputPort(0).getConnections());	//adding conenction into list of top most connections on canvas
+        }
+    });
+
+    /*
+     *  Generate wires declaration.
+     */
   	allConnections.each(function(connectionindex, connectionObj){
   		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
   	});

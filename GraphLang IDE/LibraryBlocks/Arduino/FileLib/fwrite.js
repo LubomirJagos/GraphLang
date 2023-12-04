@@ -3,16 +3,16 @@
 //                                                        
 // http://www.draw2d.org                                  
 //                                                        
-Arduino.File.fclose = GraphLang.UserDefinedNode.extend({            
+Arduino.File.fwrite = GraphLang.UserDefinedNode.extend({            
 
-   NAME: "Arduino.File.fclose",
+   NAME: "Arduino.File.fwrite",
 
    init:function(attr, setter, getter)
    {
-     this._super( $.extend({stroke:0, bgColor:null, width:86, height:60.928, flagAutoCreatePorts: false},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:81, height:60.928, flagAutoCreatePorts: false},attr), setter, getter);
      var port;
      // fileRef
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.6911860093023385, 23.81205378151276));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(3.4101137382716513, 26.273976050420135));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("fileRef");
@@ -23,8 +23,20 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
      port.userData.allowMultipleConnections = false;
      port.userData.connectionMandatory = false;
 
+     // stringToWrite
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(3.4101137382716513, 59.847689075630164));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#E300F3");
+     port.setName("stringToWrite");
+     port.setMaxFanOut(20);
+
+     if (!port.userData) port.userData = {}
+     port.userData.datatype = "String";
+     port.userData.allowMultipleConnections = false;
+     port.userData.connectionMandatory = false;
+
      // errorIn
-     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(0.6911860093023385, 89.01762016806744));
+     port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(3.4101137382716513, 95.5827462184876));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#F3E957");
      port.setName("errorIn");
@@ -36,7 +48,7 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
      port.userData.connectionMandatory = false;
 
      // errorOut
-     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(101.66661626046512, 89.01762016806744));
+     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(103.78343316543216, 95.5827462184876));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#F3E957");
      port.setName("errorOut");
@@ -53,7 +65,7 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 86;
+      this.originalWidth = 81;
       this.originalHeight= 60.928;
       return shape;
    },
@@ -63,20 +75,15 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
        this.canvas.paper.setStart();
 
         // BoundingBox
-        shape = this.canvas.paper.path("M0,0 L86,0 L86,60.928 L0,60.928");
+        shape = this.canvas.paper.path("M0,0 L81,0 L81,60.928 L0,60.928");
         shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
         shape.data("name","BoundingBox");
         
         // Rectangle
-        shape = this.canvas.paper.path('M11.824910591999924 0L72.75291059199992 0L72.75291059199992 60.928L11.824910591999924 60.928Z');
+        shape = this.canvas.paper.path('M9.99268275199995 0L70.92068275199983 0L70.92068275199983 60.928L9.99268275199995 60.928Z');
         shape.attr({"stroke":"#303030","stroke-width":1,"fill":"#FFFFFF","dasharray":null,"opacity":1});
         shape.data("name","Rectangle");
         
-        // Circle
-        shape = this.canvas.paper.ellipse();
-        shape.attr({"rx":8.72415232000003,"ry":8.72415232000003,"cx":56.750493952000056,"cy":47.578832895999994,"stroke":"none","stroke-width":0,"fill":"#C02626","dasharray":null,"opacity":1});
-        shape.data("name","Circle");
-        
         // Line_shadow
         shape = this.canvas.paper.path('M29.5 15.5L49.5,15.5L55.5,21.5L54.5,48.5L29.5,48.5L29.5,16.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
@@ -168,53 +175,63 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M74.5 51.5L86.5,51.5');
+        shape = this.canvas.paper.path('M11.5 12.5L0.5,12.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M74.5 51.5L86.5,51.5');
+        shape = this.canvas.paper.path('M11.5 12.5L0.5,12.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M13.5 51.5L0.5,51.5');
+        shape = this.canvas.paper.path('M11.5 33.5L0.5,33.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M13.5 51.5L0.5,51.5');
+        shape = this.canvas.paper.path('M11.5 33.5L0.5,33.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M13.5 11.5L0.5,12.5');
+        shape = this.canvas.paper.path('M11.5 55.5L2.5,55.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M13.5 11.5L0.5,12.5');
+        shape = this.canvas.paper.path('M11.5 55.5L2.5,55.5');
         shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M53.5 44.5L62.5,51.5');
-        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":2,"stroke-dasharray":null,"opacity":1});
+        shape = this.canvas.paper.path('M73.5 54.5L77.5,54.5L81.5,54.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M53.5 44.5L62.5,51.5');
-        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#FFFFFF","stroke-width":2,"stroke-dasharray":null,"opacity":1});
+        shape = this.canvas.paper.path('M73.5 54.5L77.5,54.5L81.5,54.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
         // Line_shadow
-        shape = this.canvas.paper.path('M61.5 43.5L55.5,50.5');
-        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":2,"stroke-dasharray":null,"opacity":1});
+        shape = this.canvas.paper.path('M58.5 48.5L58.5,54.5L62.5,52.5L68.5,41.5L64.5,39.5L58.5,48.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line_shadow");
         
         // Line
-        shape = this.canvas.paper.path('M61.5 43.5L55.5,50.5');
-        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#FFFFFF","stroke-width":2,"stroke-dasharray":null,"opacity":1});
+        shape = this.canvas.paper.path('M58.5 48.5L58.5,54.5L62.5,52.5L68.5,41.5L64.5,39.5L58.5,48.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+        shape.data("name","Line");
+        
+        // Line_shadow
+        shape = this.canvas.paper.path('M62.5 51.5L58.5,49.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"none","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+        shape.data("name","Line_shadow");
+        
+        // Line
+        shape = this.canvas.paper.path('M62.5 51.5L58.5,49.5');
+        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"#000000","stroke-width":1,"stroke-dasharray":null,"opacity":1});
         shape.data("name","Line");
         
 
@@ -345,7 +362,7 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
         },this));
     },
     
-    symbolPicture: "data:image/png;base64,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",
+    symbolPicture: "data:image/png;base64,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",
     
     jsonDocument: [],
     
@@ -354,12 +371,12 @@ Arduino.File.fclose = GraphLang.UserDefinedNode.extend({
     },
 
 translateToCppCode: function(){
-        let connectionsIn = this.getInputPort("fileRef").getConnections();
-
         let cCode = "";
-        connections = this.getInputPort("fileRef").getConnections().each(function(connIndex, connObj){
-            cCode += `fclose(wire_${connObj.getId()});\n`;
-        });
+        let filePtr = "wire_" + this.getInputPort("fileRef").getConnections().first().getId();
+        let stringIn = "wire_" + this.getInputPort("stringToWrite").getConnections().first().getId();
+
+        cCode += `fwrite(${stringIn}.data(), sizeof(char), ${stringIn}.length(), ${filePtr});\n`
+
         return cCode;
     },
 

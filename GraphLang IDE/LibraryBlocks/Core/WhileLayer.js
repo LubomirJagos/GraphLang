@@ -155,7 +155,7 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     cCode += "\n";
 
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
 
       if (figObj.translateToCppCode){
         cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n"
@@ -179,8 +179,8 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
       endCondition = "wire_" + stopTerminal.getConnections().get(0).getId();
     }
 
-    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
     cCode += this.getRightTunnelsAssignementOutputCppCode();
+    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
 
     return cCode;
   },

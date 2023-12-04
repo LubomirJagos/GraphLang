@@ -226,9 +226,10 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   translateToCppCode:function(){
     cCode = "";
 
-    var variableName = this.getVariableName();
+
+    let variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-      cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
+        cCode += "wire_" + connectionObj.getId() + " = " + variableName + ";\n";
     });
 
     return cCode;
@@ -242,12 +243,20 @@ GraphLang.Shapes.Basic.ConstantNode = draw2d.shape.basic.Label.extend({
   translateToCppCodeDeclaration:function(){
     cCode = "";
     var constDatatype = this.getDatatype();
-    
-    if (constDatatype.toLowerCase().search("string") > -1){
-      cCode += constDatatype + " " + this.getVariableName() + " = \"" + this.getText() + "\";\n";
+
+    /*
+     *  retrun variable declaration, if terminal translation is forbidden using GLOBAL FLAG translateTerminalsDeclaration then no declaration is created
+     */
+    if (!this.userData.isTerminal || (this.userData.isTerminal && translateTerminalsDeclaration)) {
+        if (constDatatype.toLowerCase().search("string") > -1) {
+            cCode += constDatatype + " " + this.getVariableName() + " = \"" + this.getText() + "\";\n";
+        } else {
+            cCode += constDatatype + " " + this.getVariableName() + " = " + this.getText() + ";\n";
+        }
     }else{
-      cCode += constDatatype + " " + this.getVariableName() + " = " + this.getText() + ";\n";
+        cCode += `/*${this.getVariableName()} is set as terminal so no declaration here */\n`;
     }
+
     return cCode;
   },
   

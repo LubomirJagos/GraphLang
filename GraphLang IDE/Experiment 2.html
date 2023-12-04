@@ -14,6 +14,7 @@
     <script src="./lib/jquery-ui.js"></script>
     <script src="./lib/jquery.browser.js"></script>
     <script src="./lib/jquery.layout.js"></script>
+    <script src="./lib/jquery.ui.touch-punch.js"></script>
 
 <!--     <script src="../draw2d/dist/draw2d.js"></script>   -->
     <script src="../draw2d_hardCopy/draw2d.js"></script>
@@ -291,9 +292,10 @@ function displayJSON(canvas){
 
    <div id="navigation" class="">
 
-     <input type="button" value="tab1" onclick="$('#navigation span').hide(); $('#tab1').show();" />
-     <input type="button" value="tab2" onclick="$('#navigation span').hide(); $('#tab2').show();" />
-     <input type="button" value="tab3" onclick="$('#navigation span').hide(); $('#tab3').show();" />
+     <input type="button" value="Arduino" onclick="$('#navigation span').hide(); $('#tab1').show();" />
+     <input type="button" value="GraphLang Core" onclick="$('#navigation span').hide(); $('#tab2').show();" />
+     <input type="button" value="Others" onclick="$('#navigation span').hide(); $('#tab3').show();" />
+	 <br />
 
       <span id="tab1">
           <div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="Add" class="palette_node_element draw2d_droppable">Add</div>

@@ -631,19 +631,22 @@ GraphLang.Shapes.Basic.Loop2.Multilayered3 = GraphLang.Shapes.Basic.Loop2.extend
     cCode += this.getTunnelsDeclarationCppCode();
 
     selectorPortWires = this.selectorPort.getConnections();
-    if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
-      cCode += "switch(wire_" + selectorPortWires.first().getId() + "){\n";
-    }else{
-      cCode += "switch(/* selectorPort not connected*/){\n";
-    }
+    selectorPortDatatype = selectorPortWires.first().getSource().userData.datatype;
 
     this.getAllLayers().each(function(layerIndex, layerObj){
-        //cCode += "case " + layerObj.getId() + ":\n";
-        cCode += "case " + layerObj.userData.layerText + ":\n";
+        if (selectorPortWires!= null && selectorPortWires.getSize() > 0){
+            if (selectorPortDatatype == "String"){
+                cCode += "if(wire_" + selectorPortWires.first().getId() + " == \"" + layerObj.userData.layerText + "\"){\n";
+            }else{
+                cCode += "if(wire_" + selectorPortWires.first().getId() + " == " + layerObj.userData.layerText + "){\n";
+            }
+        }else{
+            cCode += "if(/* selectorPort not connected*/){\n";
+        }
+
         cCode += layerObj.translateToCppCode();
-        cCode += "break;\n"
+        cCode += "}\n"
     });
-    cCode += "} //end of generated switch \n";
 
     //multilayered structure output ports assignments
     cCode += this.translateToCppCodePost();

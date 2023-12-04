@@ -3122,27 +3122,146 @@ shape_designer.filter.PortTypeFilter = shape_designer.filter.Filter.extend({
 
 
 //added by LuboJ
-shape_designer.filter.PortDatatypeFilter = shape_designer.filter.Filter.extend({
-    NAME :"shape_designer.filter.PortDatatypeFilter",
-    
+shape_designer.filter.PortConnectionsMandatoryFilter = shape_designer.filter.Filter.extend({
+    NAME :"shape_designer.filter.PortConnectionsMandatoryFilter",
+
+    init:function(){
+        this._super();
+
+        this.type   =0;
+        this.cssScope = this.NAME.replace(/[.]/g, "_");
+    },
+
+    insertPane: function(figure, $parent){
+
+        var _this = this;
+        var connectionMandatory = figure.getConnectionMandatory();
+
+        $parent.append('<div id="'+this.cssScope+'_container" class="panel panel-default">'+
+            ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#'+this.cssScope+'_panel">'+
+            '     Connection mandatory'+
+            '</div>'+
+
+            ' <div class="panel-body collapse in" id="'+this.cssScope+'_panel">'+
+            '   <div class="form-group portConnectionMandatoryOption">'+
+
+            '<label>'+
+            '  <input '+(connectionMandatory?' checked="checked"':'')+'type="checkbox" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="input" />'+
+            '</label>'+
+
+            '       </div>'+
+            '   </div>'+
+            ' </div>'+
+            '</div>');
+
+        $("#"+_this.cssScope+"_panel .portConnectionMandatoryOption input").on("change", function(){
+            var $this = $(this);
+            var portConnectionMandatory = $this.is(':checked');
+            figure.setConnectionMandatory(portConnectionMandatory);
+        });
+
+    },
+
+    removePane : function() {
+    },
+
+    onInstall : function(figure) {
+    },
+
+    getPersistentAttributes : function(relatedFigure) {
+        var memento = this._super(relatedFigure);
+
+        return memento;
+    },
+
+    setPersistentAttributes : function(relatedFigure, memento) {
+        this._super(relatedFigure, memento);
+
+        return memento;
+    }
+});
+
+//added by LuboJ
+shape_designer.filter.PortMultipleConnectionsFilter = shape_designer.filter.Filter.extend({
+    NAME :"shape_designer.filter.PortMultipleConnectionsFilter",
+
 	init:function(){
 	    this._super();
-	    
+
 	    this.type   =0;
         this.cssScope = this.NAME.replace(/[.]/g, "_");
 	},
-	
-	insertPane: function(figure, $parent){
 
-	   var _this = this;
-	   var datatype = figure.getDatatype();
-	   $parent.append(
+    insertPane: function(figure, $parent){
+
+        var _this = this;
+        var allowMultipleConnections = figure.getMultipleConnections();
+
+        $parent.append('<div id="'+this.cssScope+'_container" class="panel panel-default">'+
+            ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#'+this.cssScope+'_panel">'+
+            '     Allow multiple connections'+
+            '</div>'+
+
+            ' <div class="panel-body collapse in" id="'+this.cssScope+'_panel">'+
+            '   <div class="form-group portMultipleConnectionsOption">'+
+
+            '<label>'+
+            '  <input '+(allowMultipleConnections?' checked="checked"':'')+'type="checkbox" value="" name="'+this.cssScope+'_label" name="'+this.cssScope+'_label" data-type="input" />'+
+            '</label>'+
+
+            '       </div>'+
+            '   </div>'+
+            ' </div>'+
+            '</div>');
+
+        $("#"+_this.cssScope+"_panel .portMultipleConnectionsOption input").on("change", function(){
+            var $this = $(this);
+            var portMultipleConnections = $this.is(":checked");
+            figure.setMultipleConnections(portMultipleConnections);
+        });
+    },
+
+    removePane : function() {
+    },
+
+    onInstall : function(figure) {
+    },
+
+    getPersistentAttributes : function(relatedFigure) {
+        var memento = this._super(relatedFigure);
+
+        return memento;
+    },
+
+    setPersistentAttributes : function(relatedFigure, memento) {
+        this._super(relatedFigure, memento);
+
+        return memento;
+    }
+});
+
+//added by LuboJ
+shape_designer.filter.PortDatatypeFilter = shape_designer.filter.Filter.extend({
+    NAME :"shape_designer.filter.PortDatatypeFilter",
+
+    init:function(){
+        this._super();
+
+        this.type = 0;
+        this.cssScope = this.NAME.replace(/[.]/g, "_");
+    },
+
+    insertPane: function(figure, $parent){
+
+        var _this = this;
+        var datatype = figure.getDatatype();
+        $parent.append(
             '<div id="'+this.cssScope+'_container" class="panel panel-default">'+
             '  <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#'+this.cssScope+'_panel">'+
             '    Port Datatype'+
             '  </div>'+
-        	'  <div class="panel-body collapse in" id="'+this.cssScope+'_panel">'+
-        	'     <div class="form-group portDatatypeOption">'+
+            '  <div class="panel-body collapse in" id="'+this.cssScope+'_panel">'+
+            '     <div class="form-group portDatatypeOption">'+
             '       <select name="'+this.cssScope+'_select">'+
             '         <option value="int">int</option>'+
             '         <option value="uint">uint</option>'+
@@ -3159,54 +3278,54 @@ shape_designer.filter.PortDatatypeFilter = shape_designer.filter.Filter.extend({
             '</div>'
         );
 
-	       if (['int','uint','float','double','bool','String'].includes(datatype)){
-               $("#"+_this.cssScope+"_panel .portDatatypeOption select").val(datatype);
-           }else{
-               $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
-               $("#"+_this.cssScope+"_panel .portDatatypeOption select").val('other');
-               $("#"+_this.cssScope+"_panel .portDatatypeOption input").val(datatype);
-           }
+        if (['int','uint','float','double','bool','String'].includes(datatype)){
+            $("#"+_this.cssScope+"_panel .portDatatypeOption select").val(datatype);
+        }else{
+            $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
+            $("#"+_this.cssScope+"_panel .portDatatypeOption select").val('other');
+            $("#"+_this.cssScope+"_panel .portDatatypeOption input").val(datatype);
+        }
 
-	       $("#"+_this.cssScope+"_panel .portDatatypeOption select").on("change", function(){
-               var $this = $(this);
-	           var datatypeName = $this.val();
-               if (datatypeName == "other"){
-                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
-                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'black'});
-                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").on("change", function(){
-                       var $this = $(this);
-        	           var datatypeName = $this.val();
-                       figure.setDatatype(datatypeName);
-                   });
-                   datatypeName = $("#"+_this.cssScope+"_panel .portDatatypeOption input").val();
-                   figure.setDatatype(datatypeName);
-               }else{
-                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', true);
-                   $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'#CCCCCC'});
-	               figure.setDatatype(datatypeName);
-               }
-	       });
-	   },
-	   
-	    
+        $("#"+_this.cssScope+"_panel .portDatatypeOption select").on("change", function(){
+            var $this = $(this);
+            var datatypeName = $this.val();
+            if (datatypeName == "other"){
+                $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', false);
+                $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'black'});
+                $("#"+_this.cssScope+"_panel .portDatatypeOption input").on("change", function(){
+                    var $this = $(this);
+                    var datatypeName = $this.val();
+                    figure.setDatatype(datatypeName);
+                });
+                datatypeName = $("#"+_this.cssScope+"_panel .portDatatypeOption input").val();
+                figure.setDatatype(datatypeName);
+            }else{
+                $("#"+_this.cssScope+"_panel .portDatatypeOption input").prop('disabled', true);
+                $("#"+_this.cssScope+"_panel .portDatatypeOption input").css({'color':'#CCCCCC'});
+                figure.setDatatype(datatypeName);
+            }
+        });
+    },
 
-		removePane : function() {
-		},
 
-		onInstall : function(figure) {
-		},
 
-		getPersistentAttributes : function(relatedFigure) {
-			var memento = this._super(relatedFigure);
+    removePane : function() {
+    },
 
-			return memento;
-		},
+    onInstall : function(figure) {
+    },
 
-		setPersistentAttributes : function(relatedFigure, memento) {
-			this._super(relatedFigure, memento);
+    getPersistentAttributes : function(relatedFigure) {
+        var memento = this._super(relatedFigure);
 
-			return memento;
-		}
+        return memento;
+    },
+
+    setPersistentAttributes : function(relatedFigure, memento) {
+        this._super(relatedFigure, memento);
+
+        return memento;
+    }
 });
 
 
@@ -4217,7 +4336,9 @@ shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
       this.filters.add( new shape_designer.filter.FanoutFilter());
       this.filters.add( new shape_designer.filter.PortDirectionFilter());
       this.filters.add( new shape_designer.filter.PortTypeFilter());
-      this.filters.add( new shape_designer.filter.PortDatatypeFilter());    //added by LuboJ
+      this.filters.add( new shape_designer.filter.PortDatatypeFilter());                //added by LuboJ
+      this.filters.add( new shape_designer.filter.PortMultipleConnectionsFilter());     //added by LuboJ
+      this.filters.add( new shape_designer.filter.PortConnectionsMandatoryFilter());    //added by LuboJ
 
       this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
@@ -4244,6 +4365,26 @@ shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
     getInputType: function()
     {
     	return this.getUserData().type;
+    },
+
+    setMultipleConnections: function(allowMultipleConnections)
+    {
+        this.getUserData().allowMultipleConnections = allowMultipleConnections;
+    },
+
+    getMultipleConnections: function()
+    {
+        return this.getUserData().allowMultipleConnections;
+    },
+
+    setConnectionMandatory: function(connectionMandatory)
+    {
+        this.getUserData().connectionMandatory = connectionMandatory;
+    },
+
+    getConnectionMandatory: function()
+    {
+        return this.getUserData().connectionMandatory;
     },
 
     setMaxFanOut: function( count)
@@ -5980,7 +6121,9 @@ shape_designer.GraphLangFigureWriter = draw2d.io.Writer.extend({
                     color: figure.getBackgroundColor().hash(),
                     name : figure.getUserData().name,
                     fanout: figure.getMaxFanOut(),
-                    datatype: figure.getDatatype()
+                    datatype: figure.getDatatype(),
+                    allowMultipleConnections: figure.getMultipleConnections(),
+                    connectionMandatory: figure.getConnectionMandatory()
                     });
             }
             figure.translate(x,y);
@@ -6259,7 +6402,12 @@ shape_designer.loadSymbolFromGraphLangClass = function(contents, appCanvas, appC
     let posY = portObj.getLocator().y * newObject.height / 100;
 
     var portFigure = new shape_designer.figure.ExtPort();
-    portFigure.setUserData({name: portObj.getName(), datatype: (portObj.userData && portObj.userData.datatype)?portObj.userData.datatype:"undefined"});
+    portFigure.setUserData({
+        name: portObj.getName(),
+        datatype: (portObj.userData && portObj.userData.datatype)?portObj.userData.datatype:"undefined",
+        allowMultipleConnections: (portObj.userData && portObj.userData.allowMultipleConnections !== "undefined")?portObj.userData.allowMultipleConnections:false,
+        connectionMandatory: (portObj.userData && portObj.userData.connectionMandatory !== "undefined")?portObj.userData.connectionMandatory:true
+    });
 
     //set in/out
     let portObjTypeStr = portObj.NAME;

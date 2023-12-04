@@ -48541,7 +48541,8 @@ draw2d.ResizeHandle = draw2d.shape.basic.Rectangle.extend({
       this.useGradient = true; 
       this.setSelectable(false);
      
-      this.setDimension(); // get best if no params are given
+      //this.setDimension(); // get best if no params are given             //LuboJ commented
+        this.setDimension(1,1);                                             //LuboJ modified
     },
     
     
@@ -49052,10 +49053,12 @@ draw2d.shape.basic.LineResizeHandle = draw2d.shape.basic.Circle.extend({
         this.isResizeHandle=true;
          
         if (draw2d.isTouchDevice) {
-            this.setDimension(20, 20);
+            //this.setDimension(20, 20);
+            this.setDimension(1, 1);        //LuboJ modified
         }
         else {
-            this.setDimension(10, 10);
+            //this.setDimension(10, 10);    //LuboJ modified
+            this.setDimension(1, 1);
         }
 
         this.setBackgroundColor("#5bcaff");

@@ -34,7 +34,7 @@ GraphLang.ArduinoLib.FileLib.OpenFolderNode = draw2d.SetFigure.extend({
     port.setName("in2");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "error";
+    port.userData.datatype = "errorDatatype";
 
     this.setPersistPorts(false);
   },

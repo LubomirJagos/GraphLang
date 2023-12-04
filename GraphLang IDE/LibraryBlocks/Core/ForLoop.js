@@ -12,6 +12,12 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     port.setName("iterationTerminal");
     port.setMaxFanOut(20);
 
+    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(2, 10));
+    port.setConnectionDirection(1);
+    port.setBackgroundColor("#0000FF");
+    port.setName("iterationTerminalOutput");
+    port.setMaxFanOut(20);
+
     this.userData = {};
     this.userData.executionOrder = 1;
     this.userData.wasTranslatedToCppCode = false;
@@ -124,7 +130,7 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
      */
     cCode += "\t/*code inside FOR LOOP */\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
 
       if (figObj.translateToCppCode){
         cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n";
@@ -143,8 +149,8 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
 
   translateToCppCodePost: function(){
     var cCode = "";
-    cCode += "} /* END FOR LOOP */" + "\n";
-    cCode += this.getRightTunnelsAssignementOutputCppCode();
+    cCode += this.getRightTunnelsAssignementOutputCppCode();    //first assign values to output wires
+    cCode += "} /* END FOR LOOP */" + "\n";                     //then finish loop
 
     return cCode;
   }

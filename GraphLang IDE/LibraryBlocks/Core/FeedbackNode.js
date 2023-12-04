@@ -226,36 +226,6 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
         },this));
     },
 
-    translateToCppCode: function(){
-      //get all necessary port to have more readable code
-      var out0 = this.getOutputPort(0);                               //for right numbering have to take look at init part and think how numbers are :)
-      var in0 = this.getInputPort(0);
-      var inDefault = this.getInputPort(1);
-
-      var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
-      in0.userData.datatype = feedbackDatatype;
-      out0.userData.datatype = feedbackDatatype;
-
-      cCode = "";
-
-      //assign default value to feeback node value, this is little fiddling with C/C++ preprocessor
-      cCode += "#ifndef feedbackNodeFlag_" + this.getId() + "\n";
-      cCode += "\t#define feedbackNodeFlag_" + this.getId() + "\n";
-      cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + inDefault.getConnections().get(0).getId() + ";\n";
-      cCode += "#endif\n";
-
-      //assign output value to output wire
-      feedbackObj = this;
-      out0.getConnections().each(function(wireIndex, wireObj){
-        cCode += "wire_" + out0.getConnections().get(0).getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
-      });
-
-      //assign input value for feedback node value, this makes buffer effect
-      cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + in0.getConnections().get(0).getId() + ";\n";
-
-      return cCode;
-    },
-
     symbolPicture: " data:image/png;base64,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",
 
     /**
@@ -268,9 +238,39 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
       var inDefault = this.getInputPort(1);
       
       var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+      cCode += "bool feedBackNodeFlag_" + this.getId() + " = false;\n";
       cCode += feedbackDatatype + " feedBackNode_" + this.getId() + ";\n";
 
       return cCode;
-    }
+    },
+
+    translateToCppCode: function(){
+        //get all necessary port to have more readable code
+        var out0 = this.getOutputPort(0);                               //for right numbering have to take look at init part and think how numbers are :)
+        var in0 = this.getInputPort(0);
+        var inDefault = this.getInputPort(1);
+
+        var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+        in0.userData.datatype = feedbackDatatype;
+        out0.userData.datatype = feedbackDatatype;
+
+        cCode = "";
+
+        //assign default value to feeback node value, this is little fiddling with C/C++ preprocessor
+        cCode += "if(!feedBackNodeFlag_" + this.getId() + "){\n";
+        cCode += "\tfeedBackNodeFlag_" + this.getId() + " = true;\n";
+        cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + inDefault.getConnections().get(0).getId() + ";\n";
+        cCode += "}else{\n";
+        cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + in0.getConnections().get(0).getId() + ";\n"; //assign input value for feedback node value, this makes buffer effect
+        cCode += "}\n";
+
+        //assign output value to output wire
+        feedbackObj = this;
+        out0.getConnections().each(function(wireIndex, wireObj){
+            cCode += "wire_" + out0.getConnections().get(0).getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
+        });
+
+        return cCode;
+    },
 
 });

@@ -2031,6 +2031,11 @@ GraphLang.Utils.getUniqueNodeLabel = function(canvas, nodeLabel = "nodeLabel"){
 GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDeclaration = true){
   let cCode = "";
 
+    /*
+     *      SET GLOBAL FLAG TO CREATE TERMINALS DECLARATIONs
+     */
+    translateTerminalsDeclaration = true;
+
   //TO BE SURE RECALCULATE NODES OWNERSHIP BY loopsRecalculateAbroadFigures
   GraphLang.Utils.loopsRecalculateAbroadFigures(canvas);
 
@@ -2101,11 +2106,30 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
       }
   });
 
-  //translate nodes based on their execution order
+  /*
+   *    Translate nodes based on their execution order
+   *        Now it's running for some limited execution order.
+   */
   for (var actualStep = 0; actualStep < 20; actualStep++){
+      /*
+       *    First translate feedback nodes as they have higher priority than nodes.
+       */
+    allNodes.each(function(nodeIndex, nodeObj){
+        if (nodeObj.getUserData() !== undefined &&
+            nodeObj.getUserData().executionOrder == actualStep &&
+            nodeObj.NAME.toLowerCase().search("feedbacknode") > -1
+        ){
+            if (nodeObj.translateToCppCode) cCode += nodeObj.translateToCppCode();
+        }
+    });
+
+    /*
+     *  Translate nodes normally.
+     */
     allNodes.each(function(nodeIndex, nodeObj){
       if (nodeObj.getUserData() !== undefined &&
-          nodeObj.getUserData().executionOrder == actualStep
+          nodeObj.getUserData().executionOrder == actualStep &&
+          nodeObj.NAME.toLowerCase().search("feedbacknode") == -1
       ){
           /*
            *    Getting import statements
@@ -2119,8 +2143,10 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
 
           /*
            *    C++ code translation, getting node C++ declaration and code
+           *        node must NOT BE TERMINAL or
+           *        can be terminal but translateTerminalDeclaration == true    (transcripting top canvas)
            */
-          if (nodeObj.translateToCppCodeDeclaration && translateTerminalsDeclaration) cCode += nodeObj.translateToCppCodeDeclaration();
+          if (nodeObj.translateToCppCodeDeclaration && (!nodeObj.userData.isTerminal || (nodeObj.userData.isTerminal && translateTerminalsDeclaration))) cCode += nodeObj.translateToCppCodeDeclaration();
           if (nodeObj.translateToCppCode) cCode += nodeObj.translateToCppCode();
 
           /*
@@ -2168,6 +2194,11 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
     cCodeParamsInput = "";
     cCodeParamsOutput = "";
     cCodeReturnDatatype = "void";
+
+    /*
+     *      SET GLOBAL FLAG TO NOT CREATE TERMINALS DECLARATIONs
+     */
+    translateTerminalsDeclaration = false;
 
     var divSubnodeCanvasId = 'subnodeCanvas_'+translateSubnodeCanvasArray.getSize();
     $('#subnodeCanvasContainer').append("<div id=\"" + divSubnodeCanvasId + "\" style=\"width: 1500px; height: 600px;\"></div>");
@@ -2233,6 +2264,7 @@ GraphLang.Utils.translateToCppCodeSubNode = function(nodeObj){
           cCodeReturnDatatype = figureObj.getDatatype();
       }
     });
+    cCodeParams = cCodeParams.replace(/,\s*$/ ,"");    //remove last ',' if it's there
 
     cCode += cCodeReturnDatatype + ' ' + nodeObj.translateToCppCodeFunctionName() + "(" + cCodeParams + "){\n\t";
 
@@ -2289,7 +2321,7 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         template_cCode += "\n";
 
         template_cCode += `
-typedef int error;
+typedef int errorDatatype;
 typedef int int32;
 typedef int undefined;
 typedef unsigned int uint;
@@ -2349,6 +2381,8 @@ void digitalWrite(int pin, bool value){
 void pinMode(int pin, pinMode mode){
     arduinoPinMode[pin] = mode;
 }
+
+SerialClass Serial;
 /***********************************************/
         `;
 

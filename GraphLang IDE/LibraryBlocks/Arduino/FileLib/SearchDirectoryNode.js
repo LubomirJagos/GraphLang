@@ -24,7 +24,7 @@ GraphLang.ArduinoLib.FileLib.SearchDirectoryNode = draw2d.SetFigure.extend({
     port.setName("out2");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "error";
+    port.userData.datatype = "errorDatatype";
 
     // Port
     port = this.addPort(new draw2d.InputPort(), new draw2d.layout.locator.XYRelPortLocator(-10, 10));
@@ -42,7 +42,7 @@ GraphLang.ArduinoLib.FileLib.SearchDirectoryNode = draw2d.SetFigure.extend({
     port.setName("in2");
     port.setMaxFanOut(20);
     port.userData = {};
-    port.userData.datatype = "error";
+    port.userData.datatype = "errorDatatype";
 
     this.setPersistPorts(false);
   },
