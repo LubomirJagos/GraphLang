@@ -2315,6 +2315,7 @@ GraphLang.Utils.getCppCode3 = function(canvas, showCode = true){
         let cCode = GraphLang.Utils.translateCanvasToCppCode(canvas, translateTerminalsDeclaration = true);
 
         var template_cCode = "";
+        var _disabled_template_cCode = "";
 
         template_cCode += "\n";
         template_cCode += this.getCppCodeImport();
@@ -2328,7 +2329,9 @@ typedef unsigned int uint;
 typedef float numeric;
 #define HIGH true
 #define LOW false
+        `;
 
+        _disabled_template_cCode += `
 using namespace std;
 
 /**** MOCKING CLASSES **************************/
@@ -2402,23 +2405,23 @@ SerialClass Serial;
         });
         template_cCode += "/************* END Transcripted SubNode function definitions ************/\n\n";
 
-        /*
         template_cCode += "void setup() {\n";
         template_cCode += "\n";
         template_cCode += cCode;
         template_cCode += "\n";
         template_cCode += "}\n";
         template_cCode += "void loop() {\n";
-        template_cCode += "  // put your main code here, to run repeatedly:\n";
+        template_cCode += "\t/* generated code is in setup() */\n";
         template_cCode += "}\n";
-        */
 
+        /*
         template_cCode += "int main(int argc, char* argv[]){\n";
         template_cCode += "\n";
         template_cCode += cCode;
         template_cCode += "\n";
         template_cCode += "\t return 0;\n";
         template_cCode += "}\n";
+        */
 
         cCode = template_cCode;
 

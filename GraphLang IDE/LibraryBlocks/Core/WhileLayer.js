@@ -147,10 +147,11 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
 
     cCode += this.getTunnelsDeclarationCppCode();
 
-    cCode += "do{\n";
-
     cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t");
     cCode += "\n";
+
+    cCode += "do{\n";
+
     cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t");
     cCode += "\n";
 

@@ -373,7 +373,16 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
      *  Generate wires declaration.
      */
   	allConnections.each(function(connectionindex, connectionObj){
-  		cCode += connectionObj.getSource().userData.datatype + " wire_" + connectionObj.getId() + ";\n";
+        let datatypeStr = connectionObj.getSource().userData.datatype;
+        //if (connectionObj.getSource().getDatatype) datatypeStr = connectionObj.getSource().getDatatype();    //use getDatatype function if available
+        try {
+            console.log(`wire while loop source port class: ${connectionObj.getSource().NAME}, owner:${connectionObj.getSource().getParent().NAME},  datatype: ${connectionObj.getSource().getDatatype()}`);
+            datatypeStr = connectionObj.getSource().getDatatype();    //use getDatatype function if available
+        }catch(e){
+
+        }
+
+        cCode += datatypeStr + " wire_" + connectionObj.getId() + "; // generated\n";
   	});
 
     return cCode;

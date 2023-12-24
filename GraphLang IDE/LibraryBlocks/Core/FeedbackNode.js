@@ -20,6 +20,9 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.setName("out1");
      port.setMaxFanOut(20);
      port.userData = {datatype: "undefined", executionOrder: 1};
+     port.getDatatype = function(){
+         return this.getParent().getInputPort("in2").getDatatype(); //use default value port function to get datatype
+     };
 
      // Port
      port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(99.90984000000026, 16.393442622950822));
@@ -28,6 +31,9 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.setName("in1");
      port.setMaxFanOut(20);
      port.userData = {datatype: "undefined",  executionOrder: 0};
+     port.getDatatype = function(){
+         return this.getParent().getInputPort("in2").getDatatype(); //use default value port function to get datatype
+     };
 
      port = this.createPort("input", new draw2d.layout.locator.XYRelPortLocator(50, 95));
      port.setConnectionDirection(2);
@@ -35,6 +41,23 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
      port.setName("in2");
      port.setMaxFanOut(20);
      port.userData = {datatype: "undefined",  executionOrder: 0};
+     port.getDatatype = function(){     //this will look at wire connected to default value port, TODO: look also for value input in case there is no default value connected
+         let datatypeStr = "undefined";
+         try {
+             if (this.getConnections().getSize() > 0) {
+                 let sourceConnectionPort = this.getConnections().get(0).getSource();
+                 if (sourceConnectionPort.getDatatype) datatypeStr = sourceConnectionPort.getDatatype;
+                 else datatypeStr = this.getConnections().get(0).getSource().userData.datatype;
+             }else if (this.getInputPort("in1").getConnections().getSize() > 0){
+                 let sourceConnectionPort = this.getInputPort("in1").getConnections().get(0).getSource();
+                 if (sourceConnectionPort.getDatatype) datatypeStr = sourceConnectionPort.getDatatype;
+                 else datatypeStr = this.getConnections().get(0).getSource().userData.datatype;
+             }
+         }catch (e){
+             console.log("Feedback node datatype error.");
+         }
+         return datatypeStr;
+     };
 
      this.persistPorts=false;
    },
@@ -237,7 +260,9 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
       cCode = "";
       var inDefault = this.getInputPort(1);
       
-      var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+      //var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+      var feedbackDatatype = inDefault.getDatatype();
+
       cCode += "bool feedBackNodeFlag_" + this.getId() + " = false;\n";
       cCode += feedbackDatatype + " feedBackNode_" + this.getId() + ";\n";
 
@@ -250,7 +275,9 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
         var in0 = this.getInputPort(0);
         var inDefault = this.getInputPort(1);
 
-        var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+        //var feedbackDatatype = inDefault.getConnections().get(0).getSource().userData.datatype;
+        var feedbackDatatype = inDefault.getDatatype();
+
         in0.userData.datatype = feedbackDatatype;
         out0.userData.datatype = feedbackDatatype;
 
@@ -259,7 +286,14 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
         //assign default value to feeback node value, this is little fiddling with C/C++ preprocessor
         cCode += "if(!feedBackNodeFlag_" + this.getId() + "){\n";
         cCode += "\tfeedBackNodeFlag_" + this.getId() + " = true;\n";
-        cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + inDefault.getConnections().get(0).getId() + ";\n";
+
+        //TODO: this is wrong but still better than nothing
+        if (inDefault.getConnections().getSize() > 0) {
+            cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + inDefault.getConnections().get(0).getId() + ";\n";
+        }else{
+            cCode += "\tfeedBackNode_" + this.getId() + " = null;\n";
+        }
+
         cCode += "}else{\n";
         cCode += "\tfeedBackNode_" + this.getId() + " = wire_" + in0.getConnections().get(0).getId() + ";\n"; //assign input value for feedback node value, this makes buffer effect
         cCode += "}\n";
@@ -267,7 +301,8 @@ GraphLang.Shapes.Basic.FeedbackNode = draw2d.SetFigure.extend({
         //assign output value to output wire
         feedbackObj = this;
         out0.getConnections().each(function(wireIndex, wireObj){
-            cCode += "wire_" + out0.getConnections().get(0).getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
+            //cCode += "wire_" + out0.getConnections().get(0).getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
+            cCode += "wire_" + wireObj.getId() + " = feedBackNode_" + feedbackObj.getId() + ";\n";
         });
 
         return cCode;
