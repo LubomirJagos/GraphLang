@@ -153,20 +153,19 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     cCode += "do{\n";
 
     cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t");
-    cCode += "\n";
+    cCode += "\n\t";
 
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") ;
 
       if (figObj.translateToCppCode){
-        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n"
+        cCode += figObj.translateToCppCode().replaceAll("\n", "\n\t")
       }else if (figObj.translateToCppCode2){
-        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n"
+        cCode += figObj.translateToCppCode2().replaceAll("\n", "\n\t")
       }
       
      /* in case of post C/C++ code run it */
-     if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
-
+     if (figObj.translateToCppCodePost) cCode += figObj.translateToCppCodePost().replaceAll("\n", "\n\t"); //if there is defined to put somethin after let's do it
     });
 
     return cCode;
@@ -181,7 +180,7 @@ GraphLang.Shapes.Basic.Loop2.WhileLayer = GraphLang.Shapes.Basic.Loop2.extend({
     }
 
     cCode += this.getRightTunnelsAssignementOutputCppCode();
-    cCode += "}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
+    cCode += "\n}while(!" + endCondition + "); /* END WHILE LOOP */" + "\n";
 
     return cCode;
   },

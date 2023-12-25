@@ -2,14 +2,30 @@ import os, sys
 import glob
 import re
 
+blocksRootDir = "LibraryBlocks"
+
 searchDirs = [
-    "LibraryBlocks",
+    blocksRootDir,
 ]
 
+#
+#   List of excluded directories, these here are included but there is no menu item generated
+#
 excludeFromHtmlBlockPatterns = [
     "Core/utils",
     "GraphLangExperimental",
 ]
+
+#
+#   Tabs assignemnt blocs. If it path starts with some of keys then is under this tab.
+#
+blocksToTabsAssignment = {
+    os.path.join(blocksRootDir, "Arduino"):                 "Arduino",
+    os.path.join(blocksRootDir, "Core"):                    "Core",
+    os.path.join(blocksRootDir, "GraphLangExperimental"):   "Experimental",
+    os.path.join(blocksRootDir, "PythonQtGuiLib"):          "Python GUI",
+    os.path.join(blocksRootDir, "UserDefinedNode"):         "User Nodes"
+}
 
 objectsNamesList = []
 
@@ -311,13 +327,11 @@ if __name__ == "__main__":
         print(k)
 
     print('============= classList ================')
-
     print(classList)
 
-    print('============== <script> ===============')
 
     jsScriptIncludeStatement = ""
-    htmlNodeMenuItem = ""
+    tabList = [[] for k in range(len(blocksToTabsAssignment))]
     for nodeItem in objectsNamesList:
         scriptTagStr = "\t" + '<script src="./' + nodeItem[1].replace('\\','/') + '"></script>' + "\n"
         jsScriptIncludeStatement += scriptTagStr
@@ -332,9 +346,39 @@ if __name__ == "__main__":
 
         if generateHtml:
             htmlNodeMenuItemName = nodeItem[2].split('.')[-1]
-            htmlNodeMenuItem += '<div data-shape="' + nodeItem[2] + '" data-label="' + htmlNodeMenuItemName + '" class="palette_node_element draw2d_droppable">' + htmlNodeMenuItemName + '</div>' + "\n"
+            
+            index = 0
+            for tabDirLocation in blocksToTabsAssignment.keys():
+                if (nodeItem[0].startswith(tabDirLocation)):
+                    tabList[index].append('\t\t\t<div data-shape="' + nodeItem[2] + '" data-label="' + htmlNodeMenuItemName + '" class="palette_node_element draw2d_droppable">' + htmlNodeMenuItemName + '</div>' + "\n")
+                index += 1
+            
 
+    #
+    #   Create HTML blocks list in menu to be able put them on canvas
+    #
+    htmlNodeMenuItem = ""
+    tabIndex = 0
+    htmlNodeMenuItem += f'\t\t<input type="button" value="All" onclick="$(\'#navigation span\').show();" />\n'
+    for tabCategory in tabList:
+        htmlNodeMenuItem += f'\t\t<input type="button" value="{blocksToTabsAssignment[list(blocksToTabsAssignment.keys())[tabIndex]]}" onclick="$(\'#navigation span\').hide(); $(\'#tab{tabIndex}\').show();" />\n'
+        tabIndex += 1
+        
+    tabIndex = 0
+    for tabCategory in tabList:
+        htmlNodeMenuItem += f'\t\t<span id="tab{tabIndex}">\n'
+        for tabBlockHtmlLine in tabCategory:
+            htmlNodeMenuItem += tabBlockHtmlLine 
+        htmlNodeMenuItem += '\t\t</span>\n'
+        tabIndex += 1 
+
+    print('============== <script> ===============')
     print(jsScriptIncludeStatement)
+
+    print('============== tabn list ===============')
+    print(tabList)
+
+    print('============== html node menu ===============')
     print(htmlNodeMenuItem)
 
     outputStr = htmlTemplate.replace('<!-- user defined nodes place to insert -->', '<!-- user defined nodes place to insert -->'+"\n"+jsScriptIncludeStatement)

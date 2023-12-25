@@ -313,10 +313,6 @@ GraphLang.ArduinoLib.Node.Serial.begin = GraphLang.UserDefinedNode.extend({
     
     jsonDocument: [],
     
-    translateToCppCodeImport: function(){
-        return "SerialClass Serial;\n";
-    },
-
 translateToCppCode: function(){
       cCode = "";
       var in1 = this.getInputPort("in1"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";

@@ -257,7 +257,7 @@ GraphLang.ArduinoLib.Node.pinMode = GraphLang.UserDefinedNode.extend({
        cCode = "";
        var in1 = this.getInputPort("in2"); if (in1.getConnections().getSize() > 0) in1 = "wire_" + in1.getConnections().get(0).getId(); else in1 = "/*in1 default value*/";
        var in2 = this.getInputPort("in1"); if (in2.getConnections().getSize() > 0) in2 = "wire_" + in2.getConnections().get(0).getId(); else in2 = "/*in2 default value*/";
-       cCode += "pinMode(" + in1 + "," + in2 + ");";
+       cCode += "pinMode(" + in1 + "," + in2 + ");\n";
        return cCode;
      },
 

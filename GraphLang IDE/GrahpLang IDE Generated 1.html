@@ -308,66 +308,82 @@ function displayJSON(canvas){
    <div id="navigation" class="">
 
         <!-- user defined nodes menu place to insert -->
-<div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="Add" class="palette_node_element draw2d_droppable">Add</div>
-<div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="analogRead" class="palette_node_element draw2d_droppable">analogRead</div>
-<div data-shape="GraphLang.ArduinoLib.Node.analogWrite" data-label="analogWrite" class="palette_node_element draw2d_droppable">analogWrite</div>
-<div data-shape="GraphLang.ArduinoLib.Node.digitalRead" data-label="digitalRead" class="palette_node_element draw2d_droppable">digitalRead</div>
-<div data-shape="GraphLang.ArduinoLib.Node.digitalWrite" data-label="digitalWrite" class="palette_node_element draw2d_droppable">digitalWrite</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Divide" data-label="Divide" class="palette_node_element draw2d_droppable">Divide</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Multiply" data-label="Multiply" class="palette_node_element draw2d_droppable">Multiply</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Not" data-label="Not" class="palette_node_element draw2d_droppable">Not</div>
-<div data-shape="GraphLang.ArduinoLib.Node.pinMode" data-label="pinMode" class="palette_node_element draw2d_droppable">pinMode</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Serial.begin" data-label="begin" class="palette_node_element draw2d_droppable">begin</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Serial.println" data-label="println" class="palette_node_element draw2d_droppable">println</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Subtract" data-label="Subtract" class="palette_node_element draw2d_droppable">Subtract</div>
-<div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="ternarOperator" class="palette_node_element draw2d_droppable">ternarOperator</div>
-<div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="toStr" class="palette_node_element draw2d_droppable">toStr</div>
-<div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="waitUntilNextMs" class="palette_node_element draw2d_droppable">waitUntilNextMs</div>
-<div data-shape="Arduino.File.fclose" data-label="fclose" class="palette_node_element draw2d_droppable">fclose</div>
-<div data-shape="Arduino.File.fileSize" data-label="fileSize" class="palette_node_element draw2d_droppable">fileSize</div>
-<div data-shape="Arduino.File.fopen" data-label="fopen" class="palette_node_element draw2d_droppable">fopen</div>
-<div data-shape="Arduino.File.fread" data-label="fread" class="palette_node_element draw2d_droppable">fread</div>
-<div data-shape="Arduino.File.fwrite" data-label="fwrite" class="palette_node_element draw2d_droppable">fwrite</div>
-<div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
-<div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
-<div data-shape="GraphLang.ArduinoLib.String.replace" data-label="replace" class="palette_node_element draw2d_droppable">replace</div>
-<div data-shape="GraphLang.ArduinoLib.String.replace2" data-label="replace2" class="palette_node_element draw2d_droppable">replace2</div>
-<div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="ArrayNode" class="palette_node_element draw2d_droppable">ArrayNode</div>
-<div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="BundleByName" class="palette_node_element draw2d_droppable">BundleByName</div>
-<div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="Bundle" class="palette_node_element draw2d_droppable">Bundle</div>
-<div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="ConstantNode" class="palette_node_element draw2d_droppable">ConstantNode</div>
-<div data-shape="ConvertDatatype" data-label="ConvertDatatype" class="palette_node_element draw2d_droppable">ConvertDatatype</div>
-<div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="FeedbackNode" class="palette_node_element draw2d_droppable">FeedbackNode</div>
-<div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
-<div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
-<div data-shape="GraphLang.Shapes.Basic.Return" data-label="Return" class="palette_node_element draw2d_droppable">Return</div>
-<div data-shape="GraphLang.Shapes.Basic.Loop2.Sequence" data-label="Sequence" class="palette_node_element draw2d_droppable">Sequence</div>
-<div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="SliderNode" class="palette_node_element draw2d_droppable">SliderNode</div>
-<div data-shape="GraphLang.Shapes.Basic.TerminalOutput" data-label="TerminalOutput" class="palette_node_element draw2d_droppable">TerminalOutput</div>
-<div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="UnbundleByName" class="palette_node_element draw2d_droppable">UnbundleByName</div>
-<div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="Unbundle" class="palette_node_element draw2d_droppable">Unbundle</div>
-<div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">ClusterDatatypeNode2</div>
-<div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="Abs" class="palette_node_element draw2d_droppable">Abs</div>
-<div data-shape="GraphLang.Shapes.Basic.VectorNode" data-label="VectorNode" class="palette_node_element draw2d_droppable">VectorNode</div>
-<div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
-<div data-shape="GraphLang.Shapes.Basic.WireConnection" data-label="WireConnection" class="palette_node_element draw2d_droppable">WireConnection</div>
-<div data-shape="GraphLang.PythonQtGuiLib.UiExec" data-label="UiExec" class="palette_node_element draw2d_droppable">UiExec</div>
-<div data-shape="GraphLang.PythonQtGuiLib.UiLoad" data-label="UiLoad" class="palette_node_element draw2d_droppable">UiLoad</div>
-<div data-shape="GraphLang.PythonQtGuiLib.UiShow" data-label="UiShow" class="palette_node_element draw2d_droppable">UiShow</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="ConsoleLog" data-label="ConsoleLog" class="palette_node_element draw2d_droppable">ConsoleLog</div>
-<div data-shape="ConsoleLog2" data-label="ConsoleLog2" class="palette_node_element draw2d_droppable">ConsoleLog2</div>
-<div data-shape="Convolution" data-label="Convolution" class="palette_node_element draw2d_droppable">Convolution</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
-<div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
-<div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
-<div data-shape="UserDefinedExample" data-label="UserDefinedExample" class="palette_node_element draw2d_droppable">UserDefinedExample</div>
+		<input type="button" value="All" onclick="$('#navigation span').show();" />
+		<input type="button" value="Arduino" onclick="$('#navigation span').hide(); $('#tab0').show();" />
+		<input type="button" value="Core" onclick="$('#navigation span').hide(); $('#tab1').show();" />
+		<input type="button" value="Experimental" onclick="$('#navigation span').hide(); $('#tab2').show();" />
+		<input type="button" value="Python GUI" onclick="$('#navigation span').hide(); $('#tab3').show();" />
+		<input type="button" value="User Nodes" onclick="$('#navigation span').hide(); $('#tab4').show();" />
+		<span id="tab0">
+			<div data-shape="GraphLang.ArduinoLib.Node.Add" data-label="Add" class="palette_node_element draw2d_droppable">Add</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.analogRead" data-label="analogRead" class="palette_node_element draw2d_droppable">analogRead</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.analogWrite" data-label="analogWrite" class="palette_node_element draw2d_droppable">analogWrite</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.digitalRead" data-label="digitalRead" class="palette_node_element draw2d_droppable">digitalRead</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.digitalWrite" data-label="digitalWrite" class="palette_node_element draw2d_droppable">digitalWrite</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Divide" data-label="Divide" class="palette_node_element draw2d_droppable">Divide</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Multiply" data-label="Multiply" class="palette_node_element draw2d_droppable">Multiply</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Not" data-label="Not" class="palette_node_element draw2d_droppable">Not</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.pinMode" data-label="pinMode" class="palette_node_element draw2d_droppable">pinMode</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Serial.begin" data-label="begin" class="palette_node_element draw2d_droppable">begin</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Serial.println" data-label="println" class="palette_node_element draw2d_droppable">println</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Subtract" data-label="Subtract" class="palette_node_element draw2d_droppable">Subtract</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.ternarOperator" data-label="ternarOperator" class="palette_node_element draw2d_droppable">ternarOperator</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.toStr" data-label="toStr" class="palette_node_element draw2d_droppable">toStr</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.waitUntilNextMs" data-label="waitUntilNextMs" class="palette_node_element draw2d_droppable">waitUntilNextMs</div>
+			<div data-shape="Arduino.File.fclose" data-label="fclose" class="palette_node_element draw2d_droppable">fclose</div>
+			<div data-shape="Arduino.File.fileSize" data-label="fileSize" class="palette_node_element draw2d_droppable">fileSize</div>
+			<div data-shape="Arduino.File.fopen" data-label="fopen" class="palette_node_element draw2d_droppable">fopen</div>
+			<div data-shape="Arduino.File.fread" data-label="fread" class="palette_node_element draw2d_droppable">fread</div>
+			<div data-shape="Arduino.File.fwrite" data-label="fwrite" class="palette_node_element draw2d_droppable">fwrite</div>
+			<div data-shape="GraphLang.ArduinoLib.FileLib.OpenFolderNode" data-label="OpenFolderNode" class="palette_node_element draw2d_droppable">OpenFolderNode</div>
+			<div data-shape="GraphLang.ArduinoLib.FileLib.SearchDirectoryNode" data-label="SearchDirectoryNode" class="palette_node_element draw2d_droppable">SearchDirectoryNode</div>
+			<div data-shape="GraphLang.ArduinoLib.String.replace" data-label="replace" class="palette_node_element draw2d_droppable">replace</div>
+			<div data-shape="GraphLang.ArduinoLib.String.replace2" data-label="replace2" class="palette_node_element draw2d_droppable">replace2</div>
+			<div data-shape="GraphLang.ArduinoLib.Node.Math.Abs" data-label="Abs" class="palette_node_element draw2d_droppable">Abs</div>
+		</span>
+		<span id="tab1">
+			<div data-shape="GraphLang.Shapes.Basic.ArrayNode" data-label="ArrayNode" class="palette_node_element draw2d_droppable">ArrayNode</div>
+			<div data-shape="GraphLang.Shapes.Basic.BundleByName" data-label="BundleByName" class="palette_node_element draw2d_droppable">BundleByName</div>
+			<div data-shape="GraphLang.Shapes.Basic.Bundle" data-label="Bundle" class="palette_node_element draw2d_droppable">Bundle</div>
+			<div data-shape="GraphLang.Shapes.Basic.ConstantNode" data-label="ConstantNode" class="palette_node_element draw2d_droppable">ConstantNode</div>
+			<div data-shape="ConvertDatatype" data-label="ConvertDatatype" class="palette_node_element draw2d_droppable">ConvertDatatype</div>
+			<div data-shape="GraphLang.Shapes.Basic.FeedbackNode" data-label="FeedbackNode" class="palette_node_element draw2d_droppable">FeedbackNode</div>
+			<div data-shape="GraphLang.Shapes.Basic.Loop2.ForLoop" data-label="ForLoop" class="palette_node_element draw2d_droppable">ForLoop</div>
+			<div data-shape="GraphLang.Shapes.Basic.Loop2.Multilayered3" data-label="Multilayered3" class="palette_node_element draw2d_droppable">Multilayered3</div>
+			<div data-shape="GraphLang.Shapes.Basic.Return" data-label="Return" class="palette_node_element draw2d_droppable">Return</div>
+			<div data-shape="GraphLang.Shapes.Basic.Loop2.Sequence" data-label="Sequence" class="palette_node_element draw2d_droppable">Sequence</div>
+			<div data-shape="GraphLang.Shapes.Basic.SliderNode" data-label="SliderNode" class="palette_node_element draw2d_droppable">SliderNode</div>
+			<div data-shape="GraphLang.Shapes.Basic.TerminalOutput" data-label="TerminalOutput" class="palette_node_element draw2d_droppable">TerminalOutput</div>
+			<div data-shape="GraphLang.Shapes.Basic.UnbundleByName" data-label="UnbundleByName" class="palette_node_element draw2d_droppable">UnbundleByName</div>
+			<div data-shape="GraphLang.Shapes.Basic.Unbundle" data-label="Unbundle" class="palette_node_element draw2d_droppable">Unbundle</div>
+			<div data-shape="GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2" data-label="ClusterDatatypeNode2" class="palette_node_element draw2d_droppable">ClusterDatatypeNode2</div>
+			<div data-shape="GraphLang.Shapes.Basic.VectorNode" data-label="VectorNode" class="palette_node_element draw2d_droppable">VectorNode</div>
+			<div data-shape="GraphLang.Shapes.Basic.Loop2.WhileLayer" data-label="WhileLayer" class="palette_node_element draw2d_droppable">WhileLayer</div>
+			<div data-shape="GraphLang.Shapes.Basic.WireConnection" data-label="WireConnection" class="palette_node_element draw2d_droppable">WireConnection</div>
+		</span>
+		<span id="tab2">
+		</span>
+		<span id="tab3">
+			<div data-shape="GraphLang.PythonQtGuiLib.UiExec" data-label="UiExec" class="palette_node_element draw2d_droppable">UiExec</div>
+			<div data-shape="GraphLang.PythonQtGuiLib.UiLoad" data-label="UiLoad" class="palette_node_element draw2d_droppable">UiLoad</div>
+			<div data-shape="GraphLang.PythonQtGuiLib.UiShow" data-label="UiShow" class="palette_node_element draw2d_droppable">UiShow</div>
+		</span>
+		<span id="tab4">
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="ConsoleLog" data-label="ConsoleLog" class="palette_node_element draw2d_droppable">ConsoleLog</div>
+			<div data-shape="ConsoleLog2" data-label="ConsoleLog2" class="palette_node_element draw2d_droppable">ConsoleLog2</div>
+			<div data-shape="Convolution" data-label="Convolution" class="palette_node_element draw2d_droppable">Convolution</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
+			<div data-shape="GraphLangTestShape3" data-label="GraphLangTestShape3" class="palette_node_element draw2d_droppable">GraphLangTestShape3</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape" data-label="GraphLangTestShape" class="palette_node_element draw2d_droppable">GraphLangTestShape</div>
+			<div data-shape="GraphLangTestShape2" data-label="GraphLangTestShape2" class="palette_node_element draw2d_droppable">GraphLangTestShape2</div>
+			<div data-shape="UserDefinedExample" data-label="UserDefinedExample" class="palette_node_element draw2d_droppable">UserDefinedExample</div>
+		</span>
 
 
   </div>
