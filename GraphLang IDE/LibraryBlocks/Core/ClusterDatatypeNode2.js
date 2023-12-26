@@ -179,8 +179,8 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
    * from ID - are removed.
    * @returns {string}
    */
-  getDatatype: function(){
-    return "clusterDatatype_" + this.getId().replaceAll("-", "") + "_" + this.nodeLabel.getText() + "*";
+  getDatatype: function(asReference = true){
+    return "clusterDatatype_" + this.getId().replaceAll("-", "") + "_" + this.nodeLabel.getText() + (asReference ? "*" : "");
   },
 
   getNodeLabelText: function(){
@@ -479,7 +479,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
   translateToCppCodeDeclaration: function(){
     var cCode = "";
-    cCode += this.getDatatype() + " " + this.getVariableName()+ ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
+    cCode += this.getDatatype() + " " + this.getVariableName() + " = new " + this.getDatatype(asReference=false) + ";\n";        //THIS CREATES NEW INSTANCE, SO THAT'S REASON WHY HERE IS ID USED
     return cCode;
   },
 
@@ -488,7 +488,7 @@ GraphLang.Shapes.Basic.Loop2.ClusterDatatypeNode2 = GraphLang.Shapes.Basic.Loop2
 
     var variableName = this.getVariableName();
     this.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-        cCode += 'wire_' + connectionObj.getId() + ' = ' + '&' + variableName + ";\n";     //writing reference to this cluster to wire    
+        cCode += 'wire_' + connectionObj.getId() + ' = ' + variableName + ";\n";     //writing reference to this cluster to wire
     });
 
     return cCode;

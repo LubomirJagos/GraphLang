@@ -317,7 +317,7 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
       let inputWire = this.portClusterType.getConnections().first();
       this.items.getChildren().each(function(itemIndex, itemObj){
         itemObj.getOutputPort(0).getConnections().each(function(connectionIndex, connectionObj){
-            cCode +=  'wire_' + connectionObj.getId() + ' = wire_' + inputWire.getId() + '.' + itemObj.getText() + ";\n";
+            cCode +=  'wire_' + connectionObj.getId() + ' = wire_' + inputWire.getId() + '->' + itemObj.getText() + ";\n";
         });
       });        
 

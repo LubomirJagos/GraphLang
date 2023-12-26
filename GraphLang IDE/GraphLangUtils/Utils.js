@@ -1585,8 +1585,10 @@ GraphLang.Utils.setTunnelColorByWire = function(canvas){
  */
 GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
   var allId = new draw2d.util.ArrayList();
+  var allIdNoHyphen = new draw2d.util.ArrayList();
   canvas.getFigures().each(function(figureIndex, figureObj){
       allId.push(figureObj.getId());
+      allIdNoHyphen.push(figureObj.getId().replaceAll("-",""));
       if (figureObj.NAME.toLowerCase().search("loop") > -1){
         figureObj.getChildren().each(function(childIndex, childObj){
           if (childObj.NAME.toLowerCase().search("tunnel") > -1){
@@ -1596,17 +1598,22 @@ GraphLang.Utils.rewriteIDtoNumbers = function(canvas, cCode){
       }
   });
 
-
   canvas.getLines().each(function(connectionIndex, connectionObj){
     allId.push(connectionObj.getId());
   });
-
 
   //replace IDs with their order for more human readible code
   var counter = 0;
   allId.each(function(IdIndex, IdObj){
     var regExpression = new RegExp(IdObj, 'g');
-    cCode = cCode.replace(regExpression, counter++);
+    cCode = cCode.replace(regExpression, counter++);    //this replace id with number
+  });
+
+  //replace IDs without hyphen - this is mainly for clusters
+  var counter = 0;
+  allIdNoHyphen.each(function(IdIndex, IdObj){
+      var regExpression = new RegExp(IdObj, 'g');
+      cCode = cCode.replace(regExpression, counter++);    //this replace id with number
   });
 
   return cCode;
