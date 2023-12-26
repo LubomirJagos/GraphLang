@@ -69,7 +69,10 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
 
           if (clusterName){
               this.getCanvas().getFigures().each(function(figureIndex, figureObj){
-                  if (figureObj.getDatatype && figureObj.getDatatype() == clusterName){
+                  if (figureObj.getDatatype &&
+                      figureObj.getDatatype() == clusterName &&
+                      figureObj.NAME.toLowerCase().search("clusterdatatype") > -1   //this must be here to REALLY SURE GET CLUSTER NODE, because also tunnel can return cluster datatype if connected to one
+                  ){
                       clusterObj = figureObj;
                   } 
               }); 
@@ -180,7 +183,7 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
      */
     addEntity: function(txt, optionalIndex)
     {
-      //var label =new draw2d.shape.basic.Label({
+      //var label = new draw2d.shape.basic.Label({
       var label = new GraphLang.Shapes.Basic.Label({
         text:txt,
         stroke:0,
@@ -196,8 +199,19 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
       outputPort.userData = {};
       outputPort.userData.datatype = "bool";
       outputPort.setName("output_" + label.id);
-      
-      var _table = this;
+
+      var unbundlerObj = this;
+      outputPort.getDatatype = function(){
+          //var connectedCluster = this.getParent().getParent().getParent().getConnectedCluster();  //this will not run if structure of unbundler will change, but that's will not happen
+          var connectedCluster = unbundlerObj.getConnectedCluster();
+          var currentItemLabel = this.getParent().getText();
+          var itemClusterObj = connectedCluster.getItemByLabel(currentItemLabel);
+          return itemClusterObj.getDatatype();
+      }
+      outputPort.getTopParentNode = function(){
+          return unbundlerObj;
+      }
+
       if($.isNumeric(optionalIndex) && optionalIndex < this.items.getChildren().getSize()){
         this.items.add(label, null, optionalIndex);
       }

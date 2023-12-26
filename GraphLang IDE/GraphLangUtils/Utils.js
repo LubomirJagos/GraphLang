@@ -2082,8 +2082,38 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
           lineObj.getSource().getParent().getComposite() == null &&
           lineObj.getSource().getName() != "iterationTerminalOutput"        //this is not to generate wire declaration for FOR LOOP iterator indexer, getName() return port name not class nae different than NAME
       ){
-          sourceDatatype = lineObj.getSource().getUserData().datatype;
-          cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
+          var isWireOnTopCanvas = true;
+
+          /*
+           *    This is test if wire is connected to unbundler where its structure is:
+           *        UnbundlerNode > VerticalLayout > Label > OutputPort
+           *    then getParent() is little more complicated due there is element nesting, but there is on output port function getTopParentNode()
+           *    which is my special function which return top figure obj reference to simplify this
+           */
+          try{
+              if (
+                  lineObj.getSource().getTopParentNode &&
+                  lineObj.getSource().getTopParentNode().getComposite() != null
+              ){
+                  isWireOnTopCanvas = false;
+              }
+          }catch(e){
+              //do nothing
+          }
+
+          /*
+           *    If source has getDatatype() function use it, otherwise look for userData variable
+           */
+          if (lineObj.getSource().getDatatype) {
+              sourceDatatype = lineObj.getSource().getDatatype();
+          }else{
+              sourceDatatype = lineObj.getSource().getUserData().datatype;
+          }
+
+          /*
+           *    when flag isWireOnTopCanvas is still true write wire declaration, otherwise do nothing and continue for next wire
+           */
+          if (isWireOnTopCanvas)  cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";
       }
 
       /*
