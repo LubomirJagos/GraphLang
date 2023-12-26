@@ -2072,7 +2072,8 @@ GraphLang.Utils.translateCanvasToCppCode = function(canvas, translateTerminalsDe
   	//here it's looking just for figures skipping loops and tunnels
       if (lineObj.NAME.toLowerCase().search('connection') > -1 &&
           lineObj.getSource().getParent().NAME.toLowerCase().search('tunnel') == -1 &&
-          lineObj.getSource().getParent().getComposite() == null
+          lineObj.getSource().getParent().getComposite() == null &&
+          lineObj.getSource().getName() != "iterationTerminalOutput"        //this is not to generate wire declaration for FOR LOOP iterator indexer, getName() return port name not class nae different than NAME
       ){
           sourceDatatype = lineObj.getSource().getUserData().datatype;
           cCode += sourceDatatype + " wire_" + lineObj.getId() + ";\n";

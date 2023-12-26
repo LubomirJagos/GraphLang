@@ -11,12 +11,16 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     port.setBackgroundColor("#0000FF");
     port.setName("iterationTerminal");
     port.setMaxFanOut(20);
+    port.userData = {};
+    port.userData.datatype = "int";
 
     port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(2, 10));
     port.setConnectionDirection(1);
     port.setBackgroundColor("#0000FF");
     port.setName("iterationTerminalOutput");
     port.setMaxFanOut(20);
+    port.userData = {};
+    port.userData.datatype = "int";
 
     this.userData = {};
     this.userData.executionOrder = 1;
@@ -93,10 +97,27 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     port.setBackgroundColor("#0000FF");
     port.setName("iterationTerminal");
     port.setMaxFanOut(20);
+    port.userData = {};
+    port.userData.datatype = "int";
+
+    port = this.createPort("output", new draw2d.layout.locator.XYRelPortLocator(2, 10));
+    port.setConnectionDirection(1);
+    port.setBackgroundColor("#0000FF");
+    port.setName("iterationTerminalOutput");
+    port.setMaxFanOut(20);
+    port.userData = {};
+    port.userData.datatype = "int";
   },
 
+  /*
+   *  This is needed to load ports correctly for special hardwired ports like iteratorTerminal and iteratorTerminalOutput,
+   *  since they are returned from overrided getPort function also connected wires are created correctly
+   */
   getPort: function(name){
-    if (name.indexOf('iterationTerminal') > -1){
+    //iterationTerminalOutput must be first since it contains also word 'iterationTerminal' therefore it's more specific and must be first to be evaluated
+    if (name.indexOf('iterationTerminalOutput') > -1){
+      return this.getOutputPort(name);
+    }else if (name.indexOf('iterationTerminal') > -1){
       return this.getInputPort(name);
     }else{
       port = this._super(name); //THIS IS NOT RUNNING, TESTED
@@ -120,26 +141,30 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
     var forLoopIteratorVariable = 'forLoopIterator_' + this.getId();
 
     cCode += this.getTunnelsDeclarationCppCode();
-    cCode += "\t" + this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t") + "\n";
-    cCode += "for (int " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n";
-    cCode += "\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t") + "\n";
+    cCode += this.getWiresInsideLoopDeclarationCppCode().replaceAll("\n", "\n\t");
+    cCode += "for (int " + forLoopIteratorVariable + " = 0; " + forLoopIteratorVariable + " < " + iterationCount + "; " + forLoopIteratorVariable+ "++){\n\t";
+    cCode += "\t\t" + this.getLeftTunnelsWiresAssignementCppCode().replaceAll("\n", "\n\t");
+
+    this.getOutputPort("iterationTerminalOutput").getConnections().each(function(wireIndex, wireObj){
+      cCode += "\t\twire_" + wireObj.getId() + " = " + forLoopIteratorVariable + ";\n";
+    });
 
     /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      *          RECURSION CALL
      *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    cCode += "\t/*code inside FOR LOOP */\n";
+    cCode += "\t/*code inside FOR LOOP */\n\n";
     this.getAssignedFigures().each(function(figIndex, figObj){
-      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t") + "\n";
+      if (figObj.translateToCppCodeDeclaration && figObj.NAME.toLowerCase().search("feedbacknode") == -1) cCode += "\t" + figObj.translateToCppCodeDeclaration().replaceAll("\n", "\n\t\t");
 
       if (figObj.translateToCppCode){
-        cCode += "\t" + figObj.translateToCppCode().replaceAll("\n", "\n\t") + "\n";
+        cCode += figObj.translateToCppCode().replaceAll("\n", "\n\t\t");
       }else if (figObj.translateToCppCode2){
-        cCode += "\t" + figObj.translateToCppCode2().replaceAll("\n", "\n\t") + "\n";
+        cCode += figObj.translateToCppCode2().replaceAll("\n", "\n\t\t");
       }
 
       /* in case of post C/C++ code run it */
-      if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t") + "\n"; //if there is defined to put somethin after let's do it
+      if (figObj.translateToCppCodePost) cCode += "\t" + figObj.translateToCppCodePost().replaceAll("\n", "\n\t"); //if there is defined to put somethin after let's do it
 
     });
 
@@ -150,7 +175,7 @@ GraphLang.Shapes.Basic.Loop2.ForLoop = GraphLang.Shapes.Basic.Loop2.extend({
   translateToCppCodePost: function(){
     var cCode = "";
     cCode += this.getRightTunnelsAssignementOutputCppCode();    //first assign values to output wires
-    cCode += "} /* END FOR LOOP */" + "\n";                     //then finish loop
+    cCode += "\n} /* END FOR LOOP */" + "\n";                     //then finish loop
 
     return cCode;
   }

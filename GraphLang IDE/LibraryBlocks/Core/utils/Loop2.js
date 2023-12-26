@@ -382,7 +382,7 @@ GraphLang.Shapes.Basic.Loop2 = draw2d.shape.composite.Jailhouse.extend({
 
         }
 
-        cCode += datatypeStr + " wire_" + connectionObj.getId() + "; // generated\n";
+        cCode += datatypeStr + " wire_" + connectionObj.getId() + ";\n";
   	});
 
     return cCode;
