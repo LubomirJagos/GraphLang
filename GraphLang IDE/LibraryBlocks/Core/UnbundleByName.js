@@ -197,7 +197,7 @@ GraphLang.Shapes.Basic.UnbundleByName = draw2d.shape.layout.FlexGridLayout.exten
       
       var outputPort = label.createPort("output");
       outputPort.userData = {};
-      outputPort.userData.datatype = "bool";
+      outputPort.userData.datatype = "undefined";
       outputPort.setName("output_" + label.id);
 
       var unbundlerObj = this;

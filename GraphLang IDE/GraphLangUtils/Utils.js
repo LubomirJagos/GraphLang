@@ -1210,7 +1210,11 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
   canvas.getLines().each(function(lineIndex, lineObj){
     var color = new GraphLang.Utils.Color();  //GraphLang.Utils.Color is not object so we need to instantiate that class
 
-    if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(lineObj.getSource().getUserData().datatype);  //get hexadecimal color string from it's name
+    var wireSourceDatatype = "undefined";
+    if (lineObj.getSource().getDatatype) wireSourceDatatype = lineObj.getSource().getDatatype();
+    else if (lineObj.getSource().getUserData().datatype) wireSourceDatatype = lineObj.getSource().getUserData().datatype;
+
+    if (lineObj.getSource() != undefined && lineObj.getSource().getUserData() != undefined) var lineColor = color.getByName(wireSourceDatatype);  //get hexadecimal color string from it's name
     else var lineColor = color.getByName("broken");
 
     lineObj.setColor(lineColor);  //set wire color
@@ -1255,10 +1259,15 @@ GraphLang.Utils.setWiresColorByPorts = function setWiresColorByPorts(canvas){
     //tunnelObj.setColor(new GraphLang.Utils.Color("#FF0000"));
     //wireColor = colorPicker.getByName();
     if (tunnelObj.getInputPort(0).getConnections().getSize() > 0){
-      inputPortDatatype = tunnelObj.getInputPort(0).getConnections().get(0).getSource().userData.datatype;
+        if (tunnelObj.getInputPort(0).getConnections().get(0).getSource().getDatatype) {
+            inputPortDatatype = tunnelObj.getInputPort(0).getConnections().get(0).getSource().getDatatype();
+        }else if (tunnelObj.getInputPort(0).getConnections().get(0).getSource().getUserData().datatype){
+            inputPortDatatype = tunnelObj.getInputPort(0).getConnections().get(0).getSource().getUserData().datatype;
+        }
     }else{
       inputPortDatatype = "undefined";
     }
+
     wireColor = colorPicker.getByName(inputPortDatatype);
     tunnelObj.getOutputPort(0).userData.datatype = inputPortDatatype; //copy input datatype to output port
     tunnelObj.getInputPort(0).userData.datatype = inputPortDatatype; //copy input datatype to output port
