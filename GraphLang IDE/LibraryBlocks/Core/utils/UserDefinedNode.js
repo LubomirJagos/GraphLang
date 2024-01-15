@@ -172,11 +172,11 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
    *    THESE FUNCTIONS BELOW ARE SPECIFIC TO TRANSLATE NODE TO C/C++ CODE
    *****************************************************************************************************************/
 
-  getVariableName: function(){
-      let variableName = "outputTerminal_" + this.getId();
-      if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
-      return variableName
-  },
+    getVariableName: function(){
+        let variableName = "outputTerminal_" + this.getId();
+        if (this.userData.nodeLabel) variableName = this.userData.nodeLabel;
+        return variableName
+    },
 
     translateToCppCodeAsParam:function(){
         cCode = "";
@@ -192,11 +192,11 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
         return cCode;
     },
 
-  translateToCppCodeFunctionName: function(){
-    //cCode = this.NAME.replaceAll('.', '_');
-    cCode = this.NAME;
-    return cCode;
-  },
+    translateToCppCodeFunctionName: function(){
+        //cCode = this.NAME.replaceAll('.', '_');
+        cCode = this.NAME;
+        return cCode;
+    },
 
     translateToCppCodeTemplate: function(){
 
@@ -271,6 +271,15 @@ GraphLang.UserDefinedNode = draw2d.SetFigure.extend({
 
     translateToCppCode: function(){
         return this.translateToCppCodeTemplate();
-    }
+    },
+
+    /*****************************************************************************************************************
+     *    THESE FUNCTIONS BELOW ARE SPECIFIC TO TRANSLATE NODE TO PYTHON CODE
+     *****************************************************************************************************************/
+    translateToPythonCodeFunctionName: function(){
+        //pyCode = this.NAME.replaceAll('.', '_');
+        pyCode = this.NAME;
+        return pyCode;
+    },
 
 });

@@ -81,6 +81,8 @@ htmlTemplate = """
     <script src="./gui/HoverConnection.js"></script>
 
     <script src="./GraphLangUtils/Utils.js"></script>
+    <script src="./GraphLangUtils/TranslateToCppCode_1.js"></script>
+    <script src="./GraphLangUtils/TranslateToPythonCode_1.js"></script>
     <script src="./GraphLangUtils/RightRelPortLocator.js"></script>
     <script src="./GraphLangUtils/BottomRelPortLocator.js"></script>
     <script src="./GraphLangUtils/LeftRelPortLocator.js"></script>
